@@ -2,6 +2,7 @@
 // Cabecera común de las páginas públicas.
 // Antes de incluirla, cada página puede definir $titulo_pagina.
 require_once __DIR__ . '/../helpers.php';
+enviar_cabeceras_seguridad();
 
 $titulo_pagina = $titulo_pagina ?? 'Clínica Vida Sana';
 ?>

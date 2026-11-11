@@ -20,6 +20,37 @@ function config(string $clave, $por_defecto = null)
     return $config[$clave] ?? $por_defecto;
 }
 
+// Regla 9: los errores detallados solo se muestran en desarrollo.
+// Con 'debug' => false (producción) se guardan en el log, no en pantalla.
+error_reporting(E_ALL);
+ini_set('display_errors', config('debug', false) ? '1' : '0');
+ini_set('log_errors', '1');
+
+/**
+ * Envía las cabeceras de seguridad. Se llama al inicio de cada plantilla
+ * (header.php y panel_header.php), antes de imprimir cualquier HTML.
+ */
+function enviar_cabeceras_seguridad(): void
+{
+    // Oculta la versión de PHP.
+    header_remove('X-Powered-By');
+
+    // Impide que otra web meta esta página dentro de un <iframe> (clickjacking).
+    header('X-Frame-Options: DENY');
+
+    // El navegador no debe "adivinar" el tipo de los archivos.
+    header('X-Content-Type-Options: nosniff');
+
+    // No enviar la URL completa a otros sitios.
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+
+    // Solo se carga contenido (CSS, JS, imágenes) de este mismo sitio.
+    // Si más adelante se usa algo externo (ej. Google Fonts), hay que
+    // agregarlo aquí a propósito.
+    header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; "
+         . "form-action 'self'; frame-ancestors 'none'; base-uri 'self'");
+}
+
 /**
  * Escapa texto antes de imprimirlo en HTML (evita XSS).
  * Uso: <?= e($nombre) ?>

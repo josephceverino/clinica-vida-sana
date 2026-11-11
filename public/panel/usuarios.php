@@ -43,8 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!preg_match('/^[a-z0-9._]{3,50}$/', $form['usuario'])) {
             $errores[] = 'El usuario debe tener 3 a 50 caracteres: letras, números, punto o guion bajo.';
         }
-        if (strlen($password) < 8) {
-            $errores[] = 'La contraseña debe tener al menos 8 caracteres.';
+        // bcrypt solo usa los primeros 72 bytes; más allá se ignorarían en silencio.
+        if (strlen($password) < 8 || strlen($password) > 72) {
+            $errores[] = 'La contraseña debe tener entre 8 y 72 caracteres.';
         }
         if (!in_array($form['rol'], $roles_validos, true)) {
             $errores[] = 'Elige un rol válido.';

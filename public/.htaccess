@@ -1,0 +1,2 @@
+# No mostrar el listado de archivos de las carpetas (assets, panel, etc.).
+Options -Indexes
