@@ -170,3 +170,123 @@ function registrar_cuenta_paciente(array $datos): bool
         throw $error;
     }
 }
+
+// ---------------------------------------------------------------------
+// Verificación de cuentas (la hace admisión desde public/panel/cuentas.php)
+// ---------------------------------------------------------------------
+
+/**
+ * Cuántas cuentas de pacientes esperan verificación (para el contador del menú).
+ */
+function contar_cuentas_pendientes(): int
+{
+    return (int) db()->query(
+        "SELECT COUNT(*) FROM usuarios
+         WHERE rol = 'paciente' AND verificado = 0 AND activo = 1"
+    )->fetchColumn();
+}
+
+/**
+ * Pone en minúsculas, sin tildes y sin espacios repetidos, para comparar
+ * nombres ("María  José" y "maria jose" cuentan como lo mismo).
+ */
+function normalizar_nombre(string $texto): string
+{
+    $texto = mb_strtolower(trim($texto));
+    $texto = strtr($texto, [
+        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+        'ü' => 'u', 'ñ' => 'n',
+    ]);
+
+    return preg_replace('/\s+/', ' ', $texto);
+}
+
+/**
+ * Lista las cuentas de pacientes con los datos de su ficha al lado, para que
+ * admisión compare. $filtro: 'pendientes', 'verificadas' o 'rechazadas'.
+ *
+ * Cada fila trae dos avisos para ayudar a decidir:
+ *   nombre_coincide -> el nombre de la cuenta es igual al de la ficha.
+ *   ficha_previa    -> la ficha ya existía antes de la cuenta (la registró
+ *                      admisión o ya tiene citas), así que es más delicado.
+ */
+function listar_cuentas_paciente(string $filtro = 'pendientes'): array
+{
+    // El filtro lo elige el código, nunca se pega lo que escribe el usuario.
+    $condiciones = [
+        'pendientes'  => 'u.verificado = 0 AND u.activo = 1',
+        'verificadas' => 'u.verificado = 1 AND u.activo = 1',
+        'rechazadas'  => 'u.activo = 0',
+    ];
+    $condicion = $condiciones[$filtro] ?? $condiciones['pendientes'];
+
+    $filas = db()->query(
+        "SELECT u.id, u.nombre AS nombre_cuenta, u.correo, u.activo, u.verificado,
+                u.creado_en, u.verificado_en, v.nombre AS verificador,
+                p.tipo_documento, p.numero_documento, p.nombres, p.apellidos,
+                p.telefono,
+                TIMESTAMPDIFF(SECOND, p.creado_en, u.creado_en) AS segundos_ficha,
+                (SELECT COUNT(*) FROM citas c WHERE c.paciente_id = p.id) AS citas
+         FROM usuarios u
+         INNER JOIN pacientes p ON p.id = u.paciente_id
+         LEFT JOIN usuarios v ON v.id = u.verificado_por
+         WHERE u.rol = 'paciente' AND $condicion
+         ORDER BY u.creado_en DESC
+         LIMIT 100"
+    )->fetchAll();
+
+    foreach ($filas as &$fila) {
+        $fila['nombre_coincide'] = normalizar_nombre($fila['nombre_cuenta'])
+            === normalizar_nombre($fila['nombres'] . ' ' . $fila['apellidos']);
+        // Si la ficha se creó más de 5 segundos antes que la cuenta, o ya
+        // tiene citas, no la creó este registro: es una ficha de la clínica.
+        $fila['ficha_previa'] = (int) $fila['segundos_ficha'] > 5 || (int) $fila['citas'] > 0;
+    }
+    unset($fila);
+
+    return $filas;
+}
+
+/**
+ * Verifica una cuenta de paciente (o la reactiva si estaba rechazada).
+ * Guarda quién la verificó y cuándo. Devuelve false si no existe esa cuenta.
+ */
+function verificar_cuenta(int $cuenta_id, int $verificador_id): bool
+{
+    $existe = db()->prepare("SELECT id FROM usuarios WHERE id = ? AND rol = 'paciente'");
+    $existe->execute([$cuenta_id]);
+    if ($existe->fetch() === false) {
+        return false;
+    }
+
+    $actualizar = db()->prepare(
+        "UPDATE usuarios
+         SET verificado = 1, activo = 1, verificado_por = ?, verificado_en = NOW()
+         WHERE id = ? AND rol = 'paciente'"
+    );
+    $actualizar->execute([$verificador_id, $cuenta_id]);
+
+    return true;
+}
+
+/**
+ * Rechaza una cuenta de paciente: queda desactivada y no puede entrar.
+ * No se borra, para que quede el registro de que existió.
+ */
+function rechazar_cuenta(int $cuenta_id): bool
+{
+    $existe = db()->prepare("SELECT id FROM usuarios WHERE id = ? AND rol = 'paciente'");
+    $existe->execute([$cuenta_id]);
+    if ($existe->fetch() === false) {
+        return false;
+    }
+
+    $actualizar = db()->prepare(
+        "UPDATE usuarios
+         SET activo = 0, verificado = 0, verificado_por = NULL, verificado_en = NULL
+         WHERE id = ? AND rol = 'paciente'"
+    );
+    $actualizar->execute([$cuenta_id]);
+
+    return true;
+}

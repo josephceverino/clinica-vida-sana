@@ -44,9 +44,10 @@ INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, 
     (4, 'Dra. Camila Pediatra Demo', 'medico2', NULL, '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'medico', 3, NULL, 1, 1);
 
 -- Pacientes con cuenta: correo obligatorio, enlazados a su ficha.
-INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, paciente_id, activo, verificado) VALUES
-    (5, 'Ana María Paredes Ficticia', NULL, 'paciente1@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 1, 1, 1),
-    (6, 'Nuevo Registro Demo',        NULL, 'pendiente@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 6, 1, 0);
+-- paciente1 fue verificada por admision1 (id 2); la otra espera verificación.
+INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, paciente_id, activo, verificado, verificado_por, verificado_en) VALUES
+    (5, 'Ana María Paredes Ficticia', NULL, 'paciente1@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 1, 1, 1, 2, '2026-10-15 10:00:00'),
+    (6, 'Nuevo Registro Demo',        NULL, 'pendiente@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 6, 1, 0, NULL, NULL);
 
 -- Citas (fechas fijas de ejemplo; se pueden editar desde el panel) -----
 -- Medicina General -> medico1 (id 3). Pediatría -> medico2 (id 4).

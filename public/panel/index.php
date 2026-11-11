@@ -1,6 +1,7 @@
 <?php
 // Resumen del panel (zona privada).
 require_once __DIR__ . '/../../app/core/auth.php';
+require_once __DIR__ . '/../../app/modelos/cuentas.php';
 
 // Regla 6: toda página del panel empieza protegida.
 // Solo entra el personal: los pacientes tienen su propio portal y no deben
@@ -11,39 +12,62 @@ $titulo_pagina = 'Resumen';
 $pagina_activa = 'index.php';
 $pdo = db();
 
+$yo = usuario_actual();
+$es_medico = $yo['rol'] === 'medico';
+// Admin y admisión gestionan solicitudes, cuentas y pacientes. El médico no.
+$ve_gestion = in_array($yo['rol'], ['admin', 'admision'], true);
+
+// El médico solo ve SUS citas. Para los demás roles no hay filtro.
+// (El texto SQL lo decide el código; el id del médico va como parámetro.)
+$donde_medico = $es_medico ? ' AND medico_id = :medico' : '';
+// Lo mismo, para la consulta que usa el alias "c" (c.medico_id).
+$donde_medico_c = $es_medico ? ' AND c.medico_id = :medico' : '';
+$parametros_medico = $es_medico ? ['medico' => $yo['id']] : [];
+
 // --- Números de las tarjetas -------------------------------------------
-// Estas consultas no llevan datos del usuario, por eso usamos query().
-$citas_hoy = (int) $pdo->query(
-    "SELECT COUNT(*) FROM citas WHERE fecha = CURDATE() AND estado <> 'cancelada'"
-)->fetchColumn();
+$consulta = $pdo->prepare(
+    "SELECT COUNT(*) FROM citas
+     WHERE fecha = CURDATE() AND estado <> 'cancelada'" . $donde_medico
+);
+$consulta->execute($parametros_medico);
+$citas_hoy = (int) $consulta->fetchColumn();
 
-$citas_pendientes = (int) $pdo->query(
-    "SELECT COUNT(*) FROM citas WHERE estado = 'pendiente' AND fecha >= CURDATE()"
-)->fetchColumn();
+$consulta = $pdo->prepare(
+    "SELECT COUNT(*) FROM citas
+     WHERE estado = 'pendiente' AND fecha >= CURDATE()" . $donde_medico
+);
+$consulta->execute($parametros_medico);
+$citas_pendientes = (int) $consulta->fetchColumn();
 
-$solicitudes_nuevas = (int) $pdo->query(
-    "SELECT COUNT(*) FROM solicitudes_cita WHERE estado = 'nueva'"
-)->fetchColumn();
-
-$total_pacientes = (int) $pdo->query('SELECT COUNT(*) FROM pacientes')->fetchColumn();
+$solicitudes_nuevas = 0;
+$cuentas_pendientes = 0;
+$total_pacientes = 0;
+if ($ve_gestion) {
+    $solicitudes_nuevas = (int) $pdo->query(
+        "SELECT COUNT(*) FROM solicitudes_cita WHERE estado = 'nueva'"
+    )->fetchColumn();
+    $cuentas_pendientes = contar_cuentas_pendientes();
+    $total_pacientes = (int) $pdo->query('SELECT COUNT(*) FROM pacientes')->fetchColumn();
+}
 
 // --- Próximas citas (de hoy en adelante) ----------------------------------
-$proximas = $pdo->query(
+$consulta = $pdo->prepare(
     "SELECT c.fecha, c.hora, c.motivo, c.estado,
             p.nombres, p.apellidos, a.nombre AS area
      FROM citas c
      JOIN pacientes p ON p.id = c.paciente_id
      JOIN areas a     ON a.id = c.area_id
-     WHERE c.fecha >= CURDATE() AND c.estado IN ('pendiente', 'confirmada')
+     WHERE c.fecha >= CURDATE() AND c.estado IN ('pendiente', 'confirmada')"
+     . $donde_medico_c . "
      ORDER BY c.fecha, c.hora
      LIMIT 6"
-)->fetchAll();
+);
+$consulta->execute($parametros_medico);
+$proximas = $consulta->fetchAll();
 
 // --- Solicitudes nuevas (solo las ven admin y admisión) ---------------------
-$rol = usuario_actual()['rol'];
-$ve_solicitudes = in_array($rol, ['admin', 'admision'], true);
 $solicitudes = [];
-if ($ve_solicitudes) {
+if ($ve_gestion) {
     $solicitudes = $pdo->query(
         "SELECT s.nombre, s.telefono, s.fecha_preferida, a.nombre AS area
          FROM solicitudes_cita s
@@ -64,7 +88,7 @@ $primer_nombre = explode(' ', trim($usuario['nombre']))[0];
 <header class="panel-titulo">
     <div>
         <h1><?= e($saludo) ?>, <?= e($primer_nombre) ?></h1>
-        <p>Esto es lo que pasa hoy en la clínica.</p>
+        <p><?= $es_medico ? 'Esto es lo que tienes hoy.' : 'Esto es lo que pasa hoy en la clínica.' ?></p>
     </div>
     <time datetime="<?= e(date('Y-m-d')) ?>"><?= e(date('d/m/Y')) ?></time>
 </header>
@@ -73,29 +97,33 @@ $primer_nombre = explode(' ', trim($usuario['nombre']))[0];
 <section class="tarjetas">
     <article class="dato">
         <span class="dato-numero"><?= $citas_hoy ?></span>
-        <span class="dato-texto">Citas hoy</span>
+        <span class="dato-texto"><?= $es_medico ? 'Mis citas hoy' : 'Citas hoy' ?></span>
     </article>
     <article class="dato">
         <span class="dato-numero"><?= $citas_pendientes ?></span>
-        <span class="dato-texto">Citas por confirmar</span>
+        <span class="dato-texto"><?= $es_medico ? 'Mis citas por confirmar' : 'Citas por confirmar' ?></span>
     </article>
-    <?php if ($ve_solicitudes): ?>
+    <?php if ($ve_gestion): ?>
         <article class="dato dato-alerta">
             <span class="dato-numero"><?= $solicitudes_nuevas ?></span>
             <span class="dato-texto">Solicitudes nuevas</span>
         </article>
+        <a class="dato dato-alerta dato-enlace" href="<?= e(url('/panel/cuentas.php')) ?>">
+            <span class="dato-numero"><?= $cuentas_pendientes ?></span>
+            <span class="dato-texto">Cuentas por verificar</span>
+        </a>
+        <article class="dato">
+            <span class="dato-numero"><?= $total_pacientes ?></span>
+            <span class="dato-texto">Pacientes registrados</span>
+        </article>
     <?php endif; ?>
-    <article class="dato">
-        <span class="dato-numero"><?= $total_pacientes ?></span>
-        <span class="dato-texto">Pacientes registrados</span>
-    </article>
 </section>
 
 <div class="panel-columnas">
 
     <!-- Próximas citas -->
     <section class="caja">
-        <h2>Próximas citas</h2>
+        <h2><?= $es_medico ? 'Mis próximas citas' : 'Próximas citas' ?></h2>
         <?php if (count($proximas) === 0): ?>
             <p class="vacio">No hay citas próximas.</p>
         <?php else: ?>
@@ -120,9 +148,9 @@ $primer_nombre = explode(' ', trim($usuario['nombre']))[0];
     </section>
 
     <!-- Solicitudes nuevas -->
-    <?php if ($ve_solicitudes): ?>
+    <?php if ($ve_gestion): ?>
         <section class="caja">
-            <h2>Solicitudes desde la web</h2>
+            <h2>Solicitudes de cita</h2>
             <?php if (count($solicitudes) === 0): ?>
                 <p class="vacio">No hay solicitudes nuevas.</p>
             <?php else: ?>

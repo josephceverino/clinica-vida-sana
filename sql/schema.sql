@@ -68,6 +68,7 @@ CREATE TABLE pacientes (
 -- activo    = 0: cuenta desactivada, no puede entrar.
 -- verificado = 0: cuenta de paciente pendiente; admisión debe comprobar su
 --                 identidad antes de que pueda ver su historial.
+-- verificado_por / verificado_en: quién de admisión la verificó y cuándo.
 -- ---------------------------------------------------------------------
 CREATE TABLE usuarios (
     id            INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -80,6 +81,8 @@ CREATE TABLE usuarios (
     paciente_id   INT UNSIGNED NULL,
     activo        TINYINT(1)   NOT NULL DEFAULT 1,
     verificado    TINYINT(1)   NOT NULL DEFAULT 1,
+    verificado_por INT UNSIGNED NULL,
+    verificado_en  DATETIME     NULL,
     creado_en     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uq_usuarios_usuario (usuario),
@@ -93,6 +96,10 @@ CREATE TABLE usuarios (
     CONSTRAINT fk_usuarios_paciente
         FOREIGN KEY (paciente_id) REFERENCES pacientes (id)
         ON DELETE RESTRICT ON UPDATE RESTRICT,
+    -- Quién verificó la cuenta (si esa persona se borra, queda el dato vacío).
+    CONSTRAINT fk_usuarios_verificador
+        FOREIGN KEY (verificado_por) REFERENCES usuarios (id)
+        ON DELETE SET NULL ON UPDATE RESTRICT,
     -- Una cuenta de paciente siempre tiene ficha; el personal nunca.
     CONSTRAINT ck_usuarios_paciente
         CHECK ((rol = 'paciente' AND paciente_id IS NOT NULL)

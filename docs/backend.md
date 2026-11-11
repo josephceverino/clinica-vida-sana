@@ -13,6 +13,7 @@ Documentación de la parte hecha por Alexander. Resume qué hace cada módulo y 
 | Panel: pacientes | `public/panel/pacientes.php`, `registrar-paciente.php` |
 | Panel: citas | `public/panel/citas.php`, `registrar-cita.php`, `gestionar-cita.php` |
 | Panel: solicitudes | `public/panel/solicitudes.php` |
+| Panel: cuentas de pacientes por verificar | `public/panel/cuentas.php` (lógica en `app/modelos/cuentas.php`) |
 
 Las páginas de `public/panel/` solo muestran y reciben datos; la lógica y las consultas están en `app/`.
 
@@ -72,7 +73,15 @@ Al registrar una cita se rechaza:
 ## Cambios del portal del paciente en la base de datos
 
 - `pacientes` guarda `tipo_documento` (DNI, CE o PASAPORTE) y `numero_documento`; el par es único. Tiene `correo`, y `fecha_nacimiento` es opcional.
-- `usuarios` admite el rol `paciente`. El personal entra con `usuario`; el paciente, con `correo` y enlazado a su ficha (`paciente_id`). `verificado = 0` significa que admisión aún no comprobó su identidad.
+- `usuarios` admite el rol `paciente`. El personal entra con `usuario`; el paciente, con `correo` y enlazado a su ficha (`paciente_id`). `verificado = 0` significa que admisión aún no comprobó su identidad; `verificado_por` y `verificado_en` guardan quién la verificó y cuándo.
+
+## Verificación de cuentas (admisión)
+
+En `Cuentas por verificar` admisión ve, lado a lado, lo que escribió la persona al registrarse y la ficha del paciente. Dos avisos ayudan a decidir:
+- **Ficha de la clínica**: el documento ya tenía ficha antes de la cuenta (la registró admisión o ya tiene citas).
+- **Los nombres no coinciden** con la ficha.
+
+Puede **verificar** o **rechazar** (la cuenta se desactiva, no se borra). Desde la pestaña *Rechazadas* se puede reconsiderar. La acción solo funciona sobre cuentas de pacientes, con token CSRF, y se aplica en la siguiente página que abra el paciente, sin que tenga que volver a entrar.
 - `atenciones` es la historia clínica: una por cita, escrita por el médico.
 - `intentos_acceso` guarda los intentos de login y registro, para limitarlos por IP.
 - `solicitudes_cita.paciente_id` enlaza una solicitud con la cuenta que la hizo.

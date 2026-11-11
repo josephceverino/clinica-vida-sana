@@ -13,14 +13,40 @@ $usuario = usuario_actual();
 $titulo_pagina = $titulo_pagina ?? 'Panel';
 $pagina_activa = $pagina_activa ?? 'index.php';
 
-// Menú lateral: archivo => [texto, roles que lo ven]
+// Menú lateral, en grupos. Cada grupo tiene un título (o null) y sus enlaces:
+//   archivo => [texto, roles que lo ven]
+// Un enlace solo se muestra si el rol puede abrir esa página; los grupos sin
+// ningún enlace visible no se dibujan.
 $menu_panel = [
-    'index.php'       => ['Resumen',     ['admin', 'admision', 'medico']],
-    'pacientes.php'   => ['Pacientes',   ['admin', 'admision', 'medico']],
-    'citas.php'       => ['Citas',       ['admin', 'admision', 'medico']],
-    'solicitudes.php' => ['Solicitudes', ['admin', 'admision']],
-    'usuarios.php'    => ['Usuarios',    ['admin']],
+    [
+        'titulo'  => null,
+        'enlaces' => [
+            'index.php' => ['Resumen', ['admin', 'admision', 'medico']],
+        ],
+    ],
+    [
+        'titulo'  => 'Atención',
+        'enlaces' => [
+            'pacientes.php'   => ['Pacientes',            ['admin', 'admision']],
+            'citas.php'       => ['Citas',                ['admin', 'admision', 'medico']],
+            'solicitudes.php' => ['Solicitudes',          ['admin', 'admision']],
+            'cuentas.php'     => ['Cuentas por verificar', ['admin', 'admision']],
+        ],
+    ],
+    [
+        'titulo'  => 'Administración',
+        'enlaces' => [
+            'usuarios.php' => ['Usuarios del personal', ['admin']],
+        ],
+    ],
 ];
+
+// Números que se muestran como globito junto a un enlace del menú.
+$globitos_menu = [];
+if (in_array($usuario['rol'], ['admin', 'admision'], true)) {
+    require_once __DIR__ . '/../modelos/cuentas.php';
+    $globitos_menu['cuentas.php'] = contar_cuentas_pendientes();
+}
 
 // Iniciales para el círculo del usuario (ej. "Administrador Demo" -> "AD").
 $partes = preg_split('/\s+/', trim($usuario['nombre']));
@@ -47,18 +73,34 @@ $iniciales = mb_strtoupper(
         </a>
 
         <nav class="panel-menu" aria-label="Menú del panel">
-            <?php foreach ($menu_panel as $archivo => [$texto, $roles]): ?>
-                <?php if (!in_array($usuario['rol'], $roles, true)) { continue; } ?>
+            <?php foreach ($menu_panel as $grupo): ?>
+                <?php
+                // Enlaces de este grupo que el rol puede ver.
+                $visibles = array_filter(
+                    $grupo['enlaces'],
+                    fn ($datos) => in_array($usuario['rol'], $datos[1], true)
+                );
+                if (count($visibles) === 0) { continue; }
+                ?>
 
-                <?php if (file_exists(__DIR__ . '/../../public/panel/' . $archivo)): ?>
-                    <a href="<?= e(url('/panel/' . $archivo)) ?>"
-                       class="<?= $archivo === $pagina_activa ? 'activo' : '' ?>">
-                        <?= e($texto) ?>
-                    </a>
-                <?php else: ?>
-                    <!-- Esta sección aún no existe: se muestra apagada. -->
-                    <span class="deshabilitado"><?= e($texto) ?> <small>pronto</small></span>
+                <?php if ($grupo['titulo'] !== null): ?>
+                    <p class="panel-menu-titulo"><?= e($grupo['titulo']) ?></p>
                 <?php endif; ?>
+
+                <?php foreach ($visibles as $archivo => [$texto, $roles]): ?>
+                    <?php if (file_exists(__DIR__ . '/../../public/panel/' . $archivo)): ?>
+                        <a href="<?= e(url('/panel/' . $archivo)) ?>"
+                           class="<?= $archivo === $pagina_activa ? 'activo' : '' ?>">
+                            <?= e($texto) ?>
+                            <?php if (($globitos_menu[$archivo] ?? 0) > 0): ?>
+                                <span class="globito"><?= (int) $globitos_menu[$archivo] ?></span>
+                            <?php endif; ?>
+                        </a>
+                    <?php else: ?>
+                        <!-- Esta sección aún no existe: se muestra apagada. -->
+                        <span class="deshabilitado"><?= e($texto) ?> <small>pronto</small></span>
+                    <?php endif; ?>
+                <?php endforeach; ?>
             <?php endforeach; ?>
         </nav>
 
