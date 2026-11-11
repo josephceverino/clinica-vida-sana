@@ -26,7 +26,7 @@ unset($_SESSION['cita_registrada']);
 
 try {
     $pacientes = db()->query(
-        'SELECT id, dni, nombres, apellidos
+        'SELECT id, tipo_documento, numero_documento, nombres, apellidos
          FROM pacientes
          ORDER BY apellidos, nombres'
     )->fetchAll();
@@ -137,7 +137,7 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                                 === $valores['paciente_id']
                                 ? 'selected' : '' ?>
                         >
-                            <?= e($paciente['dni']) ?> —
+                            <?= e($paciente['tipo_documento']) ?> <?= e($paciente['numero_documento']) ?> —
                             <?= e($paciente['nombres']) ?>
                             <?= e($paciente['apellidos']) ?>
                         </option>

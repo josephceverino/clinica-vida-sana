@@ -50,7 +50,15 @@ El acceso del personal está en `/login.php`.
 |---|---|---|
 | `admin` | admin | `Clinica2026!` |
 | `admision1` | admision | `Clinica2026!` |
-| `medico1` | medico | `Clinica2026!` |
+| `medico1` | medico (Medicina General) | `Clinica2026!` |
+| `medico2` | medico (Pediatría) | `Clinica2026!` |
+
+Cuentas de **paciente** (entran con su correo cuando esté listo el portal):
+
+| Correo | Estado | Contraseña |
+|---|---|---|
+| `paciente1@example.test` | verificada | `Clinica2026!` |
+| `pendiente@example.test` | pendiente de verificación | `Clinica2026!` |
 
 Estas contraseñas son **solo para desarrollo**. En el servidor deben cambiarse.
 

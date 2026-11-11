@@ -80,7 +80,7 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                 <caption>Pacientes encontrados</caption>
                 <thead>
                     <tr>
-                        <th scope="col">DNI</th>
+                        <th scope="col">Documento</th>
                         <th scope="col">Nombres</th>
                         <th scope="col">Apellidos</th>
                         <th scope="col">Nacimiento</th>
@@ -90,7 +90,7 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                 <tbody>
                     <?php foreach ($pacientes as $paciente): ?>
                         <tr>
-                            <td><?= e($paciente['dni']) ?></td>
+                            <td><?= e($paciente['tipo_documento']) ?> <?= e($paciente['numero_documento']) ?></td>
                             <td><?= e($paciente['nombres']) ?></td>
                             <td><?= e($paciente['apellidos']) ?></td>
                             <td><?= e($paciente['fecha_nacimiento']) ?></td>

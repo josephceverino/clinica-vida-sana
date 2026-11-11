@@ -2,8 +2,10 @@
 // Resumen del panel (zona privada).
 require_once __DIR__ . '/../../app/core/auth.php';
 
-// Regla 6: toda página del panel empieza con requerir_login().
-requerir_login();
+// Regla 6: toda página del panel empieza protegida.
+// Solo entra el personal: los pacientes tienen su propio portal y no deben
+// ver datos de otras personas (requerir_rol ya incluye requerir_login).
+requerir_rol(['admin', 'admision', 'medico']);
 
 $titulo_pagina = 'Resumen';
 $pagina_activa = 'index.php';

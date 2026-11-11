@@ -130,8 +130,8 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                     <?= e($cita['nombres']) ?>
                     <?= e($cita['apellidos']) ?><br>
 
-                    <strong>DNI:</strong>
-                    <?= e($cita['dni']) ?><br>
+                    <strong>Documento:</strong>
+                    <?= e($cita['tipo_documento']) ?> <?= e($cita['numero_documento']) ?><br>
 
                     <strong>Área:</strong>
                     <?= e($cita['area']) ?><br>

@@ -28,7 +28,7 @@ function buscar_citas(string $fecha = ''): array
 
     $sql = 'SELECT citas.id, citas.fecha, citas.hora,
                    citas.motivo, citas.estado,
-                   pacientes.dni, pacientes.nombres,
+                   pacientes.tipo_documento, pacientes.numero_documento, pacientes.nombres,
                    pacientes.apellidos,
                    areas.nombre AS area
             FROM citas
@@ -465,7 +465,7 @@ function buscar_citas_medico(
     $consulta = $conexion->prepare(
         'SELECT citas.id, citas.fecha, citas.hora,
                 citas.motivo, citas.estado,
-                pacientes.dni, pacientes.nombres,
+                pacientes.tipo_documento, pacientes.numero_documento, pacientes.nombres,
                 pacientes.apellidos,
                 pacientes.fecha_nacimiento,
                 areas.nombre AS area

@@ -67,7 +67,15 @@ Al registrar una cita se rechaza:
 
 ## Datos de prueba
 
-`sql/seed.sql` crea 5 áreas, 3 usuarios, 5 pacientes, 6 citas y 3 solicitudes. Las citas de Medicina General se asignan al médico de prueba (`medico1`). Las fechas son ejemplos fijos de noviembre de 2026.
+`sql/seed.sql` crea 5 áreas, 6 cuentas (admin, admisión, 2 médicos y 2 pacientes), 6 pacientes, 7 citas, 2 atenciones (historia clínica) y 3 solicitudes. Las citas de Medicina General son de `medico1` y las de Pediatría de `medico2`; Laboratorio aún no tiene médico. Las fechas son ejemplos fijos de octubre y noviembre de 2026.
+
+## Cambios del portal del paciente en la base de datos
+
+- `pacientes` guarda `tipo_documento` (DNI, CE o PASAPORTE) y `numero_documento`; el par es único. Tiene `correo`, y `fecha_nacimiento` es opcional.
+- `usuarios` admite el rol `paciente`. El personal entra con `usuario`; el paciente, con `correo` y enlazado a su ficha (`paciente_id`). `verificado = 0` significa que admisión aún no comprobó su identidad.
+- `atenciones` es la historia clínica: una por cita, escrita por el médico.
+- `intentos_acceso` guarda los intentos de login y registro, para limitarlos por IP.
+- `solicitudes_cita.paciente_id` enlaza una solicitud con la cuenta que la hizo.
 
 Los registros creados durante las pruebas locales **no** forman parte de `seed.sql`.
 

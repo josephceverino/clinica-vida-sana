@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../core/db.php';
 
 /**
- * Busca por DNI, nombres o apellidos.
+ * Busca por número de documento, nombres o apellidos.
  */
 function buscar_pacientes(string $busqueda = ''): array
 {
@@ -12,8 +12,8 @@ function buscar_pacientes(string $busqueda = ''): array
 
     if ($busqueda === '') {
         return $conexion->query(
-            'SELECT id, dni, nombres, apellidos,
-                    fecha_nacimiento, telefono
+            'SELECT id, tipo_documento, numero_documento, nombres,
+                    apellidos, fecha_nacimiento, telefono
              FROM pacientes
              ORDER BY id DESC
              LIMIT 50'
@@ -21,10 +21,10 @@ function buscar_pacientes(string $busqueda = ''): array
     }
 
     $consulta = $conexion->prepare(
-        'SELECT id, dni, nombres, apellidos,
-                fecha_nacimiento, telefono
+        'SELECT id, tipo_documento, numero_documento, nombres,
+                apellidos, fecha_nacimiento, telefono
          FROM pacientes
-         WHERE dni LIKE :dni
+         WHERE numero_documento LIKE :documento
             OR nombres LIKE :nombres
             OR apellidos LIKE :apellidos
          ORDER BY apellidos, nombres
@@ -34,7 +34,7 @@ function buscar_pacientes(string $busqueda = ''): array
     $texto = '%' . $busqueda . '%';
 
     $consulta->execute([
-        'dni' => $texto,
+        'documento' => $texto,
         'nombres' => $texto,
         'apellidos' => $texto,
     ]);
@@ -95,11 +95,14 @@ function registrar_paciente(array $datos): int
 
     $conexion = db();
 
+    // Por ahora admisión registra solo con DNI (tipo_documento = 'DNI').
+    // El registro del portal permitirá también CE y pasaporte.
     $consulta = $conexion->prepare(
-        'INSERT INTO pacientes
-            (dni, nombres, apellidos, fecha_nacimiento, telefono)
+        "INSERT INTO pacientes
+            (tipo_documento, numero_documento, nombres, apellidos,
+             fecha_nacimiento, telefono)
          VALUES
-            (:dni, :nombres, :apellidos, :fecha, :telefono)'
+            ('DNI', :dni, :nombres, :apellidos, :fecha, :telefono)"
     );
 
     try {

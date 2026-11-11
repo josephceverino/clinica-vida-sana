@@ -61,7 +61,10 @@ Abre `http://localhost/clinica-vida-sana/public` y entra en `/login.php` con:
 |---|---|---|
 | `admin` | admin | `Clinica2026!` |
 | `admision1` | admision | `Clinica2026!` |
-| `medico1` | medico | `Clinica2026!` |
+| `medico1` | medico (Medicina General) | `Clinica2026!` |
+| `medico2` | medico (Pediatría) | `Clinica2026!` |
+
+Las cuentas de paciente (`paciente1@example.test` y `pendiente@example.test`) existen en la base, pero todavía no pueden iniciar sesión: el login único y el portal se construyen en el siguiente paso.
 
 ---
 
