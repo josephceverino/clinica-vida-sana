@@ -52,3 +52,145 @@ function buscar_citas(string $fecha = ''): array
 
     return $consulta->fetchAll();
 }
+
+/**
+ * Registra una cita y devuelve su ID.
+ * El usuario registrador debe venir de la sesión del personal.
+ */
+function registrar_cita(array $datos, int $registrado_por): int
+{
+    $paciente_id = filter_var(
+        $datos['paciente_id'] ?? null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
+
+    $area_id = filter_var(
+        $datos['area_id'] ?? null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
+
+    $fecha = trim($datos['fecha'] ?? '');
+    $hora = trim($datos['hora'] ?? '');
+    $motivo = trim($datos['motivo'] ?? '');
+
+    if (!$paciente_id || !$area_id) {
+        throw new InvalidArgumentException(
+            'Selecciona un paciente y un área válidos.'
+        );
+    }
+
+    $zona = new DateTimeZone('America/Lima');
+    $texto_fecha = $fecha . ' ' . $hora;
+    $fecha_hora = DateTimeImmutable::createFromFormat(
+        '!Y-m-d H:i',
+        $texto_fecha,
+        $zona
+    );
+
+    if (
+        !$fecha_hora
+        || $fecha_hora->format('Y-m-d H:i') !== $texto_fecha
+        || $fecha_hora <= new DateTimeImmutable('now', $zona)
+    ) {
+        throw new InvalidArgumentException(
+            'Indica una fecha y hora válidas y futuras.'
+        );
+    }
+
+    if (mb_strlen($motivo) > 255) {
+        throw new InvalidArgumentException(
+            'El motivo admite hasta 255 caracteres.'
+        );
+    }
+
+    $conexion = db();
+
+    $consulta = $conexion->prepare(
+        "SELECT id FROM usuarios
+         WHERE id = :id AND activo = 1
+           AND rol IN ('admin', 'admision')"
+    );
+    $consulta->execute(['id' => $registrado_por]);
+
+    if (!$consulta->fetch()) {
+        throw new InvalidArgumentException(
+            'El usuario no está autorizado para registrar citas.'
+        );
+    }
+
+    $consulta = $conexion->prepare(
+        'SELECT id FROM areas WHERE id = :id'
+    );
+    $consulta->execute(['id' => $area_id]);
+
+    if (!$consulta->fetch()) {
+        throw new InvalidArgumentException(
+            'El área seleccionada no existe.'
+        );
+    }
+
+    $conexion->beginTransaction();
+
+    try {
+        // Bloquea el paciente mientras se comprueba y guarda su cita.
+        $consulta = $conexion->prepare(
+            'SELECT id FROM pacientes WHERE id = :id FOR UPDATE'
+        );
+        $consulta->execute(['id' => $paciente_id]);
+
+        if (!$consulta->fetch()) {
+            throw new InvalidArgumentException(
+                'El paciente seleccionado no existe.'
+            );
+        }
+
+        $consulta = $conexion->prepare(
+            "SELECT id FROM citas
+             WHERE paciente_id = :paciente
+               AND fecha = :fecha AND hora = :hora
+               AND estado <> 'cancelada'
+             LIMIT 1"
+        );
+        $consulta->execute([
+            'paciente' => $paciente_id,
+            'fecha' => $fecha,
+            'hora' => $hora . ':00',
+        ]);
+
+        if ($consulta->fetch()) {
+            throw new InvalidArgumentException(
+                'El paciente ya tiene una cita en ese horario.'
+            );
+        }
+
+        $consulta = $conexion->prepare(
+            "INSERT INTO citas
+                (paciente_id, area_id, fecha, hora,
+                 motivo, estado, registrado_por)
+             VALUES
+                (:paciente, :area, :fecha, :hora,
+                 :motivo, 'pendiente', :usuario)"
+        );
+        $consulta->execute([
+            'paciente' => $paciente_id,
+            'area' => $area_id,
+            'fecha' => $fecha,
+            'hora' => $hora . ':00',
+            'motivo' => $motivo === '' ? null : $motivo,
+            'usuario' => $registrado_por,
+        ]);
+
+        $id = (int) $conexion->lastInsertId();
+        $conexion->commit();
+
+        return $id;
+    } catch (Throwable $error) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+
+        throw $error;
+    }
+}
