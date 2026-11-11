@@ -64,6 +64,16 @@ require __DIR__ . '/../../app/layout/header.php';
 
 <section class="seccion">
     <h1>Citas</h1>
+    <?php if ($puede_gestionar): ?>
+    <p>
+        <a
+            class="boton"
+            href="<?= e(url('/panel/registrar-cita.php')) ?>"
+        >
+            Registrar cita
+        </a>
+    </p>
+<?php endif; ?>
 
     <p>
         <a href="<?= e(url('/panel/index.php')) ?>">
