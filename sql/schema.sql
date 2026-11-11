@@ -22,9 +22,13 @@ DROP TABLE IF EXISTS areas;
 -- ---------------------------------------------------------------------
 -- areas: departamentos o especialidades de la clínica
 -- ---------------------------------------------------------------------
+-- publica = 1: se muestra en la web pública (Servicios, formulario de cita).
+-- publica = 0: área interna (ej. Admisión, Sistemas).
 CREATE TABLE areas (
-    id     INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    nombre VARCHAR(80)  NOT NULL,
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    nombre      VARCHAR(80)  NOT NULL,
+    descripcion VARCHAR(255) NULL,
+    publica     TINYINT(1)   NOT NULL DEFAULT 1,
     PRIMARY KEY (id),
     UNIQUE KEY uq_areas_nombre (nombre)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
