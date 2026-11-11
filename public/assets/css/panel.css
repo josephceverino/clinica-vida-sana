@@ -1,0 +1,327 @@
+/* Estilos del panel (zona privada). Usa las variables de base.css. */
+
+.panel-body {
+    background: var(--color-fondo);
+}
+
+/* Estructura: barra lateral + contenido */
+.panel {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+}
+
+/* ---------- Barra lateral ---------- */
+.panel-lateral {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    background: var(--color-titulos);
+    color: #C9D6DF;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.panel-marca {
+    padding: 0 0.75rem 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-blanco);
+    text-decoration: none;
+}
+
+.panel-marca span {
+    margin-left: 0.25rem;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-titulos);
+    background: var(--color-acento);
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+.panel-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.panel-menu a,
+.panel-menu .deshabilitado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+    color: #C9D6DF;
+}
+
+.panel-menu a:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--color-blanco);
+}
+
+.panel-menu a.activo {
+    background: rgba(43, 182, 115, 0.15);
+    border-left-color: var(--color-acento);
+    color: var(--color-blanco);
+    font-weight: 600;
+}
+
+.panel-menu .deshabilitado {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.panel-menu small {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Usuario abajo de la barra lateral */
+.panel-usuario {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: auto;
+    padding: 1rem 0.75rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.panel-usuario strong {
+    display: block;
+    color: var(--color-blanco);
+    font-size: 0.9rem;
+}
+
+.panel-usuario small {
+    text-transform: capitalize;
+}
+
+.panel-avatar {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--color-principal);
+    color: var(--color-blanco);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.panel-usuario form {
+    grid-column: 1 / -1;
+}
+
+.panel-salir {
+    width: 100%;
+    padding: 0.5rem;
+    font: inherit;
+    font-size: 0.9rem;
+    color: #C9D6DF;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.panel-salir:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-blanco);
+}
+
+/* ---------- Contenido ---------- */
+.panel-contenido {
+    max-width: 1100px;
+    padding: 2rem;
+}
+
+.panel-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.panel-titulo h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.panel-titulo p {
+    margin: 0.25rem 0 0;
+}
+
+.panel-titulo time {
+    padding: 0.35rem 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-principal);
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 999px;
+}
+
+/* Tarjetas de números */
+.tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.dato {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-top: 4px solid var(--color-principal);
+    border-radius: 12px;
+}
+
+.dato-alerta {
+    border-top-color: var(--color-acento);
+}
+
+.dato-numero {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color-titulos);
+}
+
+.dato-texto {
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+}
+
+/* Cajas con listas */
+.panel-columnas {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.caja {
+    padding: 1.25rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 12px;
+}
+
+.caja h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+}
+
+.vacio {
+    margin: 0;
+    color: #6B7C8B;
+}
+
+.agenda {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.agenda li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #EDF1F4;
+}
+
+.agenda li:last-child {
+    border-bottom: none;
+}
+
+.agenda-hora {
+    display: flex;
+    flex-direction: column;
+    min-width: 3.2rem;
+    text-align: center;
+}
+
+.agenda-hora strong {
+    font-size: 1.05rem;
+    color: var(--color-principal);
+}
+
+.agenda-hora small {
+    color: #6B7C8B;
+}
+
+.agenda-detalle {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.agenda-detalle small {
+    color: #6B7C8B;
+}
+
+/* Etiquetas de estado */
+.estado {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.estado-pendiente  { background: #FFF1D6; color: #8A5A00; }
+.estado-confirmada { background: #DDF3E8; color: #17744A; }
+.estado-atendida   { background: #E3EBF1; color: #3B5568; }
+.estado-cancelada  { background: #FDECEA; color: #8A1F14; }
+.estado-nueva      { background: #D9EEF4; color: #0B6E8A; }
+
+/* ---------- Pantallas chicas ---------- */
+@media (max-width: 900px) {
+    .panel {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-lateral {
+        position: static;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .panel-marca {
+        padding-bottom: 0.75rem;
+    }
+
+    .panel-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .panel-usuario {
+        margin-top: 1rem;
+    }
+
+    .panel-contenido {
+        padding: 1.25rem 1rem;
+    }
+
+    .panel-columnas {
+        grid-template-columns: 1fr;
+    }
+}
