@@ -1,0 +1,15 @@
+# Credenciales locales: nunca subir
+config/config.php
+
+# Respaldos y volcados de base de datos
+*.sql.gz
+*.tar.gz
+backups/
+
+# Sistema y editor
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+
+# Logs
+*.log
