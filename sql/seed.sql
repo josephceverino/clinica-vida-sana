@@ -14,12 +14,12 @@
 USE clinica_vida_sana;
 
 -- Áreas ---------------------------------------------------------------
-INSERT INTO areas (id, nombre) VALUES
-    (1, 'Admisión'),
-    (2, 'Medicina General'),
-    (3, 'Pediatría'),
-    (4, 'Laboratorio'),
-    (5, 'Sistemas');
+INSERT INTO areas (id, nombre, descripcion, publica) VALUES
+    (1, 'Admisión',         NULL, 0),
+    (2, 'Medicina General', 'Controles, chequeos y atención de molestias del día a día para toda la familia.', 1),
+    (3, 'Pediatría',        'Cuidado y seguimiento del crecimiento de niños y adolescentes.', 1),
+    (4, 'Laboratorio',      'Análisis clínicos con resultados claros y entregados a tiempo.', 1),
+    (5, 'Sistemas',         NULL, 0);
 
 -- Usuarios (hash de 'Clinica2026!') -------------------------------------
 INSERT INTO usuarios (id, nombre, usuario, password_hash, rol, area_id, activo) VALUES
