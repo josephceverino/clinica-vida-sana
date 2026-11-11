@@ -194,3 +194,114 @@ function registrar_cita(array $datos, int $registrado_por): int
         throw $error;
     }
 }
+
+/**
+ * Cambia el estado de una cita.
+ * El usuario debe obtenerse de la sesión del personal.
+ */
+function cambiar_estado_cita(
+    int $cita_id,
+    string $nuevo_estado,
+    int $usuario_id
+): void {
+    if ($cita_id < 1) {
+        throw new InvalidArgumentException(
+            'La cita no es válida.'
+        );
+    }
+
+    // Estados de origen permitidos para cada destino.
+    $transiciones = [
+        'confirmada' => ['pendiente'],
+        'atendida' => ['confirmada'],
+        'cancelada' => ['pendiente', 'confirmada'],
+    ];
+
+    if (!isset($transiciones[$nuevo_estado])) {
+        throw new InvalidArgumentException(
+            'El estado solicitado no es válido.'
+        );
+    }
+
+    $conexion = db();
+
+    $consulta = $conexion->prepare(
+        "SELECT id FROM usuarios
+         WHERE id = :id AND activo = 1
+           AND rol IN ('admin', 'admision')"
+    );
+    $consulta->execute(['id' => $usuario_id]);
+
+    if (!$consulta->fetch()) {
+        throw new InvalidArgumentException(
+            'El usuario no está autorizado.'
+        );
+    }
+
+    $conexion->beginTransaction();
+
+    try {
+        // Bloquea la cita mientras se comprueba y actualiza.
+        $consulta = $conexion->prepare(
+            'SELECT estado FROM citas
+             WHERE id = :id FOR UPDATE'
+        );
+        $consulta->execute(['id' => $cita_id]);
+        $cita = $consulta->fetch();
+
+        if (!$cita) {
+            throw new InvalidArgumentException(
+                'La cita no existe.'
+            );
+        }
+
+        if (
+            !in_array(
+                $cita['estado'],
+                $transiciones[$nuevo_estado],
+                true
+            )
+        ) {
+            throw new InvalidArgumentException(
+                'No se permite ese cambio desde el estado actual.'
+            );
+        }
+
+        // No permite marcar como atendida una cita futura.
+        if ($nuevo_estado === 'atendida') {
+            $consulta = $conexion->prepare(
+                'SELECT fecha, hora FROM citas WHERE id = :id'
+            );
+            $consulta->execute(['id' => $cita_id]);
+            $horario = $consulta->fetch();
+
+            $zona = new DateTimeZone('America/Lima');
+            $fecha_cita = new DateTimeImmutable(
+                $horario['fecha'] . ' ' . $horario['hora'],
+                $zona
+            );
+
+            if ($fecha_cita > new DateTimeImmutable('now', $zona)) {
+                throw new InvalidArgumentException(
+                    'Todavía no es la fecha y hora de atención.'
+                );
+            }
+        }
+
+        $consulta = $conexion->prepare(
+            'UPDATE citas SET estado = :estado WHERE id = :id'
+        );
+        $consulta->execute([
+            'estado' => $nuevo_estado,
+            'id' => $cita_id,
+        ]);
+
+        $conexion->commit();
+    } catch (Throwable $error) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+
+        throw $error;
+    }
+}
