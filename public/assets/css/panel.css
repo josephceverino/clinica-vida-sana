@@ -399,6 +399,115 @@
     font-weight: 600;
 }
 
+/* ---------- Páginas del panel hechas con HTML simple ----------
+   Pacientes, citas y solicitudes usan etiquetas básicas (table, label,
+   input, etc.). Estas reglas les dan el estilo del panel sin cambiar
+   su HTML. Solo afectan lo que está dentro de .panel-contenido. */
+.panel-contenido .seccion {
+    padding: 0;
+}
+
+.panel-contenido .seccion > h1 {
+    margin: 0 0 1rem;
+    font-size: 1.8rem;
+}
+
+.panel-contenido .seccion > h2 {
+    margin: 1.5rem 0 0.75rem;
+    font-size: 1.2rem;
+}
+
+.panel-contenido table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.panel-contenido caption {
+    padding: 0.5rem 0;
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-titulos);
+}
+
+.panel-contenido th {
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B7C8B;
+    background: #F8FAFB;
+    border-bottom: 2px solid #EDF1F4;
+}
+
+.panel-contenido td {
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid #EDF1F4;
+}
+
+.panel-contenido tr:last-child td {
+    border-bottom: none;
+}
+
+.panel-contenido label {
+    font-weight: 600;
+    color: var(--color-titulos);
+}
+
+.panel-contenido input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.panel-contenido select,
+.panel-contenido textarea {
+    width: 100%;
+    max-width: 30rem;
+    padding: 0.55rem 0.7rem;
+    font: inherit;
+    background: var(--color-blanco);
+    border: 1px solid #C5D0D8;
+    border-radius: 8px;
+}
+
+.panel-contenido input:focus,
+.panel-contenido select:focus,
+.panel-contenido textarea:focus {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 1px;
+}
+
+.panel-contenido button.boton {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+.panel-contenido button.boton-claro {
+    border: 1px solid var(--color-principal);
+}
+
+/* Avisos: sus páginas marcan errores con role="alert" y éxitos con role="status" */
+.panel-contenido [role="alert"],
+.panel-contenido [role="status"] {
+    margin: 0 0 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+}
+
+.panel-contenido [role="alert"] {
+    background: #FDECEA;
+    border: 1px solid #F5B5AE;
+    color: #8A1F14;
+}
+
+.panel-contenido [role="status"] {
+    background: #DDF3E8;
+    border: 1px solid #A9DEC3;
+    color: #17744A;
+}
+
 /* ---------- Pantallas chicas ---------- */
 @media (max-width: 900px) {
     .panel {

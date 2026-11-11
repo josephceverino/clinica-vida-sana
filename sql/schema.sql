@@ -75,6 +75,7 @@ CREATE TABLE citas (
     id             INT UNSIGNED NOT NULL AUTO_INCREMENT,
     paciente_id    INT UNSIGNED NOT NULL,
     area_id        INT UNSIGNED NOT NULL,
+    medico_id      INT UNSIGNED NULL,
     fecha          DATE         NOT NULL,
     hora           TIME         NOT NULL,
     motivo         VARCHAR(255) NULL,
@@ -92,6 +93,10 @@ CREATE TABLE citas (
         ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT fk_citas_registrado_por
         FOREIGN KEY (registrado_por) REFERENCES usuarios (id)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    -- Médico asignado a la cita (puede quedar sin asignar).
+    CONSTRAINT fk_citas_medico
+        FOREIGN KEY (medico_id) REFERENCES usuarios (id)
         ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

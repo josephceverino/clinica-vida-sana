@@ -12,6 +12,8 @@ El curso evalúa la infraestructura (Fedora Linux + Windows Server). Esta web es
 - **Zona privada (con login):** panel, pacientes, citas, solicitudes de cita y gestión de usuarios.
 - **Roles:** `admin` (todo), `admision` (pacientes, citas y solicitudes) y `medico` (sus citas y datos básicos del paciente).
 
+Las reglas de pacientes, citas y solicitudes (estados, conflictos de agenda) están en [`docs/backend.md`](docs/backend.md).
+
 ## Tecnologías
 
 PHP 8.2+ sin frameworks, MariaDB con PDO, HTML/CSS/JavaScript puros y Apache.
@@ -58,7 +60,7 @@ Consultas preparadas con PDO, contraseñas con `password_hash()`, todo lo que se
 - Commits pequeños, en español e imperativo.
 - Cada rama se une a `main` con un Pull Request revisado por el otro integrante.
 
-Más detalles en [`CLAUDE.md`](CLAUDE.md), [`docs/plan-de-trabajo.md`](docs/plan-de-trabajo.md) y [`docs/guia-alexander.md`](docs/guia-alexander.md).
+Más detalles en [`CLAUDE.md`](CLAUDE.md), [`docs/plan-de-trabajo.md`](docs/plan-de-trabajo.md), [`docs/guia-alexander.md`](docs/guia-alexander.md) y [`docs/backend.md`](docs/backend.md).
 
 ## Equipo
 
