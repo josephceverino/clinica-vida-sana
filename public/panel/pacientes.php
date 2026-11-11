@@ -37,7 +37,14 @@ require __DIR__ . '/../../app/layout/header.php';
 
 <section class="seccion">
     <h1>Pacientes</h1>
-
+<p>
+    <a
+        class="boton"
+        href="<?= e(url('/panel/registrar-paciente.php')) ?>"
+    >
+        Registrar paciente
+    </a>
+</p>
     <p>
         <a href="<?= e(url('/panel/index.php')) ?>">
             Volver al panel
