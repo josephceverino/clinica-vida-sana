@@ -1,7 +1,7 @@
 <?php
 // Conexión a la base de datos con PDO.
 // Uso en cualquier página:
-//     require_once __DIR__ . '/../app/db.php';
+//     require_once __DIR__ . '/../app/core/db.php';
 //     $pdo = db();
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/errores.php';

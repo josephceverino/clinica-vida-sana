@@ -21,9 +21,14 @@ PHP 8.2+ sin frameworks, MariaDB con PDO, HTML/CSS/JavaScript puros y Apache.
 ## Estructura
 
 ```
-public/     Lo único accesible desde el navegador (páginas, CSS, JS, imágenes)
-  panel/    Zona privada (requiere login)
-app/        Lógica PHP (conexión, login, helpers, plantillas)
+public/     Lo único accesible desde el navegador
+  panel/    Zona del personal (requiere login)
+  errores/  Páginas 403 y 404
+  assets/   CSS, JS e imágenes
+app/        Lógica PHP (no accesible desde el navegador)
+  core/     Motor: conexión, login, helpers, errores
+  modelos/  Lógica de pacientes, citas y solicitudes
+  layout/   Plantillas (cabecera y pie)
 config/     Configuración (config.php NO se sube a GitHub)
 sql/        schema.sql (tablas) y seed.sql (datos ficticios)
 docs/       Plan de trabajo y guías del equipo

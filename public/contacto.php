@@ -4,7 +4,7 @@
 // cita ya existe la página "Solicitar cita".
 // Todos los datos son ficticios.
 $titulo_pagina = 'Contacto';
-require __DIR__ . '/../app/layout/header.php';
+require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
 <!-- 1. Introducción -->
@@ -62,4 +62,4 @@ require __DIR__ . '/../app/layout/header.php';
     <a class="boton boton-claro" href="<?= e(url('/solicitar-cita.php')) ?>">Solicitar una cita</a>
 </section>
 
-<?php require __DIR__ . '/../app/layout/footer.php'; ?>
+<?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

@@ -2,7 +2,7 @@
 // Servicios y especialidades (zona pública).
 // Las áreas se leen de la base de datos, así que si se agrega una nueva
 // en la tabla "areas", aparece aquí sin tocar este archivo.
-require_once __DIR__ . '/../app/db.php';
+require_once __DIR__ . '/../app/core/db.php';
 
 $titulo_pagina = 'Servicios';
 
@@ -14,7 +14,7 @@ $consulta = db()->prepare(
 $consulta->execute();
 $areas = $consulta->fetchAll();
 
-require __DIR__ . '/../app/layout/header.php';
+require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
 <section class="seccion">
@@ -47,4 +47,4 @@ require __DIR__ . '/../app/layout/header.php';
     <a class="boton boton-claro" href="<?= e(url('/solicitar-cita.php')) ?>">Solicitar una cita</a>
 </section>
 
-<?php require __DIR__ . '/../app/layout/footer.php'; ?>
+<?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

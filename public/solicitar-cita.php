@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../app/solicitudes.php';
+require_once __DIR__ . '/../app/modelos/solicitudes.php';
 
 iniciar_sesion_segura();
 
@@ -89,7 +89,7 @@ $hoy = (new DateTimeImmutable(
 
 csrf_token();
 
-require __DIR__ . '/../app/layout/header.php';
+require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
 <section class="seccion">
@@ -220,4 +220,4 @@ require __DIR__ . '/../app/layout/header.php';
     <?php endif; ?>
 </section>
 
-<?php require __DIR__ . '/../app/layout/footer.php'; ?>
+<?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

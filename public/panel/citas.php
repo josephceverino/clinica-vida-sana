@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../app/auth.php';
-require_once __DIR__ . '/../../app/citas.php';
+require_once __DIR__ . '/../../app/core/auth.php';
+require_once __DIR__ . '/../../app/modelos/citas.php';
 
 requerir_login();
 requerir_rol(['admin', 'admision', 'medico']);

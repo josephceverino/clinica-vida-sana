@@ -28,11 +28,11 @@ function mostrar_error(int $codigo, bool $en_panel = false): void
     $pagina_activa = '';   // En el panel, que no marque ninguna sección del menú
 
     if ($en_panel) {
-        require __DIR__ . '/layout/panel_header.php';
+        require __DIR__ . '/../layout/panel_header.php';
         $enlace = url('/panel/index.php');
         $texto_enlace = 'Volver al panel';
     } else {
-        require __DIR__ . '/layout/header.php';
+        require __DIR__ . '/../layout/publico_header.php';
         $enlace = url('/');
         $texto_enlace = 'Volver al inicio';
     }
@@ -44,6 +44,6 @@ function mostrar_error(int $codigo, bool $en_panel = false): void
         <a class="boton" href="<?= e($enlace) ?>"><?= e($texto_enlace) ?></a>
     </section>
     <?php
-    require __DIR__ . ($en_panel ? '/layout/panel_footer.php' : '/layout/footer.php');
+    require __DIR__ . ($en_panel ? '/../layout/panel_footer.php' : '/../layout/publico_footer.php');
     exit;
 }

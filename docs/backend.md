@@ -6,9 +6,9 @@ Documentación de la parte hecha por Alexander. Resume qué hace cada módulo y 
 
 | Qué | Archivos |
 |---|---|
-| Lógica de pacientes | `app/pacientes.php` |
-| Lógica de citas | `app/citas.php` |
-| Lógica de solicitudes | `app/solicitudes.php` |
+| Lógica de pacientes | `app/modelos/pacientes.php` |
+| Lógica de citas | `app/modelos/citas.php` |
+| Lógica de solicitudes | `app/modelos/solicitudes.php` |
 | Formulario público de cita | `public/solicitar-cita.php` |
 | Panel: pacientes | `public/panel/pacientes.php`, `registrar-paciente.php` |
 | Panel: citas | `public/panel/citas.php`, `registrar-cita.php`, `gestionar-cita.php` |

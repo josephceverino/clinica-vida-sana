@@ -3,7 +3,7 @@
 // Es solo contenido (HTML), no usa base de datos.
 // Los textos son ficticios: la clínica es una simulación académica.
 $titulo_pagina = 'Nosotros';
-require __DIR__ . '/../app/layout/header.php';
+require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
 <!-- 1. Quiénes somos -->
@@ -66,4 +66,4 @@ require __DIR__ . '/../app/layout/header.php';
     <a class="boton boton-claro" href="<?= e(url('/solicitar-cita.php')) ?>">Solicitar una cita</a>
 </section>
 
-<?php require __DIR__ . '/../app/layout/footer.php'; ?>
+<?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

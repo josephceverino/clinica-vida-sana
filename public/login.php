@@ -1,6 +1,6 @@
 <?php
 // Inicio de sesión del personal (zona privada).
-require_once __DIR__ . '/../app/auth.php';
+require_once __DIR__ . '/../app/core/auth.php';
 
 // Si ya inició sesión, no tiene sentido ver el login.
 if (usuario_actual() !== null) {
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-require __DIR__ . '/../app/layout/header.php';
+require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
 <section class="login">
@@ -67,4 +67,4 @@ require __DIR__ . '/../app/layout/header.php';
     </form>
 </section>
 
-<?php require __DIR__ . '/../app/layout/footer.php'; ?>
+<?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

@@ -10,9 +10,9 @@ function config(string $clave, $por_defecto = null)
     static $config = null;
 
     if ($config === null) {
-        $archivo = __DIR__ . '/../config/config.php';
+        $archivo = __DIR__ . '/../../config/config.php';
         if (!file_exists($archivo)) {
-            $archivo = __DIR__ . '/../config/config.example.php';
+            $archivo = __DIR__ . '/../../config/config.example.php';
         }
         $config = require $archivo;
     }

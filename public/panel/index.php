@@ -1,6 +1,6 @@
 <?php
 // Resumen del panel (zona privada).
-require_once __DIR__ . '/../../app/auth.php';
+require_once __DIR__ . '/../../app/core/auth.php';
 
 // Regla 6: toda página del panel empieza con requerir_login().
 requerir_login();

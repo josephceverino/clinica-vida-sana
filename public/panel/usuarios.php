@@ -1,6 +1,6 @@
 <?php
 // Gestión de usuarios del personal (solo rol admin).
-require_once __DIR__ . '/../../app/auth.php';
+require_once __DIR__ . '/../../app/core/auth.php';
 
 // Solo el admin puede entrar aquí (requerir_rol ya llama a requerir_login).
 requerir_rol(['admin']);

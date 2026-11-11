@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../app/auth.php';
-require_once __DIR__ . '/../../app/pacientes.php';
+require_once __DIR__ . '/../../app/core/auth.php';
+require_once __DIR__ . '/../../app/modelos/pacientes.php';
 
 // Solo administración y admisión pueden acceder.
 requerir_login();

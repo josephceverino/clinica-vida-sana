@@ -4,7 +4,7 @@
 // requerir_login() y definir:
 //   $titulo_pagina  -> título de la pestaña y de la página
 //   $pagina_activa  -> nombre del archivo del menú (ej. 'index.php')
-require_once __DIR__ . '/../auth.php';
+require_once __DIR__ . '/../core/auth.php';
 enviar_cabeceras_seguridad();
 
 date_default_timezone_set('America/Lima');
