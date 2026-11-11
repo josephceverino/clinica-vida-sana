@@ -62,12 +62,12 @@ NUEVA: atenciones (historia clínica)
 
 | # | Paso | Quién | Cómo se comprueba | Puntos | Resultado |
 |---|---|---|---|---|---|
-| 1 | Acuerdos y actualizar `CLAUDE.md` | Joseph y Claude | `CLAUDE.md` describe la estructura, zonas y roles nuevos. | __ | |
-| 2 | **Reordenar carpetas** sin cambiar el comportamiento | Claude | Los 3 roles abren las mismas páginas que antes; los flujos y los errores siguen igual; las carpetas internas dan 403. | __ | |
-| 3 | Cambios en la base y rol `paciente` | Claude | `schema.sql` y `seed.sql` importan sin errores; el rol existe. | __ | |
-| 4 🔒 | Registro + login único con redirección por rol + límite de intentos en la base | Claude | Registro crea cuenta pendiente; borrar la cookie ya no salta el bloqueo; paciente va a `/paciente/` y personal a `/panel/`. | __ | |
+| 1 | Acuerdos y actualizar `CLAUDE.md` | Joseph y Claude | `CLAUDE.md` describe la estructura, zonas y roles nuevos. | 70 | Pasa |
+| 2 | **Reordenar carpetas** sin cambiar el comportamiento | Claude | Los 3 roles abren las mismas páginas que antes; los flujos y los errores siguen igual; las carpetas internas dan 403. | 70 | Pasa |
+| 3 | Cambios en la base y rol `paciente` | Claude | `schema.sql` y `seed.sql` importan sin errores; el rol existe. | 70 | Pasa |
+| 4 🔒 | Registro + login único con redirección por rol + límite de intentos en la base | Claude | Registro crea cuenta pendiente; borrar la cookie ya no salta el bloqueo; paciente va a `/paciente/` y personal a `/panel/`. | 70 | Pasa |
 | 5 🔒 | Portal del paciente: mis citas y pedir cita; se retira `solicitar-cita.php` público | Alexander con apoyo | Un paciente solo ve lo suyo; `solicitar-cita.php` ya no existe. | __ | |
-| 6 | Panel del admin ordenado + "cuentas por verificar" | Claude | El menú agrupa Atención y Administración; admisión puede activar una cuenta pendiente. | __ | |
+| 6 | Panel del admin ordenado + "cuentas por verificar" | Claude | El menú agrupa Atención y Administración; admisión puede activar una cuenta pendiente. | 70 | Pasa |
 | 7 🔒 | Historia clínica: el médico registra atenciones y el paciente las ve | Alexander y Claude | Solo el dueño verificado la ve; el médico solo escribe en sus citas. | __ | |
 | 8 | Cuentas de prueba y pruebas con los 4 roles | Ambos | `admin`, `admision1`, `medico1`, un segundo médico y `paciente1` funcionan; un registro nuevo recorre todo el flujo. | __ | |
 | 9 | Arreglos de interfaz | Joseph | Las casillas largas ya no se agrandan (`resize: none`); formularios consistentes. | __ | |
