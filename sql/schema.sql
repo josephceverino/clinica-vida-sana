@@ -111,3 +111,12 @@ CREATE TABLE solicitudes_cita (
         FOREIGN KEY (area_id) REFERENCES areas (id)
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Médico asignado a cada cita.
+ALTER TABLE citas
+    ADD COLUMN medico_id INT UNSIGNED NULL AFTER area_id,
+    ADD CONSTRAINT fk_citas_medico
+        FOREIGN KEY (medico_id)
+        REFERENCES usuarios (id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE;

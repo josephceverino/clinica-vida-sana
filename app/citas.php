@@ -305,3 +305,122 @@ function cambiar_estado_cita(
         throw $error;
     }
 }
+
+/**
+ * Asigna un médico a una cita pendiente o confirmada.
+ * El usuario que realiza la acción debe venir de la sesión.
+ */
+function asignar_medico_cita(
+    int $cita_id,
+    int $medico_id,
+    int $usuario_id
+): void {
+    if ($cita_id < 1 || $medico_id < 1) {
+        throw new InvalidArgumentException(
+            'Selecciona una cita y un médico válidos.'
+        );
+    }
+
+    $conexion = db();
+
+    $consulta = $conexion->prepare(
+        "SELECT id FROM usuarios
+         WHERE id = :id AND activo = 1
+           AND rol IN ('admin', 'admision')"
+    );
+    $consulta->execute(['id' => $usuario_id]);
+
+    if (!$consulta->fetch()) {
+        throw new InvalidArgumentException(
+            'El usuario no está autorizado.'
+        );
+    }
+
+    $conexion->beginTransaction();
+
+    try {
+        // Evita asignaciones simultáneas al mismo médico.
+        $consulta = $conexion->prepare(
+            "SELECT id, area_id FROM usuarios
+             WHERE id = :id AND rol = 'medico' AND activo = 1
+             FOR UPDATE"
+        );
+        $consulta->execute(['id' => $medico_id]);
+        $medico = $consulta->fetch();
+
+        if (!$medico) {
+            throw new InvalidArgumentException(
+                'El médico no existe o no está activo.'
+            );
+        }
+
+        $consulta = $conexion->prepare(
+            'SELECT id, area_id, fecha, hora, estado
+             FROM citas WHERE id = :id FOR UPDATE'
+        );
+        $consulta->execute(['id' => $cita_id]);
+        $cita = $consulta->fetch();
+
+        if (!$cita) {
+            throw new InvalidArgumentException(
+                'La cita no existe.'
+            );
+        }
+
+        if (
+            !in_array(
+                $cita['estado'],
+                ['pendiente', 'confirmada'],
+                true
+            )
+        ) {
+            throw new InvalidArgumentException(
+                'Solo puedes asignar médicos a citas pendientes o confirmadas.'
+            );
+        }
+
+        if ((int) $medico['area_id'] !== (int) $cita['area_id']) {
+            throw new InvalidArgumentException(
+                'El médico no pertenece al área de la cita.'
+            );
+        }
+
+        $consulta = $conexion->prepare(
+            "SELECT id FROM citas
+             WHERE medico_id = :medico
+               AND fecha = :fecha
+               AND hora = :hora
+               AND id <> :cita
+               AND estado IN ('pendiente', 'confirmada')
+             LIMIT 1 FOR UPDATE"
+        );
+        $consulta->execute([
+            'medico' => $medico_id,
+            'fecha' => $cita['fecha'],
+            'hora' => $cita['hora'],
+            'cita' => $cita_id,
+        ]);
+
+        if ($consulta->fetch()) {
+            throw new InvalidArgumentException(
+                'El médico ya tiene una cita en ese horario.'
+            );
+        }
+
+        $consulta = $conexion->prepare(
+            'UPDATE citas SET medico_id = :medico WHERE id = :cita'
+        );
+        $consulta->execute([
+            'medico' => $medico_id,
+            'cita' => $cita_id,
+        ]);
+
+        $conexion->commit();
+    } catch (Throwable $error) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+
+        throw $error;
+    }
+}
