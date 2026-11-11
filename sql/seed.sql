@@ -49,3 +49,17 @@ INSERT INTO solicitudes_cita (nombre, dni, telefono, area_id, fecha_preferida, m
     ('Marta Solicitante Demo', '90000101', '900000101', 2, '2026-11-15', 'Quisiera una consulta por la mañana.', 'nueva'),
     ('Pedro Ejemplo Web',      '90000102', '900000102', 3, '2026-11-16', 'Cita para mi hijo.',                   'nueva'),
     ('Rosa Prueba Web',        '90000103', '900000103', 4, NULL,         'Necesito un examen de laboratorio.',   'atendida');
+
+-- Asigna las citas de Medicina General al médico de prueba.
+-- Los otros servicios quedan pendientes de asignar sus médicos.
+UPDATE citas
+SET medico_id = 3
+WHERE area_id = 2
+  AND paciente_id IN (1, 2, 5)
+  AND registrado_por = 2
+  AND medico_id IS NULL
+  AND (
+      (fecha = '2026-11-12' AND hora = '09:00:00')
+      OR (fecha = '2026-11-12' AND hora = '10:30:00')
+      OR (fecha = '2026-11-10' AND hora = '15:00:00')
+  );
