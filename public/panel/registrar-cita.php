@@ -32,7 +32,7 @@ try {
     )->fetchAll();
 
     $areas = db()->query(
-        'SELECT id, nombre FROM areas ORDER BY nombre'
+        'SELECT id, nombre FROM areas WHERE publica = 1 ORDER BY nombre'
     )->fetchAll();
 } catch (PDOException $excepcion) {
     error_log($excepcion->getMessage());

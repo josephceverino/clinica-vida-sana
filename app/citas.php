@@ -120,14 +120,15 @@ function registrar_cita(array $datos, int $registrado_por): int
         );
     }
 
+    // Solo las áreas públicas atienden pacientes (no Admisión ni Sistemas).
     $consulta = $conexion->prepare(
-        'SELECT id FROM areas WHERE id = :id'
+        'SELECT id FROM areas WHERE id = :id AND publica = 1'
     );
     $consulta->execute(['id' => $area_id]);
 
     if (!$consulta->fetch()) {
         throw new InvalidArgumentException(
-            'El área seleccionada no existe.'
+            'El área seleccionada no existe o no atiende pacientes.'
         );
     }
 
