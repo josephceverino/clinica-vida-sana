@@ -3,6 +3,7 @@
 // Todas las páginas de public/panel/ empiezan con requerir_login().
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/errores.php';
 
 // Intentos fallidos permitidos antes de bloquear, y minutos de bloqueo.
 const LOGIN_MAX_INTENTOS = 5;
@@ -140,8 +141,7 @@ function requerir_rol(array $roles): void
     requerir_login();
 
     if (!in_array(usuario_actual()['rol'], $roles, true)) {
-        http_response_code(403);
-        exit('No tienes permiso para ver esta página.');
+        mostrar_error(403, true);
     }
 }
 

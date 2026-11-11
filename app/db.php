@@ -4,6 +4,7 @@
 //     require_once __DIR__ . '/../app/db.php';
 //     $pdo = db();
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/errores.php';
 
 /**
  * Devuelve la conexión PDO. Se crea una sola vez y se reutiliza.
@@ -32,12 +33,14 @@ function db(): PDO
             PDO::ATTR_EMULATE_PREPARES   => false,
         ]);
     } catch (PDOException $error) {
-        // Mensaje genérico al usuario; el detalle solo en desarrollo.
-        http_response_code(500);
+        // El detalle solo se ve en desarrollo (regla 9).
         if (config('debug', false)) {
+            http_response_code(500);
             exit('Error de conexión: ' . e($error->getMessage()));
         }
-        exit('No pudimos conectar con el sistema. Inténtalo más tarde.');
+        // En producción: página de error genérica, sin detalles técnicos.
+        error_log('Error de conexión a la base de datos: ' . $error->getMessage());
+        mostrar_error(500);
     }
 
     return $pdo;

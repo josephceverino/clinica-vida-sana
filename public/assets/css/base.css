@@ -253,6 +253,28 @@ a {
     border-color: var(--color-titulos);
 }
 
+/* ---------- Páginas de error (403, 404, 500) ---------- */
+.error-pagina {
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.error-codigo {
+    margin: 0;
+    font-size: clamp(4.5rem, 14vw, 8rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-principal);
+}
+
+.error-pagina h1 {
+    margin: 0.5rem 0;
+}
+
+.error-pagina .boton {
+    margin-top: 1rem;
+}
+
 /* ---------- Login y formularios ---------- */
 .login {
     max-width: 420px;

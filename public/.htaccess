@@ -1,2 +1,9 @@
 # No mostrar el listado de archivos de las carpetas (assets, panel, etc.).
 Options -Indexes
+
+# Páginas de error con el diseño de la web.
+# OJO: esta ruta es la de desarrollo (XAMPP). En el servidor Fedora el
+# DocumentRoot es public/, así que allí las rutas serían /404.php y /403.php
+# y se configuran en el VirtualHost de Apache (lo hace Joseph a mano).
+ErrorDocument 404 /clinica-vida-sana/public/404.php
+ErrorDocument 403 /clinica-vida-sana/public/403.php
