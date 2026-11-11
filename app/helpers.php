@@ -59,6 +59,29 @@ function iniciar_sesion_segura(): void
 }
 
 /**
+ * Guarda un mensaje para mostrarlo en la siguiente página
+ * (por ejemplo, "Usuario creado" después de redirigir).
+ * $tipo puede ser 'ok' o 'error'.
+ */
+function mensaje_guardar(string $texto, string $tipo = 'ok'): void
+{
+    iniciar_sesion_segura();
+    $_SESSION['mensaje'] = ['texto' => $texto, 'tipo' => $tipo];
+}
+
+/**
+ * Devuelve el mensaje guardado (y lo borra, para que salga una sola vez).
+ * Si no hay mensaje devuelve null.
+ */
+function mensaje_tomar(): ?array
+{
+    iniciar_sesion_segura();
+    $mensaje = $_SESSION['mensaje'] ?? null;
+    unset($_SESSION['mensaje']);
+    return $mensaje;
+}
+
+/**
  * Devuelve el token CSRF de la sesión (lo crea si no existe).
  */
 function csrf_token(): string

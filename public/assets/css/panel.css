@@ -292,6 +292,113 @@
 .estado-cancelada  { background: #FDECEA; color: #8A1F14; }
 .estado-nueva      { background: #D9EEF4; color: #0B6E8A; }
 
+/* ---------- Tablas, avisos y formularios del panel ---------- */
+.panel-columnas-usuarios {
+    grid-template-columns: 3fr 2fr;
+}
+
+.tabla-scroll {
+    overflow-x: auto;
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla th {
+    padding: 0.5rem 0.6rem;
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B7C8B;
+    border-bottom: 2px solid #EDF1F4;
+}
+
+.tabla td {
+    padding: 0.7rem 0.6rem;
+    border-bottom: 1px solid #EDF1F4;
+    vertical-align: middle;
+}
+
+.tabla tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla small {
+    color: #6B7C8B;
+}
+
+.boton-tabla {
+    padding: 0.3rem 0.7rem;
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--color-principal);
+    background: transparent;
+    border: 1px solid var(--color-principal);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.boton-tabla:hover {
+    background: var(--color-principal);
+    color: var(--color-blanco);
+}
+
+.aviso {
+    margin: 0 0 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+}
+
+.aviso-ok {
+    background: #DDF3E8;
+    border: 1px solid #A9DEC3;
+    color: #17744A;
+}
+
+.aviso-error {
+    background: #FDECEA;
+    border: 1px solid #F5B5AE;
+    color: #8A1F14;
+}
+
+.form-panel .campo {
+    margin-bottom: 0.9rem;
+}
+
+.form-panel .campo label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: var(--color-titulos);
+}
+
+.form-panel .campo input,
+.form-panel .campo select {
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    font: inherit;
+    background: var(--color-blanco);
+    border: 1px solid #C5D0D8;
+    border-radius: 8px;
+}
+
+.form-panel .campo input:focus,
+.form-panel .campo select:focus {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 1px;
+}
+
+.form-panel .boton {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
 /* ---------- Pantallas chicas ---------- */
 @media (max-width: 900px) {
     .panel {
@@ -321,7 +428,8 @@
         padding: 1.25rem 1rem;
     }
 
-    .panel-columnas {
+    .panel-columnas,
+    .panel-columnas-usuarios {
         grid-template-columns: 1fr;
     }
 }

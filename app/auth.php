@@ -110,9 +110,25 @@ function login_registrar_fallo(): void
  */
 function requerir_login(): void
 {
-    if (usuario_actual() === null) {
+    $actual = usuario_actual();
+
+    if ($actual === null) {
         redirigir('/login.php');
     }
+
+    // Volvemos a mirar en la base de datos: si un admin desactivó a este
+    // usuario (o le cambió el rol) mientras tenía la sesión abierta,
+    // el cambio se aplica desde la siguiente página.
+    $consulta = db()->prepare('SELECT activo, rol FROM usuarios WHERE id = ?');
+    $consulta->execute([$actual['id']]);
+    $fila = $consulta->fetch();
+
+    if ($fila === false || (int) $fila['activo'] !== 1) {
+        cerrar_sesion();
+        redirigir('/login.php');
+    }
+
+    $_SESSION['usuario']['rol'] = $fila['rol'];
 }
 
 /**
