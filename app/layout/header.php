@@ -21,6 +21,7 @@ $titulo_pagina = $titulo_pagina ?? 'Clínica Vida Sana';
         <a href="<?= e(url('/servicios.php')) ?>">Servicios</a>
         <a href="<?= e(url('/nosotros.php')) ?>">Nosotros</a>
         <a href="<?= e(url('/contacto.php')) ?>">Contacto</a>
+        <a href="<?= e(url('/login.php')) ?>">Acceso personal</a>
         <a class="boton boton-chico" href="<?= e(url('/solicitar-cita.php')) ?>">Solicitar cita</a>
     </nav>
 </header>

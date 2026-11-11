@@ -253,6 +253,59 @@ a {
     border-color: var(--color-titulos);
 }
 
+/* ---------- Login y formularios ---------- */
+.login {
+    max-width: 420px;
+    margin: 1rem auto;
+}
+
+.formulario {
+    padding: 1.5rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 12px;
+}
+
+.campo {
+    margin-bottom: 1rem;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: var(--color-titulos);
+}
+
+.campo input {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    font: inherit;
+    border: 1px solid #C5D0D8;
+    border-radius: 8px;
+}
+
+.campo input:focus {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 1px;
+}
+
+.formulario .boton {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+.aviso-error {
+    padding: 0.8rem 1rem;
+    background: #FDECEA;
+    border: 1px solid #F5B5AE;
+    border-radius: 8px;
+    color: #8A1F14;
+}
+
 /* Lista de datos de contacto (etiqueta arriba, dato abajo) */
 .lista-datos {
     margin: 0;
