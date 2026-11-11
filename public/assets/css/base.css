@@ -253,7 +253,29 @@ a {
     border-color: var(--color-titulos);
 }
 
-/* Rejilla de 2 columnas (misión y visión) */
+/* Lista de datos de contacto (etiqueta arriba, dato abajo) */
+.lista-datos {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-datos li {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #EDF1F4;
+}
+
+.lista-datos li:last-child {
+    border-bottom: none;
+}
+
+.lista-datos span {
+    font-size: 0.85rem;
+}
+
+/* Rejilla de 2 columnas (misión y visión, contacto) */
 .rejilla-2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
