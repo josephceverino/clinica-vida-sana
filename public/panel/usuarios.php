@@ -98,7 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Evita que el admin se desactive a sí mismo y se quede afuera.
             mensaje_guardar('No puedes desactivar tu propio usuario.', 'error');
         } else {
-            $cambiar = $pdo->prepare('UPDATE usuarios SET activo = 1 - activo WHERE id = ?');
+            // Solo personal: las cuentas de pacientes no se gestionan desde aquí.
+            $cambiar = $pdo->prepare(
+                "UPDATE usuarios SET activo = 1 - activo WHERE id = ? AND rol <> 'paciente'"
+            );
             $cambiar->execute([$id]);
             mensaje_guardar('Estado del usuario actualizado.');
         }
@@ -106,12 +109,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Lista de usuarios (con el nombre del área).
+// Lista del personal (con el nombre del área). Los pacientes no aparecen.
 $usuarios = $pdo->query(
-    'SELECT u.id, u.nombre, u.usuario, u.rol, u.activo, a.nombre AS area
+    "SELECT u.id, u.nombre, u.usuario, u.rol, u.activo, a.nombre AS area
      FROM usuarios u
      LEFT JOIN areas a ON a.id = u.area_id
-     ORDER BY u.activo DESC, u.nombre'
+     WHERE u.rol <> 'paciente'
+     ORDER BY u.activo DESC, u.nombre"
 )->fetchAll();
 
 $mensaje = mensaje_tomar();

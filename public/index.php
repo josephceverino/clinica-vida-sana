@@ -14,7 +14,7 @@ require __DIR__ . '/../app/layout/publico_header.php';
             que te escuchan y turnos que se adaptan a tu día.
         </p>
         <div class="portada-botones">
-            <a class="boton" href="<?= e(url('/solicitar-cita.php')) ?>">Solicitar una cita</a>
+            <a class="boton" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
             <a class="boton boton-claro" href="<?= e(url('/servicios.php')) ?>">Ver servicios</a>
         </div>
     </div>
@@ -76,8 +76,8 @@ require __DIR__ . '/../app/layout/publico_header.php';
 <!-- 4. Llamado final -->
 <section class="llamado">
     <h2>¿Necesitas una consulta?</h2>
-    <p>Déjanos tus datos y te contactamos para confirmar tu cita.</p>
-    <a class="boton boton-claro" href="<?= e(url('/solicitar-cita.php')) ?>">Solicitar una cita</a>
+    <p>Crea tu cuenta o ingresa al Portal del paciente y pide tu cita en línea.</p>
+    <a class="boton boton-claro" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
 </section>
 
 <?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

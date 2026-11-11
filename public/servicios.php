@@ -43,8 +43,8 @@ require __DIR__ . '/../app/layout/publico_header.php';
 
 <section class="llamado">
     <h2>¿Listo para tu consulta?</h2>
-    <p>Déjanos tus datos y te contactamos para confirmar tu cita.</p>
-    <a class="boton boton-claro" href="<?= e(url('/solicitar-cita.php')) ?>">Solicitar una cita</a>
+    <p>Ingresa al Portal del paciente, pide tu cita y admisión la confirmará.</p>
+    <a class="boton boton-claro" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
 </section>
 
 <?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

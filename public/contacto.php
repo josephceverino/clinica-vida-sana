@@ -1,7 +1,7 @@
 <?php
 // Página "Contacto" (zona pública).
 // Solo muestra información (HTML). No tiene formulario: para pedir una
-// cita ya existe la página "Solicitar cita".
+// cita está el Portal del paciente.
 // Todos los datos son ficticios.
 $titulo_pagina = 'Contacto';
 require __DIR__ . '/../app/layout/publico_header.php';
@@ -57,9 +57,9 @@ require __DIR__ . '/../app/layout/publico_header.php';
 
 <!-- 3. Llamado final -->
 <section class="llamado">
-    <h2>¿Prefieres que te llamemos?</h2>
-    <p>Déjanos tus datos y nuestro equipo te contactará para confirmar tu cita.</p>
-    <a class="boton boton-claro" href="<?= e(url('/solicitar-cita.php')) ?>">Solicitar una cita</a>
+    <h2>¿Quieres pedir una cita?</h2>
+    <p>Hazlo desde el Portal del paciente: admisión la confirmará.</p>
+    <a class="boton boton-claro" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
 </section>
 
 <?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

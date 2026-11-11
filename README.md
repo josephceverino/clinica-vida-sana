@@ -8,7 +8,8 @@ El curso evalúa la infraestructura (Fedora Linux + Windows Server). Esta web es
 
 ## Qué incluye
 
-- **Zona pública:** inicio, servicios, nosotros, contacto y formulario "Solicitar cita".
+- **Zona pública:** inicio, servicios, nosotros, contacto y el botón **Portal del paciente**, que lleva al login.
+- **Portal del paciente:** el paciente se registra (`/registro.php`) y entra con su correo. La cuenta nace **pendiente** hasta que admisión comprueba su identidad.
 - **Zona privada (con login):** panel, pacientes, citas, solicitudes de cita y gestión de usuarios.
 - **Roles:** `admin` (todo), `admision` (pacientes, citas y solicitudes) y `medico` (sus citas y datos básicos del paciente).
 
@@ -42,7 +43,7 @@ docs/       Plan de trabajo y guías del equipo
 4. Copia `config/config.example.php` como `config/config.php` y revisa los datos de conexión.
 5. Abre `http://localhost/clinica-vida-sana/public`.
 
-El acceso del personal está en `/login.php`.
+Todos entran por el mismo login (`/login.php`): el personal con su **usuario** y los pacientes con su **correo**. Según el rol, el sistema los lleva al panel o al portal.
 
 ### Usuarios de prueba (solo desarrollo)
 
@@ -53,7 +54,7 @@ El acceso del personal está en `/login.php`.
 | `medico1` | medico (Medicina General) | `Clinica2026!` |
 | `medico2` | medico (Pediatría) | `Clinica2026!` |
 
-Cuentas de **paciente** (entran con su correo cuando esté listo el portal):
+Cuentas de **paciente** (entran con su correo):
 
 | Correo | Estado | Contraseña |
 |---|---|---|

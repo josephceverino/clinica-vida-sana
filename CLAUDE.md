@@ -31,18 +31,17 @@ En producción, el `DocumentRoot` de Apache apunta a `public/`. **No modifiques 
 public/                # Lo único accesible desde el navegador
   index.php            # Inicio (sitio público)
   servicios.php  nosotros.php  contacto.php
-  login.php  logout.php          # Acceso único para todos los roles
-  registro.php                   # (próximamente) Registro de pacientes
-  solicitar-cita.php             # (se retirará: pasa al portal del paciente)
-  paciente/                      # (próximamente) Portal del paciente
+  login.php  logout.php          # Acceso único (usuario o correo) para todos los roles
+  registro.php                   # Registro de pacientes (la cuenta nace pendiente)
+  paciente/                      # Portal del paciente (inicio listo; citas e historia en construcción)
   panel/                         # Zona del personal (requiere login)
     index.php  pacientes.php  citas.php  solicitudes.php  usuarios.php ...
   errores/             # 403.php, 404.php
   assets/css, assets/js, assets/img
 app/                   # Lógica PHP, NO accesible desde el navegador
-  core/                # El "motor": db.php, auth.php, helpers.php, errores.php
-  modelos/             # Lógica de datos: pacientes.php, citas.php, solicitudes.php
-  layout/              # Plantillas: publico_header/footer, panel_header/footer
+  core/                # El "motor": db.php, auth.php, helpers.php, errores.php, limites.php
+  modelos/             # Lógica de datos: pacientes.php, citas.php, solicitudes.php, cuentas.php
+  layout/              # Plantillas: publico_, panel_ y paciente_ (header/footer)
 config/
   config.example.php   # Se sube a GitHub (sin contraseñas)
   config.php           # NO se sube (.gitignore)
@@ -102,7 +101,7 @@ Charset `utf8mb4`, motor InnoDB, claves foráneas declaradas.
 
 ## Reparto
 - **Joseph:** zona pública (HTML/CSS/JS), plantilla y diseño, login y seguridad (`auth.php`, `helpers.php`), `deploy.sh` y despliegue en Fedora.
-- **Alexander:** `schema.sql` y `seed.sql`, backend de pacientes, citas y solicitudes de cita (incluida la parte PHP del formulario público).
+- **Alexander:** `schema.sql` y `seed.sql`, backend de pacientes, citas y solicitudes de cita (incluido el portal del paciente: mis citas, pedir cita e historia clínica).
 
 ## Cómo probar
 1. Iniciar Apache y MySQL (MariaDB) en el panel de XAMPP.

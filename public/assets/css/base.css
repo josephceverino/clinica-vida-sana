@@ -365,3 +365,76 @@ a {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---------- Avisos (mensajes de éxito, error y estado) ---------- */
+.aviso {
+    margin: 0 0 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+}
+
+.aviso-ok {
+    background: #DDF3E8;
+    border: 1px solid #A9DEC3;
+    color: #17744A;
+}
+
+.aviso-pendiente {
+    background: #FFF1D6;
+    border: 1px solid #F0D395;
+    color: #7A5200;
+}
+
+/* ---------- Casillas de texto: tamaño fijo ---------- */
+/* El navegador deja estirar los cuadros de texto largos desde la esquina.
+   Aquí se desactiva: el tamaño lo decide el diseño, no quien llena el formulario. */
+textarea {
+    resize: none;
+}
+
+select {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    font: inherit;
+    background: var(--color-blanco);
+    border: 1px solid #C5D0D8;
+    border-radius: 8px;
+}
+
+/* ---------- Registro (formulario en dos columnas) ---------- */
+.registro {
+    max-width: 760px;
+    margin: 1rem auto;
+}
+
+.formulario-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1.5rem;
+}
+
+.formulario-grid .campo {
+    margin-bottom: 1rem;
+}
+
+.formulario-grid .formulario-nota,
+.formulario-grid .boton {
+    grid-column: 1 / -1;
+}
+
+.formulario-nota {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    color: #5A6B7A;
+}
+
+.login-alterno {
+    margin-top: 1.25rem;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .formulario-grid {
+        grid-template-columns: 1fr;
+    }
+}

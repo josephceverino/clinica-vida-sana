@@ -1,0 +1,62 @@
+/* Estilos del Portal del paciente. Usa las variables de base.css. */
+
+.paciente-barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.9rem 1.5rem;
+    background: var(--color-blanco);
+    border-bottom: 1px solid #DDE5EA;
+}
+
+.paciente-barra .marca span {
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-titulos);
+    background: var(--color-acento);
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+.paciente-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    flex: 1;
+}
+
+.paciente-menu a {
+    text-decoration: none;
+    padding: 0.3rem 0;
+    border-bottom: 2px solid transparent;
+}
+
+.paciente-menu a.activo {
+    font-weight: 600;
+    color: var(--color-titulos);
+    border-bottom-color: var(--color-acento);
+}
+
+.paciente-menu .deshabilitado {
+    padding: 0.3rem 0;
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.paciente-menu small {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.paciente-sesion {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+}

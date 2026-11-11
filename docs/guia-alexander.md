@@ -11,17 +11,21 @@ Antes de nada, lee [`CLAUDE.md`](../CLAUDE.md): tiene las reglas del proyecto, s
 | Qué | Archivo(s) | Quién puede entrar |
 |---|---|---|
 | Revisar y ajustar la base de datos | `sql/schema.sql`, `sql/seed.sql` | — |
-| Formulario público "Solicitar cita" | `public/solicitar-cita.php` | Cualquier visitante |
 | Solicitudes recibidas | `public/panel/solicitudes.php` | admin, admision |
 | Pacientes | `public/panel/pacientes.php` | admin, admision, medico (solo ver) |
 | Citas | `public/panel/citas.php` | admin, admision, medico (solo las suyas) |
 
-Hazlas **una por una**, cada una en su propia rama. El orden que recomendamos:
-1. Revisar el SQL.
-2. `solicitar-cita.php` (es la más parecida a `login.php`, buen punto de partida).
-3. `solicitudes.php`.
-4. `pacientes.php`.
-5. `citas.php`.
+Lo que sigue (ver [`plan-portal-paciente.md`](plan-portal-paciente.md)):
+
+| Qué | Archivo(s) | Quién puede entrar |
+|---|---|---|
+| Portal: mis citas y pedir cita | `public/paciente/citas.php`, `pedir-cita.php` | paciente con cuenta verificada |
+| Portal: historia clínica | `public/paciente/historia.php` | paciente con cuenta verificada |
+| Atenciones (el médico escribe) | `public/panel/atender-cita.php` | medico |
+
+**El formulario público `solicitar-cita.php` ya se retiró**: cualquiera podía enviar solicitudes con datos inventados. Ahora el paciente se registra, y las solicitudes salen de su cuenta (el `paciente_id` sale de la sesión, nunca de un campo del formulario).
+
+Hazlas **una por una**, cada una en su propia rama. Para las páginas del portal usa `requerir_paciente_verificado()` (en `app/core/auth.php`) y la plantilla `paciente_header.php`. Un buen punto de partida es `public/paciente/index.php`.
 
 ---
 
@@ -64,7 +68,7 @@ Abre `http://localhost/clinica-vida-sana/public` y entra en `/login.php` con:
 | `medico1` | medico (Medicina General) | `Clinica2026!` |
 | `medico2` | medico (Pediatría) | `Clinica2026!` |
 
-Las cuentas de paciente (`paciente1@example.test` y `pendiente@example.test`) existen en la base, pero todavía no pueden iniciar sesión: el login único y el portal se construyen en el siguiente paso.
+Las cuentas de paciente entran por el mismo login, escribiendo su **correo** (`paciente1@example.test`, verificada, y `pendiente@example.test`, pendiente de verificación). El personal escribe su **usuario**.
 
 ---
 
@@ -72,7 +76,7 @@ Las cuentas de paciente (`paciente1@example.test` y `pendiente@example.test`) ex
 
 Una rama por tarea. Parte de `feature/usuarios` (hasta que se unan los primeros Pull Requests):
 ```
-git switch -c feature/solicitar-cita
+git switch -c feature/portal-citas
 ```
 Nunca trabajes directo en `main`.
 

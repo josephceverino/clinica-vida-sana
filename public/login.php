@@ -1,48 +1,61 @@
 <?php
-// Inicio de sesión del personal (zona privada).
+// Inicio de sesión (Portal del paciente y acceso del personal).
+// Es el único login: según el rol, lleva al portal o al panel.
 require_once __DIR__ . '/../app/core/auth.php';
 
 // Si ya inició sesión, no tiene sentido ver el login.
-if (usuario_actual() !== null) {
-    redirigir('/panel/index.php');
+$sesion = usuario_actual();
+if ($sesion !== null) {
+    redirigir(ruta_inicio_por_rol($sesion['rol']));
 }
 
-$titulo_pagina = 'Acceso del personal';
+$titulo_pagina = 'Portal del paciente';
 $error = '';
-$usuario = '';
+$identificador = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $usuario = trim($_POST['usuario'] ?? '');
+    $identificador = trim($_POST['identificador'] ?? '');
     $password = $_POST['password'] ?? '';
 
     if (!csrf_verificar()) {
         // El token no coincide: el formulario no vino de esta página.
         $error = 'La sesión expiró. Recarga la página e inténtalo otra vez.';
-    } elseif (login_segundos_bloqueo() > 0) {
-        $error = 'Demasiados intentos. Espera un minuto e inténtalo otra vez.';
-    } elseif ($usuario === '' || $password === '' || strlen($usuario) > 50) {
+    } elseif ($identificador === '' || $password === ''
+        || mb_strlen($identificador) > 120 || strlen($password) > 200) {
         // Validación en el servidor (aunque el navegador también valide).
-        $error = 'Escribe tu usuario y tu contraseña.';
+        $error = 'Escribe tu usuario o correo y tu contraseña.';
+    } elseif (login_bloqueado($identificador)) {
+        // Ni siquiera comprobamos la contraseña: así un ataque de fuerza
+        // bruta no puede seguir probando mientras dura el bloqueo.
+        $error = 'Demasiados intentos. Espera unos minutos e inténtalo otra vez.';
     } else {
-        $fila = verificar_credenciales($usuario, $password);
+        $fila = verificar_credenciales($identificador, $password);
 
         if ($fila !== null) {
+            limpiar_intentos('login', $identificador);
             iniciar_login($fila);
-            redirigir('/panel/index.php');
+            redirigir(ruta_inicio_por_rol($fila['rol']));
         }
 
-        // Mensaje genérico: no decimos si falló el usuario o la contraseña.
-        login_registrar_fallo();
-        $error = 'Usuario o contraseña incorrectos.';
+        // Mensaje genérico: no decimos si falló la cuenta o la contraseña.
+        registrar_intento('login', $identificador);
+        $error = 'Usuario, correo o contraseña incorrectos.';
     }
 }
+
+// Aviso de otra página (por ejemplo, "Cuenta creada" después de registrarse).
+$mensaje = mensaje_tomar();
 
 require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
 <section class="login">
-    <h1>Acceso del personal</h1>
-    <p>Ingresa con tu usuario para entrar al panel.</p>
+    <h1>Portal del paciente</h1>
+    <p>Ingresa para ver tus citas y tu historial. El personal de la clínica entra por aquí también.</p>
+
+    <?php if ($mensaje !== null): ?>
+        <p class="aviso aviso-<?= e($mensaje['tipo']) ?>" role="status"><?= e($mensaje['texto']) ?></p>
+    <?php endif; ?>
 
     <?php if ($error !== ''): ?>
         <p class="aviso-error" role="alert"><?= e($error) ?></p>
@@ -52,9 +65,9 @@ require __DIR__ . '/../app/layout/publico_header.php';
         <?= csrf_campo() ?>
 
         <div class="campo">
-            <label for="usuario">Usuario</label>
-            <input type="text" id="usuario" name="usuario" maxlength="50"
-                   value="<?= e($usuario) ?>" autocomplete="username" required autofocus>
+            <label for="identificador">Usuario o correo</label>
+            <input type="text" id="identificador" name="identificador" maxlength="120"
+                   value="<?= e($identificador) ?>" autocomplete="username" required autofocus>
         </div>
 
         <div class="campo">
@@ -65,6 +78,10 @@ require __DIR__ . '/../app/layout/publico_header.php';
 
         <button class="boton" type="submit">Ingresar</button>
     </form>
+
+    <p class="login-alterno">
+        ¿No tienes cuenta? <a href="<?= e(url('/registro.php')) ?>">Regístrate</a>
+    </p>
 </section>
 
 <?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

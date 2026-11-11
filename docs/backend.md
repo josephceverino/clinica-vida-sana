@@ -9,7 +9,7 @@ Documentación de la parte hecha por Alexander. Resume qué hace cada módulo y 
 | Lógica de pacientes | `app/modelos/pacientes.php` |
 | Lógica de citas | `app/modelos/citas.php` |
 | Lógica de solicitudes | `app/modelos/solicitudes.php` |
-| Formulario público de cita | `public/solicitar-cita.php` |
+| Cuentas de pacientes (registro) | `app/modelos/cuentas.php`, `public/registro.php` |
 | Panel: pacientes | `public/panel/pacientes.php`, `registrar-paciente.php` |
 | Panel: citas | `public/panel/citas.php`, `registrar-cita.php`, `gestionar-cita.php` |
 | Panel: solicitudes | `public/panel/solicitudes.php` |
@@ -20,8 +20,8 @@ Las páginas de `public/panel/` solo muestran y reciben datos; la lógica y las 
 
 ### Zona pública
 - Ver los servicios y áreas públicas.
-- Enviar una **solicitud de cita** (validación en PHP y token CSRF).
-- Recibe una confirmación de recepción. **No** se crea una cita automáticamente.
+- Registrarse como paciente (`/registro.php`). La cuenta queda **pendiente** hasta que admisión la verifique.
+- ~~Enviar una solicitud de cita sin cuenta~~: el formulario anónimo `solicitar-cita.php` se **retiró**. Las solicitudes saldrán de la cuenta del paciente (en construcción).
 
 ### Administración y admisión
 - Registrar y buscar pacientes (se rechaza el DNI duplicado).
@@ -63,7 +63,7 @@ Al registrar una cita se rechaza:
 - Token CSRF en todos los formularios POST.
 - Control de acceso por sesión y por rol.
 - La identidad del personal sale de la **sesión**, nunca de un campo del formulario.
-- Las áreas internas (Admisión, Sistemas) se rechazan tanto en el formulario público como en el backend.
+- Las áreas internas (Admisión, Sistemas) se rechazan en el formulario del panel y en el backend (`publica = 1`).
 
 ## Datos de prueba
 
