@@ -253,9 +253,17 @@ a {
     border-color: var(--color-titulos);
 }
 
+/* Rejilla de 2 columnas (misión y visión) */
+.rejilla-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+}
+
 /* ---------- Pantallas chicas (celular) ---------- */
 @media (max-width: 800px) {
     .portada,
+    .rejilla-2,
     .rejilla-3 {
         grid-template-columns: 1fr;
     }
