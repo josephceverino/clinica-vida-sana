@@ -1,0 +1,51 @@
+<?php
+
+require_once __DIR__ . '/db.php';
+
+/**
+ * Busca pacientes y devuelve hasta 50 resultados.
+ * Si la búsqueda está vacía, muestra los últimos registrados.
+ */
+function buscar_pacientes(string $busqueda = ''): array
+{
+    $busqueda = trim($busqueda);
+    $conexion = db();
+
+    if ($busqueda === '') {
+        $consulta = $conexion->query(
+            'SELECT id, dni, nombres, apellidos,
+                    fecha_nacimiento, telefono
+             FROM pacientes
+             ORDER BY id DESC
+             LIMIT 50'
+        );
+
+        return $consulta->fetchAll();
+    }
+
+    $consulta = $conexion->prepare(
+        'SELECT id, dni, nombres, apellidos,
+                fecha_nacimiento, telefono
+         FROM pacientes
+         WHERE dni LIKE :dni
+            OR nombres LIKE :nombres
+            OR apellidos LIKE :apellidos
+         ORDER BY apellidos, nombres
+         LIMIT 50'
+    );
+
+    $texto = '%' . $busqueda . '%';
+
+    $consulta->execute([
+        'dni' => $texto,
+        'nombres' => $texto,
+        'apellidos' => $texto,
+    ]);
+
+    return $consulta->fetchAll();
+}
+
+/**
+ * Registra un paciente y devuelve su ID.
+ */
+function registrar_paciente(array $datos): int
