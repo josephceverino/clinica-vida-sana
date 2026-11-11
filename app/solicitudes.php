@@ -165,3 +165,57 @@ function registrar_solicitud(array $datos): int
 
     return (int) $conexion->lastInsertId();
 }
+
+/**
+ * Cambia el estado de una solicitud nueva.
+ * El usuario debe obtenerse de la sesión, nunca del formulario.
+ */
+function cambiar_estado_solicitud(
+    int $solicitud_id,
+    string $estado,
+    int $usuario_id
+): void {
+    if ($solicitud_id < 1) {
+        throw new InvalidArgumentException(
+            'La solicitud no es válida.'
+        );
+    }
+
+    if (!in_array($estado, ['atendida', 'descartada'], true)) {
+        throw new InvalidArgumentException(
+            'Selecciona atendida o descartada.'
+        );
+    }
+
+    $conexion = db();
+
+    $consulta = $conexion->prepare(
+        "SELECT id FROM usuarios
+         WHERE id = :id AND activo = 1
+           AND rol IN ('admin', 'admision')"
+    );
+    $consulta->execute(['id' => $usuario_id]);
+
+    if (!$consulta->fetch()) {
+        throw new InvalidArgumentException(
+            'El usuario no está autorizado.'
+        );
+    }
+
+    // Solo modifica solicitudes que todavía están nuevas.
+    $consulta = $conexion->prepare(
+        "UPDATE solicitudes_cita
+         SET estado = :estado
+         WHERE id = :id AND estado = 'nueva'"
+    );
+    $consulta->execute([
+        'estado' => $estado,
+        'id' => $solicitud_id,
+    ]);
+
+    if ($consulta->rowCount() === 0) {
+        throw new InvalidArgumentException(
+            'La solicitud no existe o ya fue procesada.'
+        );
+    }
+}
