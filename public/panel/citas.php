@@ -11,6 +11,12 @@ $usuario = usuario_actual();
 $error = '';
 $citas = [];
 
+$puede_gestionar = in_array(
+    $usuario['rol'],
+    ['admin', 'admision'],
+    true
+);
+
 $zona = new DateTimeZone('America/Lima');
 $fecha = (new DateTimeImmutable('today', $zona))->format('Y-m-d');
 
@@ -40,7 +46,7 @@ if ($error === '') {
         }
 
         if ($usuario['rol'] === 'medico') {
-            // Siempre usa el médico de la sesión iniciada.
+            // El médico solo consulta las citas de su propia sesión.
             $citas = buscar_citas_medico($usuario['id'], $fecha);
         } else {
             $citas = buscar_citas($fecha);
@@ -71,6 +77,7 @@ require __DIR__ . '/../../app/layout/header.php';
 
     <form method="get" action="<?= e(url('/panel/citas.php')) ?>">
         <label for="fecha">Fecha de las citas</label>
+
         <p>
             <input
                 id="fecha"
@@ -79,6 +86,7 @@ require __DIR__ . '/../../app/layout/header.php';
                 value="<?= e($fecha) ?>"
                 required
             >
+
             <button class="boton" type="submit">
                 Consultar
             </button>
@@ -87,12 +95,14 @@ require __DIR__ . '/../../app/layout/header.php';
 
     <?php if ($error !== ''): ?>
         <p role="alert"><?= e($error) ?></p>
+
     <?php elseif ($citas === []): ?>
         <p>No hay citas para la fecha seleccionada.</p>
+
     <?php else: ?>
         <p>Resultados mostrados: <?= e(count($citas)) ?>.</p>
 
-        <?php if ($usuario['rol'] !== 'medico'): ?>
+        <?php if ($puede_gestionar): ?>
             <p>Se muestran hasta 100 citas por consulta.</p>
         <?php endif; ?>
 
@@ -120,6 +130,19 @@ require __DIR__ . '/../../app/layout/header.php';
                     <strong>Estado:</strong>
                     <?= e($cita['estado']) ?>
                 </p>
+
+                <?php if ($puede_gestionar): ?>
+                    <p>
+                        <a
+                            class="boton"
+                            href="<?= e(url(
+                                '/panel/gestionar-cita.php?id=' . $cita['id']
+                            )) ?>"
+                        >
+                            Gestionar cita
+                        </a>
+                    </p>
+                <?php endif; ?>
             </article>
         <?php endforeach; ?>
     <?php endif; ?>
