@@ -10,7 +10,8 @@ iniciar_sesion_segura();
 $titulo_pagina = 'Gestionar cita';
 $error = '';
 $cita = null;
-
+$medicos = [];
+$puede_editar = false;
 $id = false;
 
 if (isset($_GET['id']) && is_string($_GET['id'])) {
@@ -26,11 +27,13 @@ if ($id === false) {
     exit('Selecciona una cita válida.');
 }
 
-$exito = $_SESSION['cita_actualizada'] ?? false;
-unset($_SESSION['cita_actualizada']);
+$exito = $_SESSION['gestion_cita_mensaje'] ?? '';
+unset($_SESSION['gestion_cita_mensaje']);
+
+$ruta = '/panel/gestionar-cita.php?id=' . $id;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $exito = false;
+    $exito = '';
 
     try {
         if (
@@ -44,27 +47,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (
-            !isset($_POST['estado'])
-            || !is_string($_POST['estado'])
+            !isset($_POST['accion'])
+            || !is_string($_POST['accion'])
         ) {
             throw new InvalidArgumentException(
-                'Selecciona un estado válido.'
+                'La acción no es válida.'
             );
         }
 
-        cambiar_estado_cita(
-            $id,
-            $_POST['estado'],
-            usuario_actual()['id']
-        );
+        $usuario_id = usuario_actual()['id'];
 
-        $_SESSION['cita_actualizada'] = true;
+        if ($_POST['accion'] === 'asignar_medico') {
+            if (
+                !isset($_POST['medico_id'])
+                || !is_string($_POST['medico_id'])
+            ) {
+                throw new InvalidArgumentException(
+                    'Selecciona un médico válido.'
+                );
+            }
 
-        header(
-            'Location: ' . url('/panel/gestionar-cita.php?id=' . $id),
-            true,
-            303
-        );
+            $medico_id = filter_var(
+                $_POST['medico_id'],
+                FILTER_VALIDATE_INT,
+                ['options' => ['min_range' => 1]]
+            );
+
+            if ($medico_id === false) {
+                throw new InvalidArgumentException(
+                    'Selecciona un médico válido.'
+                );
+            }
+
+            asignar_medico_cita($id, $medico_id, $usuario_id);
+            $mensaje = 'Médico asignado correctamente.';
+        } elseif ($_POST['accion'] === 'cambiar_estado') {
+            if (
+                !isset($_POST['estado'])
+                || !is_string($_POST['estado'])
+            ) {
+                throw new InvalidArgumentException(
+                    'Selecciona un estado válido.'
+                );
+            }
+
+            cambiar_estado_cita(
+                $id,
+                $_POST['estado'],
+                $usuario_id
+            );
+
+            $mensaje = 'Estado actualizado correctamente.';
+        } else {
+            throw new InvalidArgumentException(
+                'La acción no es válida.'
+            );
+        }
+
+        $_SESSION['gestion_cita_mensaje'] = $mensaje;
+
+        header('Location: ' . url($ruta), true, 303);
         exit;
     } catch (InvalidArgumentException $excepcion) {
         $error = $excepcion->getMessage();
@@ -76,12 +118,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 try {
     $consulta = db()->prepare(
-        'SELECT citas.id, citas.fecha, citas.hora, citas.estado,
+        'SELECT citas.id, citas.area_id, citas.medico_id,
+                citas.fecha, citas.hora, citas.estado,
                 pacientes.nombres, pacientes.apellidos,
-                areas.nombre AS area
+                areas.nombre AS area,
+                usuarios.nombre AS medico
          FROM citas
          INNER JOIN pacientes ON pacientes.id = citas.paciente_id
          INNER JOIN areas ON areas.id = citas.area_id
+         LEFT JOIN usuarios ON usuarios.id = citas.medico_id
          WHERE citas.id = :id'
     );
     $consulta->execute(['id' => $id]);
@@ -90,10 +135,27 @@ try {
     if (!$cita) {
         http_response_code(404);
         $error = 'La cita no existe.';
+    } else {
+        $consulta = db()->prepare(
+            "SELECT id, nombre FROM usuarios
+             WHERE rol = 'medico'
+               AND activo = 1
+               AND area_id = :area
+             ORDER BY nombre"
+        );
+        $consulta->execute(['area' => $cita['area_id']]);
+        $medicos = $consulta->fetchAll();
+
+        $puede_editar = in_array(
+            $cita['estado'],
+            ['pendiente', 'confirmada'],
+            true
+        );
     }
 } catch (PDOException $excepcion) {
     error_log($excepcion->getMessage());
-    $error = 'No se pudo consultar la cita.';
+    $error = 'No se pudieron cargar los datos de la cita.';
+    $puede_editar = false;
 }
 
 csrf_token();
@@ -105,13 +167,16 @@ require __DIR__ . '/../../app/layout/header.php';
     <h1>Gestionar cita</h1>
 
     <p>
-        <a href="<?= e(url('/panel/citas.php')) ?>">
+        <a href="<?= e(url(
+            '/panel/citas.php'
+            . ($cita ? '?fecha=' . $cita['fecha'] : '')
+        )) ?>">
             Volver a citas
         </a>
     </p>
 
-    <?php if ($exito): ?>
-        <p role="status">Estado actualizado correctamente.</p>
+    <?php if ($exito !== ''): ?>
+        <p role="status"><?= e($exito) ?></p>
     <?php endif; ?>
 
     <?php if ($error !== ''): ?>
@@ -137,21 +202,68 @@ require __DIR__ . '/../../app/layout/header.php';
                 <?= e($cita['hora']) ?><br>
 
                 <strong>Estado:</strong>
-                <?= e($cita['estado']) ?>
+                <?= e($cita['estado']) ?><br>
+
+                <strong>Médico asignado:</strong>
+                <?= e($cita['medico'] ?? 'Sin médico asignado') ?>
             </p>
 
-            <?php if (in_array(
-                $cita['estado'],
-                ['pendiente', 'confirmada'],
-                true
-            )): ?>
-                <form
-                    method="post"
-                    action="<?= e(url(
-                        '/panel/gestionar-cita.php?id=' . $id
-                    )) ?>"
-                >
+            <?php if ($puede_editar): ?>
+                <h3>Asignar médico</h3>
+
+                <?php if ($medicos === []): ?>
+                    <p>No hay médicos activos en esta área.</p>
+                <?php else: ?>
+                    <form method="post" action="<?= e(url($ruta)) ?>">
+                        <?= csrf_campo() ?>
+
+                        <input
+                            type="hidden"
+                            name="accion"
+                            value="asignar_medico"
+                        >
+
+                        <p>
+                            <label for="medico_id">Médico</label><br>
+
+                            <select
+                                id="medico_id"
+                                name="medico_id"
+                                required
+                            >
+                                <option value="">
+                                    Selecciona un médico
+                                </option>
+
+                                <?php foreach ($medicos as $medico): ?>
+                                    <option
+                                        value="<?= e($medico['id']) ?>"
+                                        <?= (int) $medico['id']
+                                            === (int) $cita['medico_id']
+                                            ? 'selected' : '' ?>
+                                    >
+                                        <?= e($medico['nombre']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </p>
+
+                        <button class="boton" type="submit">
+                            Guardar médico
+                        </button>
+                    </form>
+                <?php endif; ?>
+
+                <h3>Cambiar estado</h3>
+
+                <form method="post" action="<?= e(url($ruta)) ?>">
                     <?= csrf_campo() ?>
+
+                    <input
+                        type="hidden"
+                        name="accion"
+                        value="cambiar_estado"
+                    >
 
                     <?php if ($cita['estado'] === 'pendiente'): ?>
                         <button
@@ -187,8 +299,12 @@ require __DIR__ . '/../../app/layout/header.php';
                     Una cita solo puede marcarse como atendida
                     cuando haya llegado su fecha y hora.
                 </p>
-            <?php else: ?>
-                <p>Esta cita ya no admite cambios de estado.</p>
+            <?php elseif (in_array(
+                $cita['estado'],
+                ['atendida', 'cancelada'],
+                true
+            )): ?>
+                <p>Esta cita ya no admite cambios.</p>
             <?php endif; ?>
         </article>
     <?php endif; ?>
