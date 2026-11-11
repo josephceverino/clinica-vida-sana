@@ -2,6 +2,9 @@
 # queda dentro de htdocs. En producción (Fedora) el DocumentRoot es public/,
 # así que estas carpetas ya quedan fuera de la web y este archivo no se usa.
 
+# No mostrar el listado de carpetas.
+Options -Indexes
+
 # Bloquea la carpeta .git
 RedirectMatch 403 /\.git
 
