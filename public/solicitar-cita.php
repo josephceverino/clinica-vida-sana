@@ -18,14 +18,21 @@ $valores = [
     'mensaje' => '',
 ];
 
-// La confirmación se muestra una sola vez.
 $exito = $_SESSION['solicitud_enviada'] ?? false;
 unset($_SESSION['solicitud_enviada']);
 
 try {
+    // Solo muestra áreas disponibles para el público.
     $areas = db()->query(
-        'SELECT id, nombre FROM areas ORDER BY nombre'
+        'SELECT id, nombre FROM areas
+         WHERE publica = 1
+         ORDER BY nombre'
     )->fetchAll();
+
+    if ($areas === []) {
+        $error = 'Actualmente no hay áreas disponibles para solicitudes.';
+        $disponible = false;
+    }
 } catch (PDOException $excepcion) {
     error_log($excepcion->getMessage());
     $error = 'El servicio no está disponible. Inténtalo más tarde.';
@@ -35,15 +42,7 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $disponible) {
     $exito = false;
 
-    // Conserva solamente campos que contienen texto.
-    foreach ($valores as $campo => $valor) {
-        if (isset($_POST[$campo]) && is_string($_POST[$campo])) {
-            $valores[$campo] = trim($_POST[$campo]);
-        }
-    }
-
     try {
-        // Comprueba el tipo antes de llamar al helper de seguridad.
         if (
             !isset($_POST['csrf_token'])
             || !is_string($_POST['csrf_token'])
@@ -54,14 +53,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $disponible) {
             );
         }
 
-        registrar_solicitud($_POST);
+        foreach ($valores as $campo => $valor) {
+            if (
+                isset($_POST[$campo])
+                && !is_string($_POST[$campo])
+            ) {
+                throw new InvalidArgumentException(
+                    'Los datos enviados no son válidos.'
+                );
+            }
+
+            $valores[$campo] = trim($_POST[$campo] ?? '');
+        }
+
+        registrar_solicitud($valores);
 
         $_SESSION['solicitud_enviada'] = true;
-
-        // Renueva el token para impedir reutilizar el envío anterior.
         unset($_SESSION['csrf_token']);
 
-        // Redirige para que actualizar la página no repita el envío.
+        // Evita repetir el envío al actualizar la página.
         header('Location: ' . url('/solicitar-cita.php'), true, 303);
         exit;
     } catch (InvalidArgumentException $excepcion) {
@@ -77,7 +87,6 @@ $hoy = (new DateTimeImmutable(
     new DateTimeZone('America/Lima')
 ))->format('Y-m-d');
 
-// Genera el token antes de imprimir la página.
 csrf_token();
 
 require __DIR__ . '/../app/layout/header.php';

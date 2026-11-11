@@ -49,11 +49,10 @@ function buscar_solicitudes(string $estado = ''): array
 }
 
 /**
- * Valida y guarda una solicitud del formulario público.
+ * Valida y guarda una solicitud para un área pública.
  */
 function registrar_solicitud(array $datos): int
 {
-    // Rechaza campos enviados como arreglos en lugar de texto.
     $campos = [
         'nombre', 'dni', 'telefono', 'area_id',
         'fecha_preferida', 'mensaje',
@@ -112,9 +111,9 @@ function registrar_solicitud(array $datos): int
         );
     }
 
-    // La fecha preferida es opcional.
     if ($fecha !== '') {
         $zona = new DateTimeZone('America/Lima');
+
         $fecha_validada = DateTimeImmutable::createFromFormat(
             '!Y-m-d',
             $fecha,
@@ -134,14 +133,16 @@ function registrar_solicitud(array $datos): int
 
     $conexion = db();
 
+    // Rechaza áreas internas aunque se manipule el formulario.
     $consulta = $conexion->prepare(
-        'SELECT id FROM areas WHERE id = :id'
+        'SELECT id FROM areas
+         WHERE id = :id AND publica = 1'
     );
     $consulta->execute(['id' => $area_id]);
 
     if (!$consulta->fetch()) {
         throw new InvalidArgumentException(
-            'El área seleccionada no existe.'
+            'El área seleccionada no está disponible para solicitudes.'
         );
     }
 
@@ -168,7 +169,7 @@ function registrar_solicitud(array $datos): int
 
 /**
  * Cambia el estado de una solicitud nueva.
- * El usuario debe obtenerse de la sesión, nunca del formulario.
+ * El usuario debe obtenerse de la sesión.
  */
 function cambiar_estado_solicitud(
     int $solicitud_id,
@@ -202,7 +203,6 @@ function cambiar_estado_solicitud(
         );
     }
 
-    // Solo modifica solicitudes que todavía están nuevas.
     $consulta = $conexion->prepare(
         "UPDATE solicitudes_cita
          SET estado = :estado
