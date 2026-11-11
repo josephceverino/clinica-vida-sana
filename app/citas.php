@@ -424,3 +424,62 @@ function asignar_medico_cita(
         throw $error;
     }
 }
+
+/**
+ * Consulta las citas de un médico en una fecha.
+ * El ID del médico debe obtenerse de la sesión iniciada.
+ */
+function buscar_citas_medico(
+    int $medico_id,
+    string $fecha
+): array {
+    $fecha_validada = DateTimeImmutable::createFromFormat(
+        '!Y-m-d',
+        $fecha
+    );
+
+    if (
+        !$fecha_validada
+        || $fecha_validada->format('Y-m-d') !== $fecha
+    ) {
+        throw new InvalidArgumentException(
+            'La fecha no es válida.'
+        );
+    }
+
+    $conexion = db();
+
+    $consulta = $conexion->prepare(
+        "SELECT id FROM usuarios
+         WHERE id = :id AND rol = 'medico' AND activo = 1"
+    );
+    $consulta->execute(['id' => $medico_id]);
+
+    if (!$consulta->fetch()) {
+        throw new InvalidArgumentException(
+            'El médico no existe o no está activo.'
+        );
+    }
+
+    $consulta = $conexion->prepare(
+        'SELECT citas.id, citas.fecha, citas.hora,
+                citas.motivo, citas.estado,
+                pacientes.dni, pacientes.nombres,
+                pacientes.apellidos,
+                pacientes.fecha_nacimiento,
+                areas.nombre AS area
+         FROM citas
+         INNER JOIN pacientes ON pacientes.id = citas.paciente_id
+         INNER JOIN areas ON areas.id = citas.area_id
+         WHERE citas.medico_id = :medico
+           AND citas.fecha = :fecha
+         ORDER BY citas.hora, citas.id'
+    );
+
+    $consulta->execute([
+        'medico' => $medico_id,
+        'fecha' => $fecha,
+    ]);
+
+    return $consulta->fetchAll();
+}
