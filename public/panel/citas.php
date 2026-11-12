@@ -155,6 +155,24 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                         </a>
                     </p>
                 <?php endif; ?>
+
+                <?php if ($usuario['rol'] === 'medico'): ?>
+                    <?php if ($cita['estado'] === 'confirmada'): ?>
+                        <p>
+                            <a class="boton"
+                               href="<?= e(url('/panel/atender-cita.php?id=' . (int) $cita['id'])) ?>">
+                                Atender
+                            </a>
+                        </p>
+                    <?php elseif ($cita['estado'] === 'atendida'): ?>
+                        <p>
+                            <a class="boton boton-claro"
+                               href="<?= e(url('/panel/atender-cita.php?id=' . (int) $cita['id'])) ?>">
+                                Ver atención
+                            </a>
+                        </p>
+                    <?php endif; ?>
+                <?php endif; ?>
             </article>
         <?php endforeach; ?>
     <?php endif; ?>

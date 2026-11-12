@@ -22,7 +22,13 @@ Las páginas de `public/panel/` solo muestran y reciben datos; la lógica y las 
 ### Zona pública
 - Ver los servicios y áreas públicas.
 - Registrarse como paciente (`/registro.php`). La cuenta queda **pendiente** hasta que admisión la verifique.
-- ~~Enviar una solicitud de cita sin cuenta~~: el formulario anónimo `solicitar-cita.php` se **retiró**. Las solicitudes saldrán de la cuenta del paciente (en construcción).
+- ~~Enviar una solicitud de cita sin cuenta~~: el formulario anónimo `solicitar-cita.php` se **retiró**.
+
+### Paciente (cuenta verificada)
+- **Mis citas** (`public/paciente/citas.php`): sus próximas citas, su historial y sus solicitudes. Solo las suyas: el paciente se toma de la **sesión**, nunca de la dirección ni de un formulario.
+- **Pedir cita** (`public/paciente/pedir-cita.php`): área pública, fecha preferida opcional (hoy a 6 meses) y motivo obligatorio (5 a 500 caracteres). Crea una solicitud ligada a su cuenta.
+- Máximo **3 solicitudes pendientes** a la vez por paciente. El conteo y el guardado van dentro de una transacción con `FOR UPDATE`, así que enviar varias a la vez no salta el límite.
+- Una cuenta pendiente de verificación no puede entrar a estas páginas.
 
 ### Administración y admisión
 - Registrar y buscar pacientes (se rechaza el DNI duplicado).
@@ -34,7 +40,31 @@ Las páginas de `public/panel/` solo muestran y reciben datos; la lógica y las 
 ### Médico
 - Ver **solo sus propias citas**, por fecha.
 - Ver los datos básicos de los pacientes de esas citas.
+- **Atender** una cita suya y registrar la historia clínica (ver abajo).
 - No tiene acceso a la gestión general de pacientes ni de solicitudes.
+
+## Historia clínica
+
+La historia clínica son las **atenciones** que el médico registra al atender una cita (`app/modelos/atenciones.php`).
+
+**Quién puede qué**
+
+| Rol | Escribir atenciones | Leer atenciones |
+|---|---|---|
+| Médico | Solo en citas **suyas** | Solo las que él escribió |
+| Paciente (cuenta verificada) | No | Solo las **suyas** |
+| Admisión y admin | No | **No** (son datos sensibles; lo mínimo necesario) |
+
+**Reglas de `registrar_atencion()`** (se comprueban en el modelo, no en la página):
+- La cita debe estar asignada al médico de la sesión, **confirmada**, y su fecha y hora ya deben haber llegado.
+- El **paciente** se toma de la cita y el **médico** de la sesión; nada de eso se lee del formulario.
+- Diagnóstico obligatorio (5 a 500 caracteres); tratamiento hasta 500 y notas hasta 1000.
+- Guardar la atención y pasar la cita a `atendida` ocurre **junto** (transacción con `FOR UPDATE`): enviar varias veces a la vez guarda una sola atención.
+- Una cita ajena o inexistente responde con el mismo 404, para no revelar qué citas existen.
+
+**Una cita pasa a `atendida` solo cuando el médico registra la atención.** Admisión ya no puede marcarla a mano en `gestionar-cita.php`, para que ninguna cita quede "atendida" sin su historia clínica.
+
+Páginas: `public/panel/atender-cita.php` (el médico) y `public/paciente/historia.php` (el paciente).
 
 ## Reglas de la agenda
 
@@ -48,9 +78,9 @@ Al registrar una cita se rechaza:
 
 **Citas**
 - `pendiente` → `confirmada` o `cancelada`
-- `confirmada` → `atendida` o `cancelada`
+- `confirmada` → `cancelada` (admisión) o `atendida` (solo cuando el médico registra la atención)
 - `atendida` y `cancelada` no admiten más cambios.
-- Una cita futura no puede marcarse como `atendida`.
+- Una cita futura no se puede atender: debe haber llegado su fecha y hora.
 
 **Solicitudes**
 - `nueva` → `atendida` o `descartada`
@@ -68,7 +98,7 @@ Al registrar una cita se rechaza:
 
 ## Datos de prueba
 
-`sql/seed.sql` crea 5 áreas, 6 cuentas (admin, admisión, 2 médicos y 2 pacientes), 6 pacientes, 7 citas, 2 atenciones (historia clínica) y 3 solicitudes. Las citas de Medicina General son de `medico1` y las de Pediatría de `medico2`; Laboratorio aún no tiene médico. Las fechas son ejemplos fijos de octubre y noviembre de 2026.
+`sql/seed.sql` crea 5 áreas, 7 cuentas (admin, admisión, 2 médicos y 3 de paciente), 6 pacientes, 10 citas, 4 atenciones (historia clínica) y 4 solicitudes. La cita 8 está **confirmada para el 12/11/2026 a las 08:00** (sirve para probar "Atender" con `medico1`). Las citas de Medicina General son de `medico1` y las de Pediatría de `medico2`; Laboratorio aún no tiene médico. Las fechas son ejemplos fijos de octubre y noviembre de 2026.
 
 ## Cambios del portal del paciente en la base de datos
 

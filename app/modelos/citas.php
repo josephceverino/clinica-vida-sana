@@ -211,10 +211,18 @@ function cambiar_estado_cita(
         );
     }
 
+    // "Atendida" no se marca a mano: la cita pasa a ese estado cuando el
+    // médico registra la atención (app/modelos/atenciones.php). Así ninguna
+    // cita queda "atendida" sin su historia clínica.
+    if ($nuevo_estado === 'atendida') {
+        throw new InvalidArgumentException(
+            'Una cita pasa a atendida cuando el médico registra la atención.'
+        );
+    }
+
     // Estados de origen permitidos para cada destino.
     $transiciones = [
         'confirmada' => ['pendiente'],
-        'atendida' => ['confirmada'],
         'cancelada' => ['pendiente', 'confirmada'],
     ];
 
@@ -266,27 +274,6 @@ function cambiar_estado_cita(
             throw new InvalidArgumentException(
                 'No se permite ese cambio desde el estado actual.'
             );
-        }
-
-        // No permite marcar como atendida una cita futura.
-        if ($nuevo_estado === 'atendida') {
-            $consulta = $conexion->prepare(
-                'SELECT fecha, hora FROM citas WHERE id = :id'
-            );
-            $consulta->execute(['id' => $cita_id]);
-            $horario = $consulta->fetch();
-
-            $zona = new DateTimeZone('America/Lima');
-            $fecha_cita = new DateTimeImmutable(
-                $horario['fecha'] . ' ' . $horario['hora'],
-                $zona
-            );
-
-            if ($fecha_cita > new DateTimeImmutable('now', $zona)) {
-                throw new InvalidArgumentException(
-                    'Todavía no es la fecha y hora de atención.'
-                );
-            }
         }
 
         $consulta = $conexion->prepare(
@@ -481,6 +468,30 @@ function buscar_citas_medico(
         'medico' => $medico_id,
         'fecha' => $fecha,
     ]);
+
+    return $consulta->fetchAll();
+}
+/**
+ * Citas de UN paciente (para "Mis citas" en su portal).
+ * $paciente_id debe salir siempre de la sesión, nunca de un formulario.
+ */
+function citas_del_paciente(int $paciente_id): array
+{
+    $consulta = db()->prepare(
+        'SELECT citas.id, citas.fecha, citas.hora, citas.motivo,
+                citas.estado,
+                areas.nombre AS area,
+                medico.nombre AS medico
+         FROM citas
+         INNER JOIN areas
+             ON areas.id = citas.area_id
+         LEFT JOIN usuarios AS medico
+             ON medico.id = citas.medico_id
+         WHERE citas.paciente_id = :paciente
+         ORDER BY citas.fecha DESC, citas.hora DESC
+         LIMIT 100'
+    );
+    $consulta->execute(['paciente' => $paciente_id]);
 
     return $consulta->fetchAll();
 }

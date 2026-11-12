@@ -143,16 +143,14 @@ CREATE TABLE citas (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
--- solicitudes_cita: citas pedidas por los pacientes (admisión confirma)
--- paciente_id enlaza la solicitud con la cuenta que la hizo. Queda NULL
--- mientras exista el formulario público antiguo (se retira en el portal).
+-- solicitudes_cita: citas pedidas por los pacientes desde su portal.
+-- Admisión las revisa y, si corresponde, registra la cita.
+-- El paciente se identifica por su cuenta (paciente_id), así que su nombre,
+-- documento y teléfono se leen de su ficha: no se guardan aquí otra vez.
 -- ---------------------------------------------------------------------
 CREATE TABLE solicitudes_cita (
     id              INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    paciente_id     INT UNSIGNED NULL,
-    nombre          VARCHAR(100) NOT NULL,
-    dni             CHAR(8)      NOT NULL,
-    telefono        VARCHAR(20)  NOT NULL,
+    paciente_id     INT UNSIGNED NOT NULL,
     area_id         INT UNSIGNED NOT NULL,
     fecha_preferida DATE         NULL,
     mensaje         VARCHAR(500) NULL,

@@ -124,11 +124,12 @@ require __DIR__ . '/../../app/layout/panel_header.php';
             </h2>
 
             <p>
-                <strong>DNI:</strong>
-                <?= e($solicitud['dni']) ?><br>
+                <strong>Documento:</strong>
+                <?= e($solicitud['tipo_documento']) ?>
+                <?= e($solicitud['numero_documento']) ?><br>
 
                 <strong>Teléfono:</strong>
-                <?= e($solicitud['telefono']) ?><br>
+                <?= e($solicitud['telefono'] ?? 'Sin teléfono') ?><br>
 
                 <strong>Área:</strong>
                 <?= e($solicitud['area']) ?><br>

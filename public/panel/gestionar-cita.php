@@ -276,15 +276,6 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                         >
                             Confirmar
                         </button>
-                    <?php else: ?>
-                        <button
-                            class="boton"
-                            name="estado"
-                            value="atendida"
-                            type="submit"
-                        >
-                            Marcar atendida
-                        </button>
                     <?php endif; ?>
 
                     <button
@@ -298,8 +289,8 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                 </form>
 
                 <p>
-                    Una cita solo puede marcarse como atendida
-                    cuando haya llegado su fecha y hora.
+                    La cita pasa a <strong>atendida</strong> cuando el médico
+                    registra la atención, no desde aquí.
                 </p>
             <?php elseif (in_array(
                 $cita['estado'],

@@ -58,7 +58,8 @@ Cuentas de **paciente** (entran con su correo):
 
 | Correo | Estado | Contraseña |
 |---|---|---|
-| `paciente1@example.test` | verificada | `Clinica2026!` |
+| `paciente1@example.test` | verificada (Ana, con citas, historial y solicitudes) | `Clinica2026!` |
+| `paciente2@example.test` | verificada (Carlos; sirve para comprobar que un paciente no ve lo de otro) | `Clinica2026!` |
 | `pendiente@example.test` | pendiente de verificación | `Clinica2026!` |
 
 Estas contraseñas son **solo para desarrollo**. En el servidor deben cambiarse.

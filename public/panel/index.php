@@ -69,8 +69,10 @@ $proximas = $consulta->fetchAll();
 $solicitudes = [];
 if ($ve_gestion) {
     $solicitudes = $pdo->query(
-        "SELECT s.nombre, s.telefono, s.fecha_preferida, a.nombre AS area
+        "SELECT CONCAT(p.nombres, ' ', p.apellidos) AS nombre, p.telefono,
+                s.fecha_preferida, a.nombre AS area
          FROM solicitudes_cita s
+         JOIN pacientes p ON p.id = s.paciente_id
          JOIN areas a ON a.id = s.area_id
          WHERE s.estado = 'nueva'
          ORDER BY s.creado_en DESC
