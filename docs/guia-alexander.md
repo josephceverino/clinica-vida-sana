@@ -20,8 +20,10 @@ Lo que sigue (ver [`plan-portal-paciente.md`](plan-portal-paciente.md)):
 | Qué | Archivo(s) | Quién puede entrar | Estado |
 |---|---|---|---|
 | Portal: mis citas y pedir cita | `public/paciente/citas.php`, `pedir-cita.php` | paciente con cuenta verificada | **Hecho** (rama `feature/portal-citas`) |
-| Portal: historia clínica | `public/paciente/historia.php` | paciente con cuenta verificada | Pendiente |
-| Atenciones (el médico escribe) | `public/panel/atender-cita.php` | medico | Pendiente |
+| Portal: historia clínica | `public/paciente/historia.php` | paciente con cuenta verificada | **Hecho** (rama `feature/historia-clinica`) |
+| Atenciones (el médico escribe) | `public/panel/atender-cita.php` | medico | **Hecho** (rama `feature/historia-clinica`) |
+
+Con eso **el plan del portal está completo**. Lo que queda es revisar el código, probarlo en tu PC y el paso 8 (pruebas finales con los 4 roles). Lee `docs/backend.md`, sección *Historia clínica*, para ver las reglas.
 
 **El formulario público `solicitar-cita.php` ya se retiró**: cualquiera podía enviar solicitudes con datos inventados. Ahora el paciente se registra, y las solicitudes salen de su cuenta (el `paciente_id` sale de la sesión, nunca de un campo del formulario). Un buen ejemplo de cómo se hace es `public/paciente/pedir-cita.php` y `registrar_solicitud_paciente()` en `app/modelos/solicitudes.php`.
 

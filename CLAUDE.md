@@ -33,7 +33,7 @@ public/                # Lo único accesible desde el navegador
   servicios.php  nosotros.php  contacto.php
   login.php  logout.php          # Acceso único (usuario o correo) para todos los roles
   registro.php                   # Registro de pacientes (la cuenta nace pendiente)
-  paciente/                      # Portal del paciente: inicio, mis citas y pedir cita (historia clínica en construcción)
+  paciente/                      # Portal del paciente: inicio, mis citas, pedir cita e historia clínica
   panel/                         # Zona del personal (requiere login)
     index.php  pacientes.php  citas.php  solicitudes.php  usuarios.php ...
   errores/             # 403.php, 404.php

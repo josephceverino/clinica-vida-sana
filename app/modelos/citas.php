@@ -211,10 +211,18 @@ function cambiar_estado_cita(
         );
     }
 
+    // "Atendida" no se marca a mano: la cita pasa a ese estado cuando el
+    // médico registra la atención (app/modelos/atenciones.php). Así ninguna
+    // cita queda "atendida" sin su historia clínica.
+    if ($nuevo_estado === 'atendida') {
+        throw new InvalidArgumentException(
+            'Una cita pasa a atendida cuando el médico registra la atención.'
+        );
+    }
+
     // Estados de origen permitidos para cada destino.
     $transiciones = [
         'confirmada' => ['pendiente'],
-        'atendida' => ['confirmada'],
         'cancelada' => ['pendiente', 'confirmada'],
     ];
 
@@ -266,27 +274,6 @@ function cambiar_estado_cita(
             throw new InvalidArgumentException(
                 'No se permite ese cambio desde el estado actual.'
             );
-        }
-
-        // No permite marcar como atendida una cita futura.
-        if ($nuevo_estado === 'atendida') {
-            $consulta = $conexion->prepare(
-                'SELECT fecha, hora FROM citas WHERE id = :id'
-            );
-            $consulta->execute(['id' => $cita_id]);
-            $horario = $consulta->fetch();
-
-            $zona = new DateTimeZone('America/Lima');
-            $fecha_cita = new DateTimeImmutable(
-                $horario['fecha'] . ' ' . $horario['hora'],
-                $zona
-            );
-
-            if ($fecha_cita > new DateTimeImmutable('now', $zona)) {
-                throw new InvalidArgumentException(
-                    'Todavía no es la fecha y hora de atención.'
-                );
-            }
         }
 
         $consulta = $conexion->prepare(
