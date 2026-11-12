@@ -33,7 +33,7 @@ public/                # Lo único accesible desde el navegador
   servicios.php  nosotros.php  contacto.php
   login.php  logout.php          # Acceso único (usuario o correo) para todos los roles
   registro.php                   # Registro de pacientes (la cuenta nace pendiente)
-  paciente/                      # Portal del paciente (inicio listo; citas e historia en construcción)
+  paciente/                      # Portal del paciente: inicio, mis citas y pedir cita (historia clínica en construcción)
   panel/                         # Zona del personal (requiere login)
     index.php  pacientes.php  citas.php  solicitudes.php  usuarios.php ...
   errores/             # 403.php, 404.php
@@ -68,10 +68,11 @@ Nadie puede pedir una cita sin cuenta: la cuenta identifica a quién responde po
 
 ## Base de datos (borrador; ajustar si hace falta)
 - `areas` (id, nombre) → Admisión, Laboratorio, Sistemas, Medicina General, etc.
-- `usuarios` (id, nombre, usuario UNIQUE, password_hash, rol, area_id, activo, creado_en)
-- `pacientes` (id, dni UNIQUE, nombres, apellidos, fecha_nacimiento, telefono, creado_en)
-- `citas` (id, paciente_id, area_id, fecha, hora, motivo, estado [pendiente|confirmada|atendida|cancelada], registrado_por, creado_en)
-- `solicitudes_cita` (id, nombre, dni, telefono, area_id, fecha_preferida, mensaje, estado [nueva|atendida|descartada], creado_en)
+- `usuarios` (id, nombre, usuario, correo, password_hash, rol [admin|admision|medico|paciente], area_id, paciente_id, activo, verificado, verificado_por, verificado_en, creado_en). El personal entra con `usuario`; el paciente con `correo` y enlazado a su ficha.
+- `pacientes` (id, tipo_documento, numero_documento, nombres, apellidos, correo, fecha_nacimiento, telefono, creado_en). Documento único junto con su tipo.
+- `citas` (id, paciente_id, area_id, medico_id, fecha, hora, motivo, estado [pendiente|confirmada|atendida|cancelada], registrado_por, creado_en)
+- `solicitudes_cita` (id, paciente_id, area_id, fecha_preferida, mensaje, estado [nueva|atendida|descartada], creado_en). La crea el paciente desde su portal; el nombre, documento y teléfono se leen de su ficha.
+- `atenciones` (historia clínica: cita_id, paciente_id, medico_id, diagnostico, tratamiento, notas) e `intentos_acceso` (límite de intentos de login y registro).
 
 Charset `utf8mb4`, motor InnoDB, claves foráneas declaradas.
 

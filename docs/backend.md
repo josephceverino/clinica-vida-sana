@@ -22,7 +22,13 @@ Las páginas de `public/panel/` solo muestran y reciben datos; la lógica y las 
 ### Zona pública
 - Ver los servicios y áreas públicas.
 - Registrarse como paciente (`/registro.php`). La cuenta queda **pendiente** hasta que admisión la verifique.
-- ~~Enviar una solicitud de cita sin cuenta~~: el formulario anónimo `solicitar-cita.php` se **retiró**. Las solicitudes saldrán de la cuenta del paciente (en construcción).
+- ~~Enviar una solicitud de cita sin cuenta~~: el formulario anónimo `solicitar-cita.php` se **retiró**.
+
+### Paciente (cuenta verificada)
+- **Mis citas** (`public/paciente/citas.php`): sus próximas citas, su historial y sus solicitudes. Solo las suyas: el paciente se toma de la **sesión**, nunca de la dirección ni de un formulario.
+- **Pedir cita** (`public/paciente/pedir-cita.php`): área pública, fecha preferida opcional (hoy a 6 meses) y motivo obligatorio (5 a 500 caracteres). Crea una solicitud ligada a su cuenta.
+- Máximo **3 solicitudes pendientes** a la vez por paciente. El conteo y el guardado van dentro de una transacción con `FOR UPDATE`, así que enviar varias a la vez no salta el límite.
+- Una cuenta pendiente de verificación no puede entrar a estas páginas.
 
 ### Administración y admisión
 - Registrar y buscar pacientes (se rechaza el DNI duplicado).

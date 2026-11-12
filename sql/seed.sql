@@ -9,7 +9,9 @@
 --     medico1    rol medico (Medicina General)
 --     medico2    rol medico (Pediatría)
 --   Pacientes (entran con "correo"):
---     paciente1@example.test    cuenta VERIFICADA (ve su historial)
+--     paciente1@example.test    cuenta VERIFICADA (Ana: citas, historial y solicitudes)
+--     paciente2@example.test    cuenta VERIFICADA (Carlos: sirve para comprobar
+--                               que un paciente NO ve los datos de otro)
 --     pendiente@example.test    cuenta PENDIENTE (espera a admisión)
 -- Las contraseñas están guardadas como hash (password_hash de PHP).
 -- ¡Cambiarlas antes de publicar en el servidor Fedora!
@@ -47,7 +49,8 @@ INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, 
 -- paciente1 fue verificada por admision1 (id 2); la otra espera verificación.
 INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, paciente_id, activo, verificado, verificado_por, verificado_en) VALUES
     (5, 'Ana María Paredes Ficticia', NULL, 'paciente1@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 1, 1, 1, 2, '2026-10-15 10:00:00'),
-    (6, 'Nuevo Registro Demo',        NULL, 'pendiente@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 6, 1, 0, NULL, NULL);
+    (6, 'Nuevo Registro Demo',        NULL, 'pendiente@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 6, 1, 0, NULL, NULL),
+    (7, 'Carlos Rojas Ejemplo',       NULL, 'paciente2@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 2, 1, 1, 2, '2026-10-16 11:00:00');
 
 -- Citas (fechas fijas de ejemplo; se pueden editar desde el panel) -----
 -- Medicina General -> medico1 (id 3). Pediatría -> medico2 (id 4).
@@ -70,8 +73,9 @@ INSERT INTO atenciones (cita_id, paciente_id, medico_id, motivo, diagnostico, tr
         'Mantener alimentación balanceada y actividad física regular.',
         'Se recomienda control de rutina en 12 meses.');
 
--- Solicitudes llegadas desde la web pública ------------------------------
-INSERT INTO solicitudes_cita (nombre, dni, telefono, area_id, fecha_preferida, mensaje, estado) VALUES
-    ('Marta Solicitante Demo', '90000101', '900000101', 2, '2026-11-15', 'Quisiera una consulta por la mañana.', 'nueva'),
-    ('Pedro Ejemplo Web',      '90000102', '900000102', 3, '2026-11-16', 'Cita para mi hijo.',                   'nueva'),
-    ('Rosa Prueba Web',        '90000103', '900000103', 4, NULL,         'Necesito un examen de laboratorio.',   'atendida');
+-- Solicitudes de cita hechas desde el portal (de pacientes con cuenta) ----
+INSERT INTO solicitudes_cita (paciente_id, area_id, fecha_preferida, mensaje, estado) VALUES
+    (1, 4, '2026-11-20', 'Quisiera un análisis de sangre de rutina.', 'nueva'),
+    (2, 2, '2026-11-18', 'Dolor de cabeza que no se me quita.',       'nueva'),
+    (1, 2, '2026-10-20', 'Chequeo anual.',                            'atendida'),
+    (1, 2, '2026-10-01', 'Pedí la misma cita dos veces.',             'descartada');

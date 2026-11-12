@@ -484,3 +484,27 @@ function buscar_citas_medico(
 
     return $consulta->fetchAll();
 }
+/**
+ * Citas de UN paciente (para "Mis citas" en su portal).
+ * $paciente_id debe salir siempre de la sesión, nunca de un formulario.
+ */
+function citas_del_paciente(int $paciente_id): array
+{
+    $consulta = db()->prepare(
+        'SELECT citas.id, citas.fecha, citas.hora, citas.motivo,
+                citas.estado,
+                areas.nombre AS area,
+                medico.nombre AS medico
+         FROM citas
+         INNER JOIN areas
+             ON areas.id = citas.area_id
+         LEFT JOIN usuarios AS medico
+             ON medico.id = citas.medico_id
+         WHERE citas.paciente_id = :paciente
+         ORDER BY citas.fecha DESC, citas.hora DESC
+         LIMIT 100'
+    );
+    $consulta->execute(['paciente' => $paciente_id]);
+
+    return $consulta->fetchAll();
+}

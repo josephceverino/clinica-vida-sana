@@ -60,3 +60,55 @@
     gap: 0.75rem;
     font-size: 0.95rem;
 }
+
+/* ---------- Listas y etiquetas de estado del portal ---------- */
+.tabla-scroll {
+    overflow-x: auto;
+}
+
+.lista-paciente {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+}
+
+.lista-paciente th {
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B7C8B;
+    background: #F8FAFB;
+    border-bottom: 2px solid #EDF1F4;
+}
+
+.lista-paciente td {
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid #EDF1F4;
+}
+
+.lista-paciente tr:last-child td {
+    border-bottom: none;
+}
+
+.vacio {
+    color: #6B7C8B;
+}
+
+.estado {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.estado-pendiente  { background: #FFF1D6; color: #8A5A00; }
+.estado-confirmada { background: #DDF3E8; color: #17744A; }
+.estado-atendida   { background: #E3EBF1; color: #3B5568; }
+.estado-cancelada  { background: #FDECEA; color: #8A1F14; }
+.estado-nueva      { background: #D9EEF4; color: #0B6E8A; }
+.estado-descartada { background: #FDECEA; color: #8A1F14; }

@@ -16,9 +16,10 @@ $verificada = ($usuario['verificado'] ?? 0) === 1;
 
 // Menú del portal: archivo => texto. Lo que aún no existe sale apagado.
 $menu_paciente = [
-    'index.php'    => 'Inicio',
-    'citas.php'    => 'Mis citas',
-    'historia.php' => 'Historia clínica',
+    'index.php'      => 'Inicio',
+    'citas.php'      => 'Mis citas',
+    'pedir-cita.php' => 'Pedir cita',
+    'historia.php'   => 'Historia clínica',
 ];
 ?>
 <!DOCTYPE html>
