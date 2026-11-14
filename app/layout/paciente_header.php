@@ -46,7 +46,9 @@ $menu_paciente = [
     </nav>
 
     <div class="paciente-sesion">
-        <span><?= e($usuario['nombre']) ?></span>
+        <a class="paciente-perfil <?= $pagina_activa === 'perfil.php' ? 'activo' : '' ?>"
+           href="<?= e(url('/paciente/perfil.php')) ?>"
+           title="Mi perfil y contraseña"><?= e($usuario['nombre']) ?></a>
         <form method="post" action="<?= e(url('/logout.php')) ?>">
             <?= csrf_campo() ?>
             <button type="submit" class="boton boton-claro boton-chico">Salir</button>

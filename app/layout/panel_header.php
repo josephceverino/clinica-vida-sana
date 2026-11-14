@@ -113,6 +113,8 @@ $iniciales = mb_strtoupper(
                 <strong><?= e($usuario['nombre']) ?></strong>
                 <small><?= e($usuario['rol']) ?></small>
             </div>
+            <a class="panel-perfil <?= $pagina_activa === 'perfil.php' ? 'activo' : '' ?>"
+               href="<?= e(url('/panel/perfil.php')) ?>">Mi perfil</a>
             <form method="post" action="<?= e(url('/logout.php')) ?>">
                 <?= csrf_campo() ?>
                 <button type="submit" class="panel-salir">Salir</button>

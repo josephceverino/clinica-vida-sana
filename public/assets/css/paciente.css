@@ -267,3 +267,20 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Nombre del paciente arriba a la derecha: lleva a "Mi perfil" */
+.paciente-perfil {
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}
+
+.paciente-perfil:hover,
+.paciente-perfil.activo {
+    border-bottom-color: var(--color-acento);
+}
+
+.form-password small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #6B7C8B;
+}

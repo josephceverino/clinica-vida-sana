@@ -916,3 +916,32 @@ a.calendario-cita:hover {
     border-left-width: 4px;
     border-left-style: solid;
 }
+
+/* ---------- Enlace "Mi perfil" en el recuadro del usuario ---------- */
+.panel-perfil {
+    grid-column: 1 / -1;
+    padding: 0.45rem;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #C9D6DF;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.panel-perfil:hover,
+.panel-perfil.activo {
+    color: var(--color-blanco);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Formulario de contraseña dentro de una caja del panel: sin doble borde */
+.caja .form-password {
+    padding: 0;
+    border: none;
+}
+
+.form-password small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #6B7C8B;
+}
