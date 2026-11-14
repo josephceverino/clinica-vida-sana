@@ -1,0 +1,945 @@
+/* Estilos del panel (zona privada). Usa las variables de base.css. */
+
+.panel-body {
+    background: var(--color-fondo);
+}
+
+/* Estructura: barra lateral + contenido */
+.panel {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+}
+
+/* ---------- Barra lateral ---------- */
+.panel-lateral {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    background: var(--color-titulos);
+    color: #C9D6DF;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.panel-marca {
+    padding: 0 0.75rem 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-blanco);
+    text-decoration: none;
+}
+
+.panel-marca span {
+    margin-left: 0.25rem;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-titulos);
+    background: var(--color-acento);
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+.panel-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.panel-menu a,
+.panel-menu .deshabilitado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+    color: #C9D6DF;
+}
+
+.panel-menu a:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--color-blanco);
+}
+
+.panel-menu a.activo {
+    background: rgba(43, 182, 115, 0.15);
+    border-left-color: var(--color-acento);
+    color: var(--color-blanco);
+    font-weight: 600;
+}
+
+.panel-menu .deshabilitado {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.panel-menu small {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Usuario abajo de la barra lateral */
+.panel-usuario {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: auto;
+    padding: 1rem 0.75rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.panel-usuario strong {
+    display: block;
+    color: var(--color-blanco);
+    font-size: 0.9rem;
+}
+
+.panel-usuario small {
+    text-transform: capitalize;
+}
+
+.panel-avatar {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--color-principal);
+    color: var(--color-blanco);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.panel-usuario form {
+    grid-column: 1 / -1;
+}
+
+.panel-salir {
+    width: 100%;
+    padding: 0.5rem;
+    font: inherit;
+    font-size: 0.9rem;
+    color: #C9D6DF;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.panel-salir:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-blanco);
+}
+
+/* ---------- Contenido ---------- */
+.panel-contenido {
+    max-width: 1100px;
+    padding: 2rem;
+}
+
+.panel-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.panel-titulo h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.panel-titulo p {
+    margin: 0.25rem 0 0;
+}
+
+.panel-titulo time {
+    padding: 0.35rem 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-principal);
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 999px;
+}
+
+/* Tarjetas de números */
+.tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.dato {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-top: 4px solid var(--color-principal);
+    border-radius: 12px;
+}
+
+.dato-alerta {
+    border-top-color: var(--color-acento);
+}
+
+.dato-numero {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color-titulos);
+}
+
+.dato-texto {
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+}
+
+/* Cajas con listas */
+.panel-columnas {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.caja {
+    padding: 1.25rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 12px;
+}
+
+.caja h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+}
+
+.vacio {
+    margin: 0;
+    color: #6B7C8B;
+}
+
+.agenda {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.agenda li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #EDF1F4;
+}
+
+.agenda li:last-child {
+    border-bottom: none;
+}
+
+.agenda-hora {
+    display: flex;
+    flex-direction: column;
+    min-width: 3.2rem;
+    text-align: center;
+}
+
+.agenda-hora strong {
+    font-size: 1.05rem;
+    color: var(--color-principal);
+}
+
+.agenda-hora small {
+    color: #6B7C8B;
+}
+
+.agenda-detalle {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.agenda-detalle small {
+    color: #6B7C8B;
+}
+
+/* Etiquetas de estado */
+.estado {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.estado-pendiente  { background: #FFF1D6; color: #8A5A00; }
+.estado-confirmada { background: #DDF3E8; color: #17744A; }
+.estado-atendida   { background: #E3EBF1; color: #3B5568; }
+.estado-cancelada  { background: #FDECEA; color: #8A1F14; }
+.estado-nueva      { background: #D9EEF4; color: #0B6E8A; }
+
+/* ---------- Tablas, avisos y formularios del panel ---------- */
+.panel-columnas-usuarios {
+    grid-template-columns: 3fr 2fr;
+}
+
+.tabla-scroll {
+    overflow-x: auto;
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla th {
+    padding: 0.5rem 0.6rem;
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B7C8B;
+    border-bottom: 2px solid #EDF1F4;
+}
+
+.tabla td {
+    padding: 0.7rem 0.6rem;
+    border-bottom: 1px solid #EDF1F4;
+    vertical-align: middle;
+}
+
+.tabla tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla small {
+    color: #6B7C8B;
+}
+
+.boton-tabla {
+    padding: 0.3rem 0.7rem;
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--color-principal);
+    background: transparent;
+    border: 1px solid var(--color-principal);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.boton-tabla:hover {
+    background: var(--color-principal);
+    color: var(--color-blanco);
+}
+
+.aviso {
+    margin: 0 0 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+}
+
+.aviso-ok {
+    background: #DDF3E8;
+    border: 1px solid #A9DEC3;
+    color: #17744A;
+}
+
+.aviso-error {
+    background: #FDECEA;
+    border: 1px solid #F5B5AE;
+    color: #8A1F14;
+}
+
+.form-panel .campo {
+    margin-bottom: 0.9rem;
+}
+
+.form-panel .campo label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: var(--color-titulos);
+}
+
+.form-panel .campo input,
+.form-panel .campo select {
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    font: inherit;
+    background: var(--color-blanco);
+    border: 1px solid #C5D0D8;
+    border-radius: 8px;
+}
+
+.form-panel .campo input:focus,
+.form-panel .campo select:focus {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 1px;
+}
+
+.form-panel .boton {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+/* ---------- Páginas del panel hechas con HTML simple ----------
+   Pacientes, citas y solicitudes usan etiquetas básicas (table, label,
+   input, etc.). Estas reglas les dan el estilo del panel sin cambiar
+   su HTML. Solo afectan lo que está dentro de .panel-contenido. */
+.panel-contenido .seccion {
+    padding: 0;
+}
+
+.panel-contenido .seccion > h1 {
+    margin: 0 0 1rem;
+    font-size: 1.8rem;
+}
+
+.panel-contenido .seccion > h2 {
+    margin: 1.5rem 0 0.75rem;
+    font-size: 1.2rem;
+}
+
+.panel-contenido table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.panel-contenido caption {
+    padding: 0.5rem 0;
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-titulos);
+}
+
+.panel-contenido th {
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B7C8B;
+    background: #F8FAFB;
+    border-bottom: 2px solid #EDF1F4;
+}
+
+.panel-contenido td {
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid #EDF1F4;
+}
+
+.panel-contenido tr:last-child td {
+    border-bottom: none;
+}
+
+.panel-contenido label {
+    font-weight: 600;
+    color: var(--color-titulos);
+}
+
+.panel-contenido input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.panel-contenido select,
+.panel-contenido textarea {
+    width: 100%;
+    max-width: 30rem;
+    padding: 0.55rem 0.7rem;
+    font: inherit;
+    background: var(--color-blanco);
+    border: 1px solid #C5D0D8;
+    border-radius: 8px;
+}
+
+.panel-contenido input:focus,
+.panel-contenido select:focus,
+.panel-contenido textarea:focus {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 1px;
+}
+
+.panel-contenido button.boton {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+.panel-contenido button.boton-claro {
+    border: 1px solid var(--color-principal);
+}
+
+/* Avisos: sus páginas marcan errores con role="alert" y éxitos con role="status" */
+.panel-contenido [role="alert"],
+.panel-contenido [role="status"] {
+    margin: 0 0 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+}
+
+.panel-contenido [role="alert"] {
+    background: #FDECEA;
+    border: 1px solid #F5B5AE;
+    color: #8A1F14;
+}
+
+.panel-contenido [role="status"] {
+    background: #DDF3E8;
+    border: 1px solid #A9DEC3;
+    color: #17744A;
+}
+
+/* ---------- Pantallas chicas ---------- */
+@media (max-width: 900px) {
+    .panel {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-lateral {
+        position: static;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .panel-marca {
+        padding-bottom: 0.75rem;
+    }
+
+    .panel-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .panel-usuario {
+        margin-top: 1rem;
+    }
+
+    .panel-contenido {
+        padding: 1.25rem 1rem;
+    }
+
+    .panel-columnas,
+    .panel-columnas-usuarios {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- Menú lateral agrupado y globito de pendientes ---------- */
+.panel-menu-titulo {
+    margin: 1.1rem 0 0.25rem;
+    padding: 0 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7F95A5;
+}
+
+.panel-menu .globito {
+    margin-left: auto;
+    min-width: 1.4rem;
+    padding: 0.05rem 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-titulos);
+    background: var(--color-acento);
+    border-radius: 999px;
+}
+
+/* Tarjeta de número que también es un enlace */
+a.dato-enlace {
+    text-decoration: none;
+    color: inherit;
+}
+
+a.dato-enlace:hover {
+    background: #FAFCFD;
+}
+
+/* ---------- Pestañas (filtros de una lista) ---------- */
+.pestanas {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #DDE5EA;
+}
+
+.pestanas a {
+    margin-bottom: -2px;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #5A6B7A;
+    border-bottom: 2px solid transparent;
+}
+
+.pestanas a.activo {
+    font-weight: 600;
+    color: var(--color-titulos);
+    border-bottom-color: var(--color-acento);
+}
+
+/* ---------- Tarjeta de una cuenta por verificar ---------- */
+.cuenta {
+    margin-bottom: 1rem;
+}
+
+.cuenta h2 {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B7C8B;
+}
+
+.cuenta-comparacion {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.datos {
+    margin: 0;
+}
+
+.datos dt {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #6B7C8B;
+}
+
+.datos dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--color-titulos);
+}
+
+.cuenta-pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #EDF1F4;
+}
+
+.cuenta-acciones {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.cuenta-acciones .boton {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+}
+
+.cuenta-acciones .boton-claro {
+    border: 1px solid var(--color-principal);
+}
+
+@media (max-width: 700px) {
+    .cuenta-comparacion {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- Botones dentro de una fila de tabla ---------- */
+/* Varios botones juntos en la última columna (ej. "Programar" y "Descartar") */
+.acciones-fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.acciones-fila form {
+    margin: 0;
+}
+
+/* El "botón" también puede ser un enlace <a>: que se vea igual */
+a.boton-tabla {
+    display: inline-block;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* Versión gris, para la acción secundaria (ej. "Descartar") */
+.boton-tabla-claro {
+    color: #5A6B7A;
+    border-color: #C5D0D8;
+}
+
+.boton-tabla-claro:hover {
+    color: var(--color-blanco);
+    background: #5A6B7A;
+    border-color: #5A6B7A;
+}
+
+/* ---------- "Mi día" del médico ---------- */
+
+/* Siguiente paciente: franja destacada con el color principal */
+.siguiente-paciente {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.4rem 1.75rem;
+    color: var(--color-blanco);
+    background: linear-gradient(135deg, var(--color-principal), #0F5D75);
+    border-radius: 14px;
+}
+
+.siguiente-paciente p {
+    margin: 0 0 0.25rem;
+}
+
+.siguiente-etiqueta {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.siguiente-nombre {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+/* Sin pacientes en espera: versión clara */
+.siguiente-libre {
+    color: var(--color-texto);
+    background: var(--color-blanco);
+    border: 2px dashed #C5D0D8;
+}
+
+.siguiente-libre .siguiente-nombre {
+    color: var(--color-titulos);
+}
+
+/* Botones de la agenda de hoy, alineados a la derecha */
+.agenda li .boton-tabla,
+.agenda li .estado {
+    margin-left: auto;
+}
+
+/* ---------- Gráfico de barras (SVG) ---------- */
+.grafico-barras {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    margin-top: 0.5rem;
+}
+
+.grafico-base {
+    stroke: #DDE5EA;
+    stroke-width: 1;
+}
+
+.barra {
+    fill: var(--color-principal);
+}
+
+/* Zona para señalar con el ratón: transparente */
+.barra-zona {
+    fill: transparent;
+}
+
+.barra-grupo:hover .barra {
+    fill: var(--color-titulos);
+}
+
+.barra-valor,
+.barra-mes {
+    font-size: 12px;
+    text-anchor: middle;
+    fill: #5A6B7A;
+}
+
+/* El número de cada barra solo aparece al pasar el ratón */
+.barra-valor {
+    font-weight: 700;
+    fill: var(--color-titulos);
+    opacity: 0;
+}
+
+.barra-grupo:hover .barra-valor {
+    opacity: 1;
+}
+
+/* ---------- Agenda semanal (calendario) ---------- */
+.agenda-controles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.agenda-navegacion,
+.agenda-filtro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.panel-contenido .agenda-filtro select {
+    width: auto;
+}
+
+/* 7 columnas (lunes a domingo). En pantallas chicas se desliza de lado. */
+.calendario {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(130px, 1fr));
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.calendario-dia {
+    min-height: 220px;
+    padding: 0.5rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 10px;
+}
+
+/* Hoy: borde con el color de acento */
+.calendario-dia.es-hoy {
+    border: 2px solid var(--color-acento);
+}
+
+/* Días pasados: un poco apagados */
+.calendario-dia.es-pasado {
+    background: #F8FAFB;
+}
+
+.calendario-cabecera {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #EDF1F4;
+    color: #6B7C8B;
+}
+
+.calendario-cabecera strong {
+    font-size: 1.3rem;
+    color: var(--color-titulos);
+}
+
+.calendario-vacio {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #9AA8B4;
+}
+
+/* Cada cita: tarjetita con una franja de color a la izquierda según el estado */
+.calendario-cita {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.4rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    color: var(--color-texto);
+    text-decoration: none;
+    background: #F3F6F8;
+    border-left: 4px solid #9AA8B4;
+    border-radius: 6px;
+}
+
+a.calendario-cita:hover {
+    background: #E6EEF2;
+}
+
+.calendario-cita strong {
+    color: var(--color-titulos);
+}
+
+.calendario-cita small {
+    color: #6B7C8B;
+}
+
+/* Colores por estado (los mismos tonos que las etiquetas de estado) */
+.cita-pendiente  { border-left-color: #E0A526; }
+.cita-confirmada { border-left-color: var(--color-acento); }
+.cita-atendida   { border-left-color: #6B8599; }
+
+/* Leyenda de colores */
+.calendario-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+}
+
+.leyenda {
+    padding-left: 0.5rem;
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+/* ---------- Enlace "Mi perfil" en el recuadro del usuario ---------- */
+.panel-perfil {
+    grid-column: 1 / -1;
+    padding: 0.45rem;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #C9D6DF;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.panel-perfil:hover,
+.panel-perfil.activo {
+    color: var(--color-blanco);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Formulario de contraseña dentro de una caja del panel: sin doble borde */
+.caja .form-password {
+    padding: 0;
+    border: none;
+}
+
+.form-password small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #6B7C8B;
+}
+
+/* Filtros de la auditoría: separados de la tabla */
+.filtro-auditoria {
+    margin-bottom: 0.75rem;
+}
+
+/* Estado "no asistió" (etiqueta y franja del calendario) */
+.estado-no_asistio { background: #EDE7F6; color: #4A2F7A; }
+.cita-no_asistio   { border-left-color: #7E57C2; }

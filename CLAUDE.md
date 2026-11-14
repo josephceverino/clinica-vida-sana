@@ -28,49 +28,51 @@ En producción, el `DocumentRoot` de Apache apunta a `public/`. **No modifiques 
 
 ## Estructura
 ```
-public/            # Lo único accesible desde el navegador
-  index.php        # Inicio (zona pública)
-  servicios.php
-  nosotros.php
-  contacto.php
-  solicitar-cita.php
-  login.php
-  logout.php
-  panel/           # Zona privada (requiere login)
-    index.php
-    pacientes.php
-    citas.php
-    solicitudes.php
+public/                # Lo único accesible desde el navegador
+  index.php            # Inicio (sitio público)
+  servicios.php  nosotros.php  contacto.php
+  login.php  logout.php          # Acceso único (usuario o correo) para todos los roles
+  registro.php                   # Registro de pacientes (la cuenta nace pendiente)
+  paciente/                      # Portal del paciente: inicio, mis citas, pedir cita e historia clínica
+  panel/                         # Zona del personal (requiere login)
+    index.php  pacientes.php  citas.php  solicitudes.php  usuarios.php ...
+  errores/             # 403.php, 404.php
   assets/css, assets/js, assets/img
-app/               # Lógica PHP, NO accesible desde el navegador
-  db.php           # Conexión PDO
-  auth.php         # Sesiones, login, requerir_login(), requerir_rol()
-  helpers.php      # e() para escapar HTML, csrf_token(), csrf_verificar()
-  layout/          # header.php, footer.php, menús
+app/                   # Lógica PHP, NO accesible desde el navegador
+  core/                # El "motor": db.php, auth.php, helpers.php, errores.php, limites.php
+  modelos/             # Lógica de datos: pacientes.php, citas.php, solicitudes.php, cuentas.php
+  layout/              # Plantillas: publico_, panel_ y paciente_ (header/footer)
 config/
   config.example.php   # Se sube a GitHub (sin contraseñas)
   config.php           # NO se sube (.gitignore)
 sql/
-  schema.sql       # Tablas
-  seed.sql         # Datos ficticios
-deploy.sh          # Actualiza el servidor (git pull + permisos + restorecon)
+  schema.sql           # Tablas
+  seed.sql             # Datos ficticios
+docs/                  # Plan de trabajo y guías del equipo
+deploy.sh              # Actualiza el servidor (git pull + permisos + restorecon)
 ```
 
 ## Zonas de la web
-- **Pública (sin login):** inicio, servicios y especialidades, nosotros, contacto, formulario "Solicitar cita".
-- **Privada (personal con login):** panel, pacientes, citas, solicitudes de cita recibidas desde la web pública.
+- **Sitio público (sin login):** inicio, servicios y especialidades, nosotros, contacto. Un solo botón de acceso: **Portal del paciente** (lleva al login).
+- **Login único:** lo usan todos. Según el rol, redirige a `/paciente/` o a `/panel/`. No hay enlace "Acceso personal".
+- **Portal del paciente (cuenta verificada):** ver sus citas, pedir cita y consultar su historia clínica.
+- **Panel del personal:** pacientes, citas, solicitudes, cuentas por verificar y usuarios, según el rol.
+
+Nadie puede pedir una cita sin cuenta: la cuenta identifica a quién responde por los datos.
 
 ## Roles
 - `admin`: todo, incluida la gestión de usuarios.
-- `admision`: pacientes, citas y solicitudes.
-- `medico`: ver sus citas del día y los datos básicos del paciente.
+- `admision`: pacientes, citas y solicitudes; verifica las cuentas de pacientes nuevos.
+- `medico`: ver sus citas del día y los datos básicos del paciente; registra las atenciones (historia clínica).
+- `paciente`: solo ve y pide lo suyo. Su cuenta nace "pendiente" y admisión la verifica antes de que pueda ver su historial.
 
 ## Base de datos (borrador; ajustar si hace falta)
 - `areas` (id, nombre) → Admisión, Laboratorio, Sistemas, Medicina General, etc.
-- `usuarios` (id, nombre, usuario UNIQUE, password_hash, rol, area_id, activo, creado_en)
-- `pacientes` (id, dni UNIQUE, nombres, apellidos, fecha_nacimiento, telefono, creado_en)
-- `citas` (id, paciente_id, area_id, fecha, hora, motivo, estado [pendiente|confirmada|atendida|cancelada], registrado_por, creado_en)
-- `solicitudes_cita` (id, nombre, dni, telefono, area_id, fecha_preferida, mensaje, estado [nueva|atendida|descartada], creado_en)
+- `usuarios` (id, nombre, usuario, correo, password_hash, rol [admin|admision|medico|paciente], area_id, paciente_id, activo, verificado, verificado_por, verificado_en, creado_en). El personal entra con `usuario`; el paciente con `correo` y enlazado a su ficha.
+- `pacientes` (id, tipo_documento, numero_documento, nombres, apellidos, correo, fecha_nacimiento, telefono, creado_en). Documento único junto con su tipo.
+- `citas` (id, paciente_id, area_id, medico_id, fecha, hora, motivo, estado [pendiente|confirmada|atendida|cancelada], registrado_por, creado_en)
+- `solicitudes_cita` (id, paciente_id, area_id, fecha_preferida, mensaje, estado [nueva|atendida|descartada], creado_en). La crea el paciente desde su portal; el nombre, documento y teléfono se leen de su ficha.
+- `atenciones` (historia clínica: cita_id, paciente_id, medico_id, diagnostico, tratamiento, notas) e `intentos_acceso` (límite de intentos de login y registro).
 
 Charset `utf8mb4`, motor InnoDB, claves foráneas declaradas.
 
@@ -100,7 +102,7 @@ Charset `utf8mb4`, motor InnoDB, claves foráneas declaradas.
 
 ## Reparto
 - **Joseph:** zona pública (HTML/CSS/JS), plantilla y diseño, login y seguridad (`auth.php`, `helpers.php`), `deploy.sh` y despliegue en Fedora.
-- **Alexander:** `schema.sql` y `seed.sql`, backend de pacientes, citas y solicitudes de cita (incluida la parte PHP del formulario público).
+- **Alexander:** `schema.sql` y `seed.sql`, backend de pacientes, citas y solicitudes de cita (incluido el portal del paciente: mis citas, pedir cita e historia clínica).
 
 ## Cómo probar
 1. Iniciar Apache y MySQL (MariaDB) en el panel de XAMPP.

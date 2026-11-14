@@ -1,0 +1,207 @@
+<?php
+// Funciones pequeñas que usamos en muchas páginas.
+
+/**
+ * Lee la configuración. Si no existe config.php, usa config.example.php
+ * para que la web al menos abra en un equipo recién clonado.
+ */
+function config(string $clave, $por_defecto = null)
+{
+    static $config = null;
+
+    if ($config === null) {
+        $archivo = __DIR__ . '/../../config/config.php';
+        if (!file_exists($archivo)) {
+            $archivo = __DIR__ . '/../../config/config.example.php';
+        }
+        $config = require $archivo;
+    }
+
+    return $config[$clave] ?? $por_defecto;
+}
+
+// Hora de Perú para TODO el sistema. Se pone aquí (y no en cada plantilla)
+// porque helpers.php se carga antes que cualquier otra cosa. Así date() da
+// la misma fecha en todas las páginas, sin importar cómo esté configurado
+// el PHP del equipo (XAMPP viene con Europa/Berlín; Fedora suele usar UTC).
+date_default_timezone_set('America/Lima');
+
+// Regla 9: los errores detallados solo se muestran en desarrollo.
+// Con 'debug' => false (producción) se guardan en el log, no en pantalla.
+error_reporting(E_ALL);
+ini_set('display_errors', config('debug', false) ? '1' : '0');
+ini_set('log_errors', '1');
+
+/**
+ * Envía las cabeceras de seguridad. Se llama al inicio de cada plantilla
+ * (header.php y panel_header.php), antes de imprimir cualquier HTML.
+ */
+function enviar_cabeceras_seguridad(): void
+{
+    // Oculta la versión de PHP.
+    header_remove('X-Powered-By');
+
+    // Impide que otra web meta esta página dentro de un <iframe> (clickjacking).
+    header('X-Frame-Options: DENY');
+
+    // El navegador no debe "adivinar" el tipo de los archivos.
+    header('X-Content-Type-Options: nosniff');
+
+    // No enviar la URL completa a otros sitios.
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+
+    // Solo se carga contenido (CSS, JS, imágenes) de este mismo sitio.
+    // Si más adelante se usa algo externo (ej. Google Fonts), hay que
+    // agregarlo aquí a propósito.
+    header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; "
+         . "form-action 'self'; frame-ancestors 'none'; base-uri 'self'");
+}
+
+/**
+ * Escapa texto antes de imprimirlo en HTML (evita XSS).
+ * Uso: <?= e($nombre) ?>
+ */
+function e($texto): string
+{
+    return htmlspecialchars((string) $texto, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Arma una ruta de la web. Uso: <?= e(url('/assets/css/base.css')) ?>
+ */
+function url(string $ruta = '/'): string
+{
+    return rtrim(config('base_url', ''), '/') . '/' . ltrim($ruta, '/');
+}
+
+/**
+ * Inicia la sesión con cookies seguras (HttpOnly y SameSite=Lax).
+ * Si la sesión ya está iniciada, no hace nada.
+ */
+function iniciar_sesion_segura(): void
+{
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        return;
+    }
+
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+        // En producción (HTTPS) la cookie solo viaja por conexión segura.
+        'secure'   => !empty($_SERVER['HTTPS']),
+    ]);
+    session_start();
+}
+
+/**
+ * Guarda un mensaje para mostrarlo en la siguiente página
+ * (por ejemplo, "Usuario creado" después de redirigir).
+ * $tipo puede ser 'ok' o 'error'.
+ */
+function mensaje_guardar(string $texto, string $tipo = 'ok'): void
+{
+    iniciar_sesion_segura();
+    $_SESSION['mensaje'] = ['texto' => $texto, 'tipo' => $tipo];
+}
+
+/**
+ * Devuelve el mensaje guardado (y lo borra, para que salga una sola vez).
+ * Si no hay mensaje devuelve null.
+ */
+function mensaje_tomar(): ?array
+{
+    iniciar_sesion_segura();
+    $mensaje = $_SESSION['mensaje'] ?? null;
+    unset($_SESSION['mensaje']);
+    return $mensaje;
+}
+
+/**
+ * Devuelve el token CSRF de la sesión (lo crea si no existe).
+ */
+function csrf_token(): string
+{
+    iniciar_sesion_segura();
+
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Imprime el campo oculto que va dentro de cada formulario POST.
+ * Uso: <?= csrf_campo() ?>
+ */
+function csrf_campo(): string
+{
+    return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
+}
+
+/**
+ * Comprueba que el token enviado por POST sea el de la sesión.
+ * Devuelve true si es válido.
+ */
+function csrf_verificar(): bool
+{
+    iniciar_sesion_segura();
+
+    $enviado = $_POST['csrf_token'] ?? '';
+    $guardado = $_SESSION['csrf_token'] ?? '';
+
+    return $guardado !== '' && hash_equals($guardado, $enviado);
+}
+
+/**
+ * Fecha en palabras, en español: "viernes 14 de noviembre".
+ * Se hace con listas propias (sin la extensión intl) para no depender de
+ * cómo esté instalado PHP en el servidor.
+ * Uso: <?= e(fecha_larga('2026-11-14')) ?>
+ */
+function fecha_larga(string $fecha): string
+{
+    $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    $meses = [
+        1 => 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+    ];
+
+    $momento = strtotime($fecha);
+
+    return $dias[(int) date('w', $momento)] . ' ' . date('j', $momento)
+        . ' de ' . $meses[(int) date('n', $momento)];
+}
+
+/**
+ * "Hoy", "Mañana" o la fecha en palabras. Para destacar lo más cercano.
+ */
+function fecha_relativa(string $fecha): string
+{
+    $dia = date('Y-m-d', strtotime($fecha));
+
+    if ($dia === date('Y-m-d')) {
+        return 'Hoy';
+    }
+
+    if ($dia === date('Y-m-d', strtotime('+1 day'))) {
+        return 'Mañana';
+    }
+
+    return ucfirst(fecha_larga($dia));
+}
+
+/**
+ * Texto para mostrar el estado de una cita o solicitud
+ * (ej. 'no_asistio' -> 'no asistió').
+ */
+function texto_estado(string $estado): string
+{
+    $textos = [
+        'no_asistio' => 'no asistió',
+    ];
+
+    return $textos[$estado] ?? $estado;
+}

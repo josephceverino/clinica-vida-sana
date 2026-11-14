@@ -1,0 +1,435 @@
+/* Estilos del Portal del paciente. Usa las variables de base.css. */
+
+.paciente-barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    padding: 0.9rem 1.5rem;
+    background: var(--color-blanco);
+    border-bottom: 1px solid #DDE5EA;
+}
+
+.paciente-barra .marca span {
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-titulos);
+    background: var(--color-acento);
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+.paciente-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    flex: 1;
+}
+
+.paciente-menu a {
+    text-decoration: none;
+    padding: 0.3rem 0;
+    border-bottom: 2px solid transparent;
+}
+
+.paciente-menu a.activo {
+    font-weight: 600;
+    color: var(--color-titulos);
+    border-bottom-color: var(--color-acento);
+}
+
+.paciente-menu .deshabilitado {
+    padding: 0.3rem 0;
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.paciente-menu small {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.paciente-sesion {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+}
+
+/* ---------- Listas y etiquetas de estado del portal ---------- */
+.tabla-scroll {
+    overflow-x: auto;
+}
+
+.lista-paciente {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+}
+
+.lista-paciente th {
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B7C8B;
+    background: #F8FAFB;
+    border-bottom: 2px solid #EDF1F4;
+}
+
+.lista-paciente td {
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid #EDF1F4;
+}
+
+.lista-paciente tr:last-child td {
+    border-bottom: none;
+}
+
+.vacio {
+    color: #6B7C8B;
+}
+
+.estado {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.estado-pendiente  { background: #FFF1D6; color: #8A5A00; }
+.estado-confirmada { background: #DDF3E8; color: #17744A; }
+.estado-atendida   { background: #E3EBF1; color: #3B5568; }
+.estado-cancelada  { background: #FDECEA; color: #8A1F14; }
+.estado-nueva      { background: #D9EEF4; color: #0B6E8A; }
+.estado-descartada { background: #FDECEA; color: #8A1F14; }
+
+/* ---------- Historia clínica ---------- */
+.atencion {
+    margin-bottom: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-left: 4px solid var(--color-principal);
+    border-radius: 12px;
+}
+
+.atencion-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #EDF1F4;
+    color: #5A6B7A;
+}
+
+.atencion-cabecera strong {
+    color: var(--color-titulos);
+}
+
+.atencion-datos {
+    margin: 0;
+}
+
+.atencion-datos dt {
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+    color: #6B7C8B;
+}
+
+.atencion-datos dd {
+    margin: 0;
+    color: var(--color-titulos);
+}
+
+/* ---------- Inicio del paciente ---------- */
+
+/* Tarjeta blanca genérica del portal */
+.tarjeta-paciente {
+    padding: 1.25rem 1.5rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 12px;
+}
+
+.tarjeta-paciente h2 {
+    margin-top: 0;
+    font-size: 1.1rem;
+}
+
+.pasos li {
+    margin-bottom: 0.4rem;
+}
+
+/* Próxima cita: lo primero que ve el paciente, con el color principal */
+.proxima-cita {
+    padding: 1.5rem 1.75rem;
+    color: var(--color-blanco);
+    background: linear-gradient(135deg, var(--color-principal), #0F5D75);
+    border-radius: 14px;
+}
+
+.proxima-cita p {
+    margin: 0 0 0.4rem;
+}
+
+.proxima-etiqueta {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.proxima-fecha {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.proxima-fecha span {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+/* Sin próxima cita: fondo claro y un botón para pedirla */
+.proxima-vacia {
+    color: var(--color-texto);
+    background: var(--color-blanco);
+    border: 2px dashed #C5D0D8;
+}
+
+/* Tres números en fila */
+.resumen-paciente {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.numero-paciente {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-left: 4px solid var(--color-acento);
+    border-radius: 12px;
+}
+
+.numero-paciente:hover {
+    background: #FAFCFD;
+}
+
+.numero-paciente strong {
+    font-size: 1.8rem;
+    color: var(--color-titulos);
+}
+
+.numero-paciente span {
+    color: #5A6B7A;
+}
+
+/* Lista de accesos rápidos */
+.accesos {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.accesos a {
+    display: flex;
+    flex-direction: column;
+    padding: 0.7rem 0;
+    text-decoration: none;
+    border-bottom: 1px solid #EDF1F4;
+}
+
+.accesos li:last-child a {
+    border-bottom: none;
+}
+
+.accesos span {
+    font-size: 0.9rem;
+    color: #5A6B7A;
+}
+
+@media (max-width: 640px) {
+    .resumen-paciente {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Nombre del paciente arriba a la derecha: lleva a "Mi perfil" */
+.paciente-perfil {
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}
+
+.paciente-perfil:hover,
+.paciente-perfil.activo {
+    border-bottom-color: var(--color-acento);
+}
+
+.form-password small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #6B7C8B;
+}
+
+/* ---------- Pedir cita: buscador y horarios ---------- */
+
+/* Área, día y botón en una fila */
+.buscador-horarios {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1.5rem;
+}
+
+.buscador-horarios .campo {
+    margin-bottom: 0;
+}
+
+.horarios-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.horarios-dias {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Un recuadro por médico con sus horas */
+.horarios-medico {
+    margin: 0 0 1rem;
+}
+
+.horarios-medico legend {
+    padding: 0 0.4rem;
+    font-weight: 700;
+    color: var(--color-titulos);
+}
+
+.horas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Cada hora: el círculo del radio se oculta y se ve una "pastilla" */
+.hora input {
+    position: absolute;
+    opacity: 0;
+}
+
+.hora span {
+    display: inline-block;
+    min-width: 4.5rem;
+    padding: 0.5rem 0.8rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--color-principal);
+    background: var(--color-blanco);
+    border: 1px solid #C5D0D8;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.hora span:hover {
+    border-color: var(--color-principal);
+}
+
+/* Hora elegida: verde */
+.hora input:checked + span {
+    color: var(--color-blanco);
+    background: var(--color-acento);
+    border-color: var(--color-acento);
+}
+
+/* Con teclado se ve dónde está el foco */
+.hora input:focus-visible + span {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 2px;
+}
+
+/* Días sugeridos cuando el elegido está lleno */
+.dias-sugeridos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.dia-sugerido {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem 1rem;
+    text-decoration: none;
+    border: 1px solid #C5D0D8;
+    border-left: 4px solid var(--color-acento);
+    border-radius: 10px;
+}
+
+.dia-sugerido span {
+    font-size: 0.85rem;
+    color: #5A6B7A;
+}
+
+/* "¿No encuentras horario?": desplegable */
+.otra-opcion summary {
+    font-weight: 600;
+    color: var(--color-principal);
+    cursor: pointer;
+}
+
+.otra-opcion .formulario {
+    margin-top: 1rem;
+    padding: 0;
+    border: none;
+}
+
+@media (max-width: 640px) {
+    .buscador-horarios {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hora span {
+        transition: none;
+    }
+}
+
+/* Botón "Cancelar" de una cita: discreto, en rojo suave */
+.boton-cancelar {
+    padding: 0.3rem 0.7rem;
+    font: inherit;
+    font-size: 0.85rem;
+    color: #8A1F14;
+    background: transparent;
+    border: 1px solid #F5B5AE;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.boton-cancelar:hover {
+    color: var(--color-blanco);
+    background: #B23A2B;
+    border-color: #B23A2B;
+}
+
+.estado-no_asistio { background: #EDE7F6; color: #4A2F7A; }

@@ -1,0 +1,14 @@
+# Protección para el entorno de desarrollo (XAMPP), donde todo el repositorio
+# queda dentro de htdocs. En producción (Fedora) el DocumentRoot es public/,
+# así que estas carpetas ya quedan fuera de la web y este archivo no se usa.
+
+# No mostrar el listado de carpetas.
+Options -Indexes
+
+# Bloquea la carpeta .git
+RedirectMatch 403 /\.git
+
+# Bloquea archivos sueltos de la raíz que no son parte de la web
+<FilesMatch "^(CLAUDE\.md|README\.md|deploy\.sh|\.gitignore)$">
+    Require all denied
+</FilesMatch>
