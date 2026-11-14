@@ -66,6 +66,17 @@ function verificar_credenciales(string $identificador, string $password): ?array
 }
 
 /**
+ * "Huella" de la contraseña que se guarda en la sesión: un resumen del hash.
+ * Si la contraseña cambia, la huella cambia y las sesiones abiertas con la
+ * contraseña vieja se cierran (ver requerir_login()).
+ * Se guarda el resumen y no el hash en sí, para no tener el hash en la sesión.
+ */
+function huella_password(string $password_hash): string
+{
+    return hash('sha256', $password_hash);
+}
+
+/**
  * Guarda al usuario en la sesión. Se llama solo cuando el login fue correcto.
  */
 function iniciar_login(array $fila): void
@@ -83,6 +94,7 @@ function iniciar_login(array $fila): void
         'rol'         => $fila['rol'],
         'paciente_id' => $fila['paciente_id'] === null ? null : (int) $fila['paciente_id'],
         'verificado'  => (int) $fila['verificado'],
+        'huella'      => huella_password($fila['password_hash']),
     ];
 }
 
@@ -101,12 +113,22 @@ function requerir_login(): void
     // le cambió el rol o admisión la verificó mientras la sesión estaba
     // abierta, el cambio se aplica desde la siguiente página.
     $consulta = db()->prepare(
-        'SELECT activo, rol, verificado, paciente_id FROM usuarios WHERE id = ?'
+        'SELECT activo, rol, verificado, paciente_id, password_hash
+         FROM usuarios WHERE id = ?'
     );
     $consulta->execute([$actual['id']]);
     $fila = $consulta->fetch();
 
     if ($fila === false || (int) $fila['activo'] !== 1) {
+        cerrar_sesion();
+        redirigir('/login.php');
+    }
+
+    // Si la contraseña cambió desde que se abrió esta sesión (por ejemplo,
+    // desde otra PC), esta sesión deja de valer y hay que entrar de nuevo.
+    // hash_equals compara sin dar pistas por el tiempo que tarda.
+    $huella = huella_password($fila['password_hash']);
+    if (!hash_equals($huella, (string) ($actual['huella'] ?? ''))) {
         cerrar_sesion();
         redirigir('/login.php');
     }
