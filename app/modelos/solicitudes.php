@@ -3,6 +3,7 @@
 // El paciente las crea desde su portal (public/paciente/pedir-cita.php) y
 // admisión las revisa en el panel (public/panel/solicitudes.php).
 require_once __DIR__ . '/../core/db.php';
+require_once __DIR__ . '/horarios.php'; // medico_ocupado()
 
 // Máximo de solicitudes "nuevas" (sin atender) que un paciente puede tener a
 // la vez. Evita que alguien llene el panel de admisión.
@@ -86,8 +87,10 @@ function etiqueta_solicitud(array $solicitud): array
         }
     }
 
+    // Atendida pero sin cita enlazada: solicitudes de antes de que existiera
+    // cita_id. No sabemos su cita, así que no decimos "programada".
     if ($solicitud['estado'] === 'atendida') {
-        return ['confirmada', 'programada'];
+        return ['atendida', 'atendida'];
     }
 
     return [$solicitud['estado'], $solicitud['estado']];
@@ -390,30 +393,27 @@ function convertir_solicitud_en_cita(
             );
         }
 
-        // 3. Ni el médico ni el paciente pueden tener otra cita a esa hora.
-        $consulta = $conexion->prepare(
-            "SELECT
-                SUM(medico_id = :medico)     AS choca_medico,
-                SUM(paciente_id = :paciente) AS choca_paciente
-             FROM citas
-             WHERE fecha = :fecha AND hora = :hora
-               AND estado IN ('pendiente', 'confirmada')"
-        );
-        $consulta->execute([
-            'medico'   => $medico_id,
-            'paciente' => $solicitud['paciente_id'],
-            'fecha'    => $fecha,
-            'hora'     => $hora . ':00',
-        ]);
-        $choques = $consulta->fetch();
-
-        if ((int) $choques['choca_medico'] > 0) {
+        // 3. El médico no puede tener otra cita que se cruce con esta
+        //    (misma regla que al reservar: ver medico_ocupado()).
+        if (medico_ocupado($medico_id, $fecha, $hora)) {
             throw new InvalidArgumentException(
                 'El médico ya tiene una cita a esa hora. Elige otro horario.'
             );
         }
 
-        if ((int) $choques['choca_paciente'] > 0) {
+        //    Y el paciente no puede tener otra cita a la misma hora.
+        $consulta = $conexion->prepare(
+            "SELECT COUNT(*) FROM citas
+             WHERE paciente_id = :paciente AND fecha = :fecha AND hora = :hora
+               AND estado IN ('pendiente', 'confirmada')"
+        );
+        $consulta->execute([
+            'paciente' => $solicitud['paciente_id'],
+            'fecha'    => $fecha,
+            'hora'     => $hora . ':00',
+        ]);
+
+        if ((int) $consulta->fetchColumn() > 0) {
             throw new InvalidArgumentException(
                 'El paciente ya tiene una cita a esa hora.'
             );

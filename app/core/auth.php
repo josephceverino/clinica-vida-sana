@@ -136,7 +136,15 @@ function requerir_login(): void
     // desde otra PC), esta sesión deja de valer y hay que entrar de nuevo.
     // hash_equals compara sin dar pistas por el tiempo que tarda.
     $huella = huella_password($fila['password_hash']);
-    if (!hash_equals($huella, (string) ($actual['huella'] ?? ''))) {
+
+    // Sesiones abiertas antes de esta versión no tienen huella: se les pone
+    // la actual en vez de cerrarlas (así nadie pierde lo que estaba haciendo).
+    if (!isset($actual['huella'])) {
+        $_SESSION['usuario']['huella'] = $huella;
+        $actual['huella'] = $huella;
+    }
+
+    if (!hash_equals($huella, (string) $actual['huella'])) {
         cerrar_sesion();
         redirigir('/login.php');
     }
