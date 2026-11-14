@@ -32,6 +32,10 @@ function db(): PDO
             // Consultas preparadas reales (más seguras contra inyección SQL).
             PDO::ATTR_EMULATE_PREPARES   => false,
         ]);
+
+        // La base también trabaja en hora de Perú (UTC-5, sin horario de
+        // verano). Así CURDATE() y NOW() coinciden con date() de PHP.
+        $pdo->exec("SET time_zone = '-05:00'");
     } catch (PDOException $error) {
         // El detalle solo se ve en desarrollo (regla 9).
         if (config('debug', false)) {

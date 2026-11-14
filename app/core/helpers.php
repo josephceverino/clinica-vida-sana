@@ -20,6 +20,12 @@ function config(string $clave, $por_defecto = null)
     return $config[$clave] ?? $por_defecto;
 }
 
+// Hora de Perú para TODO el sistema. Se pone aquí (y no en cada plantilla)
+// porque helpers.php se carga antes que cualquier otra cosa. Así date() da
+// la misma fecha en todas las páginas, sin importar cómo esté configurado
+// el PHP del equipo (XAMPP viene con Europa/Berlín; Fedora suele usar UTC).
+date_default_timezone_set('America/Lima');
+
 // Regla 9: los errores detallados solo se muestran en desarrollo.
 // Con 'debug' => false (producción) se guardan en el log, no en pantalla.
 error_reporting(E_ALL);

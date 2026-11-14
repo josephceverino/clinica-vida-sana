@@ -7,8 +7,6 @@
 require_once __DIR__ . '/../core/auth.php';
 enviar_cabeceras_seguridad();
 
-date_default_timezone_set('America/Lima');
-
 $usuario = usuario_actual();
 $titulo_pagina = $titulo_pagina ?? 'Mi cuenta';
 $pagina_activa = $pagina_activa ?? 'index.php';
