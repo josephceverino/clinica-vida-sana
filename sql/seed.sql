@@ -84,7 +84,14 @@ INSERT INTO citas (id, paciente_id, area_id, medico_id, fecha, hora, motivo, est
     (6,  2, 3, NULL, DATE_SUB(@hoy, INTERVAL 4 DAY),  '16:00:00', 'Consulta cancelada', 'cancelada', 2),
     (7,  1, 2, 3,    DATE_SUB(@hoy, INTERVAL 24 DAY), '09:00:00', 'Chequeo anual',      'atendida',  2),
     (9,  1, 2, 3,    DATE_SUB(@hoy, INTERVAL 59 DAY), '10:00:00', 'Dolor de espalda',   'atendida',  2),
-    (10, 2, 2, 3,    DATE_SUB(@hoy, INTERVAL 39 DAY), '11:30:00', 'Control de presión', 'atendida',  2);
+    (10, 2, 2, 3,    DATE_SUB(@hoy, INTERVAL 39 DAY), '11:30:00', 'Control de presión', 'atendida',  2),
+    -- Más atenciones de meses anteriores: llenan el gráfico "Mis atenciones
+    -- por mes" del médico (medico1).
+    (14, 4, 2, 3, DATE_SUB(@hoy, INTERVAL 75 DAY),  '09:00:00', 'Dolor de rodilla',     'atendida', 2),
+    (15, 5, 2, 3, DATE_SUB(@hoy, INTERVAL 82 DAY),  '10:30:00', 'Chequeo general',      'atendida', 2),
+    (16, 2, 2, 3, DATE_SUB(@hoy, INTERVAL 105 DAY), '15:00:00', 'Gastritis',            'atendida', 2),
+    (17, 4, 2, 3, DATE_SUB(@hoy, INTERVAL 110 DAY), '11:00:00', 'Control de colesterol','atendida', 2),
+    (18, 1, 2, 3, DATE_SUB(@hoy, INTERVAL 140 DAY), '09:30:00', 'Alergia estacional',   'atendida', 2);
 
 -- Historia clínica: atenciones de las citas ya atendidas -----------------
 -- creado_en = el día de la cita, un rato después de la hora.
@@ -104,7 +111,22 @@ INSERT INTO atenciones (cita_id, paciente_id, medico_id, motivo, diagnostico, tr
     (10, 2, 3, 'Control de presión', 'Presión arterial dentro de lo normal.',
         'Sin medicación. Reducir el consumo de sal.',
         NULL,
-        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 39 DAY), '11:50:00'));
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 39 DAY), '11:50:00')),
+    (14, 4, 3, 'Dolor de rodilla', 'Esguince leve de rodilla derecha.',
+        'Reposo, hielo local y antiinflamatorio por 5 días.', NULL,
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 75 DAY), '09:25:00')),
+    (15, 5, 3, 'Chequeo general', 'Sin hallazgos de importancia.',
+        'Continuar con hábitos saludables.', NULL,
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 82 DAY), '10:50:00')),
+    (16, 2, 3, 'Gastritis', 'Gastritis leve.',
+        'Dieta blanda y protector gástrico por 14 días.', 'Evitar café y picantes.',
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 105 DAY), '15:20:00')),
+    (17, 4, 3, 'Control de colesterol', 'Colesterol ligeramente elevado.',
+        'Dieta baja en grasas y caminata diaria.', 'Repetir análisis en 3 meses.',
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 110 DAY), '11:20:00')),
+    (18, 1, 3, 'Alergia estacional', 'Rinitis alérgica.',
+        'Antihistamínico por 7 días.', NULL,
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 140 DAY), '09:50:00'));
 
 -- Solicitudes de cita hechas desde el portal (de pacientes con cuenta) ----
 -- Las "nuevas" esperan a admisión. La "atendida" se convirtió en la cita 7

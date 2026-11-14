@@ -27,6 +27,7 @@ $menu_panel = [
         'enlaces' => [
             'pacientes.php'   => ['Pacientes',            ['admin', 'admision']],
             'citas.php'       => ['Citas',                ['admin', 'admision', 'medico']],
+            'agenda.php'      => ['Agenda semanal',       ['admin', 'admision', 'medico']],
             'solicitudes.php' => ['Solicitudes',          ['admin', 'admision']],
             'cuentas.php'     => ['Cuentas por verificar', ['admin', 'admision']],
         ],
@@ -44,6 +45,10 @@ $globitos_menu = [];
 if (in_array($usuario['rol'], ['admin', 'admision'], true)) {
     require_once __DIR__ . '/../modelos/cuentas.php';
     $globitos_menu['cuentas.php'] = contar_cuentas_pendientes();
+    // Solicitudes que esperan que admisión las programe o descarte.
+    $globitos_menu['solicitudes.php'] = (int) db()->query(
+        "SELECT COUNT(*) FROM solicitudes_cita WHERE estado = 'nueva'"
+    )->fetchColumn();
 }
 
 // Iniciales para el círculo del usuario (ej. "Administrador Demo" -> "AD").

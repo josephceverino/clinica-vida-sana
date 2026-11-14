@@ -101,7 +101,7 @@ Al registrar una cita se rechaza:
 
 ## Datos de prueba
 
-`sql/seed.sql` crea 5 áreas, 8 cuentas (admin, admisión, 3 médicos y 3 de paciente), 6 pacientes, 13 citas, 4 atenciones (historia clínica) y 4 solicitudes. Las citas de Medicina General son de `medico1`, las de Pediatría de `medico2` y las de Laboratorio de `medico3`.
+`sql/seed.sql` crea 5 áreas, 8 cuentas (admin, admisión, 3 médicos y 3 de paciente), 6 pacientes, 18 citas, 9 atenciones (historia clínica) y 4 solicitudes. Las citas de Medicina General son de `medico1`, las de Pediatría de `medico2` y las de Laboratorio de `medico3`.
 
 **Las fechas son relativas al día en que se importa** (`CURDATE()`): siempre hay 4 citas para hoy (la de las 08:00 sirve para probar "Atender" con `medico1`), algunas en los próximos días y otras pasadas con su historia clínica. Si la demo es otro día, basta con volver a importar `schema.sql` y `seed.sql`.
 
