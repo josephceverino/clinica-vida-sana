@@ -2,7 +2,7 @@
 // Gestión de usuarios del personal (solo rol admin).
 require_once __DIR__ . '/../../app/core/auth.php';
 
-// Solo el admin puede entrar aquí (requerir_rol ya llama a requerir_login).
+// Solo el admin puede entrar aquí (regla 6: primero el login, luego el rol).
 requerir_login();
 requerir_rol(['admin']);
 

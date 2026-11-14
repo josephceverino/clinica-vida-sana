@@ -180,6 +180,72 @@ function duracion_turno(int $medico_id, string $fecha, string $hora): int
 }
 
 /**
+ * Convierte "HH:MM" o "HH:MM:SS" en minutos desde las 00:00.
+ * Ej.: "08:30" -> 510. Con números es fácil comparar y sumar duraciones.
+ */
+function minutos_del_dia(string $hora): int
+{
+    [$h, $m] = explode(':', $hora);
+    return (int) $h * 60 + (int) $m;
+}
+
+/**
+ * Tramos ocupados por las citas vigentes de un médico en una fecha.
+ * Cada cita ocupa [inicio, inicio + duración de su turno), en minutos.
+ * $excluir_cita_id: una cita que no se cuenta (la que se está asignando).
+ * Devuelve: [[510, 530], [600, 620], ...]
+ */
+function tramos_ocupados(int $medico_id, string $fecha, int $excluir_cita_id = 0): array
+{
+    $consulta = db()->prepare(
+        "SELECT TIME_FORMAT(hora, '%H:%i') FROM citas
+         WHERE medico_id = :medico AND fecha = :fecha AND id <> :excluir
+           AND estado IN ('pendiente', 'confirmada')"
+    );
+    $consulta->execute([
+        'medico' => $medico_id,
+        'fecha' => $fecha,
+        'excluir' => $excluir_cita_id,
+    ]);
+
+    $tramos = [];
+    foreach ($consulta->fetchAll(PDO::FETCH_COLUMN) as $hora) {
+        $inicio = minutos_del_dia($hora);
+        $tramos[] = [$inicio, $inicio + duracion_turno($medico_id, $fecha, $hora)];
+    }
+
+    return $tramos;
+}
+
+/**
+ * ¿El tramo [inicio, fin) se cruza con alguno de los $tramos?
+ * Dos tramos se cruzan si uno empieza antes de que el otro termine, y al revés.
+ * Ej.: [10:20, 10:40) y [10:10, 10:30) se cruzan; [10:00, 10:20) y
+ * [10:20, 10:40) no (uno termina justo cuando empieza el otro).
+ */
+function tramo_se_cruza(int $inicio, int $fin, array $tramos): bool
+{
+    foreach ($tramos as [$otro_inicio, $otro_fin]) {
+        if ($inicio < $otro_fin && $otro_inicio < $fin) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * ¿El médico ya tiene una cita que se cruce con una nueva a esa fecha y hora?
+ * Es LA regla que usan todos: reservar, asignar médico y programar solicitud.
+ */
+function medico_ocupado(int $medico_id, string $fecha, string $hora, int $excluir_cita_id = 0): bool
+{
+    $inicio = minutos_del_dia($hora);
+    $fin = $inicio + duracion_turno($medico_id, $fecha, $hora);
+
+    return tramo_se_cruza($inicio, $fin, tramos_ocupados($medico_id, $fecha, $excluir_cita_id));
+}
+
+/**
  * Huecos libres de UN médico en una fecha (Y-m-d): sus turnos de ese día de
  * la semana, menos los que ya tienen cita vigente, menos los que ya pasaron.
  * Devuelve las horas como ['08:00', '08:40', ...].
@@ -200,13 +266,14 @@ function huecos_libres(int $medico_id, string $fecha): array
     );
     $consulta->execute(['medico' => $medico_id, 'dia' => (int) $dia->format('N')]);
 
-    // Cada turno se guarda como hora de inicio => hora de fin.
-    // Ej.: ['08:00' => '08:20', '08:20' => '08:40', ...]
+    // Cada turno: hora "HH:MM" => [inicio, fin] en minutos.
+    // Ej.: ['08:00' => [480, 500], '08:20' => [500, 520], ...]
     $turnos = [];
     foreach ($consulta->fetchAll() as $bloque) {
         $duracion = (int) $bloque['duracion_min'];
-        foreach (turnos_de_bloque($bloque['hora_inicio'], $bloque['hora_fin'], $duracion) as $inicio) {
-            $turnos[$inicio] = date('H:i', strtotime('2000-01-01 ' . $inicio) + $duracion * 60);
+        foreach (turnos_de_bloque($bloque['hora_inicio'], $bloque['hora_fin'], $duracion) as $hora) {
+            $inicio = minutos_del_dia($hora);
+            $turnos[$hora] = [$inicio, $inicio + $duracion];
         }
     }
 
@@ -214,30 +281,14 @@ function huecos_libres(int $medico_id, string $fecha): array
         return [];
     }
 
-    // Horas en que empiezan las citas vigentes de ese médico ese día.
-    $consulta = db()->prepare(
-        "SELECT TIME_FORMAT(hora, '%H:%i') FROM citas
-         WHERE medico_id = :medico AND fecha = :fecha
-           AND estado IN ('pendiente', 'confirmada')"
-    );
-    $consulta->execute(['medico' => $medico_id, 'fecha' => $fecha]);
-    $horas_citas = $consulta->fetchAll(PDO::FETCH_COLUMN);
-
-    // Un turno está ocupado si alguna cita empieza DENTRO de él
-    // (desde su inicio y antes de su fin). Así una cita a las 10:30,
-    // creada a mano por admisión, bloquea el turno de 10:20 a 10:40.
-    // Las horas "HH:MM" se pueden comparar como texto.
+    // Un turno está libre si no se cruza con ninguna cita vigente
+    // (ver tramo_se_cruza()). Así una cita a las 10:10 que dura hasta las
+    // 10:30 bloquea tanto el turno de 10:00 como el de 10:20.
+    $ocupados = tramos_ocupados($medico_id, $fecha);
     $libres = [];
-    foreach ($turnos as $inicio => $fin) {
-        $ocupado = false;
-        foreach ($horas_citas as $hora_cita) {
-            if ($hora_cita >= $inicio && $hora_cita < $fin) {
-                $ocupado = true;
-                break;
-            }
-        }
-        if (!$ocupado) {
-            $libres[] = $inicio;
+    foreach ($turnos as $hora => [$inicio, $fin]) {
+        if (!tramo_se_cruza($inicio, $fin, $ocupados)) {
+            $libres[] = $hora;
         }
     }
 
