@@ -9,9 +9,10 @@ El curso evalúa la infraestructura (Fedora Linux + Windows Server). Esta web es
 ## Qué incluye
 
 - **Zona pública:** inicio, servicios, nosotros, contacto y el botón **Portal del paciente**, que lleva al login.
-- **Portal del paciente:** el paciente se registra (`/registro.php`) y entra con su correo. La cuenta nace **pendiente** hasta que admisión comprueba su identidad.
-- **Zona privada (con login):** panel, pacientes, citas, solicitudes de cita y gestión de usuarios.
-- **Roles:** `admin` (todo), `admision` (pacientes, citas y solicitudes) y `medico` (sus citas y datos básicos del paciente).
+- **Portal del paciente:** el paciente se registra (`/registro.php`) y entra con su correo. La cuenta nace **pendiente** hasta que admisión comprueba su identidad. Ya verificado, su inicio muestra su próxima cita, un resumen y su última atención; puede pedir citas, ver su historia clínica y cambiar su contraseña.
+- **Zona privada (con login):** panel, pacientes, citas, **agenda semanal** (calendario), solicitudes de cita, cuentas por verificar, gestión de usuarios y **Mi perfil** (cambio de contraseña).
+- **Recorrido de una cita:** el paciente pide → admisión la **programa** (fecha, hora y médico) → aparece en la agenda del médico y en "Mis citas" del paciente → el médico la atiende y queda en la historia clínica.
+- **Roles:** `admin` (todo), `admision` (pacientes, citas y solicitudes) y `medico` ("Mi día" con su siguiente paciente y un gráfico de sus atenciones, su agenda y la historia clínica).
 
 Las reglas de pacientes, citas y solicitudes (estados, conflictos de agenda) están en [`docs/backend.md`](docs/backend.md).
 

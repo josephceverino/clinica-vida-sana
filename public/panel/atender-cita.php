@@ -55,11 +55,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Regla 9: al usuario un mensaje genérico; el detalle va al log.
         error_log($excepcion->getMessage());
         $error = 'No se pudo guardar la atención. Inténtalo más tarde.';
+    } catch (Exception $excepcion) {
+        // Cualquier otro fallo (ej. una fecha mal guardada): mensaje genérico
+        // en vez de una pantalla de error. Lo escrito sigue en el formulario.
+        error_log($excepcion->getMessage());
+        $error = 'No se pudo guardar la atención. Inténtalo más tarde.';
     }
+
+    // Si no se guardó, se vuelve a leer la cita: quizá cambió mientras el
+    // médico escribía (la atendió en otra pestaña o admisión la canceló).
+    // Así la pantalla muestra el estado real y no un formulario que ya no sirve.
+    $cita = cita_del_medico($cita['id'], $yo['id']) ?? $cita;
 }
 
 $mensaje = mensaje_tomar();
-$ya_atendida = $cita['estado'] === 'atendida' && $cita['diagnostico'] !== null;
+// Está atendida si tiene atención guardada (el diagnóstico es obligatorio).
+$ya_atendida = $cita['diagnostico'] !== null;
 $puede_atender = $cita['estado'] === 'confirmada'
     && cita_ya_llego($cita['fecha'], $cita['hora']);
 
