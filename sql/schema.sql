@@ -16,6 +16,7 @@ USE clinica_vida_sana;
 
 -- Se borran en orden inverso a las dependencias (claves foráneas).
 -- (Útil para volver a importar en desarrollo. ¡Cuidado en producción!)
+DROP TABLE IF EXISTS auditoria;
 DROP TABLE IF EXISTS intentos_acceso;
 DROP TABLE IF EXISTS atenciones;
 DROP TABLE IF EXISTS solicitudes_cita;
@@ -83,6 +84,9 @@ CREATE TABLE usuarios (
     verificado    TINYINT(1)   NOT NULL DEFAULT 1,
     verificado_por INT UNSIGNED NULL,
     verificado_en  DATETIME     NULL,
+    -- Cuándo aceptó el tratamiento de sus datos personales (Ley 29733).
+    -- Lo llena el registro de pacientes; el personal lo deja vacío.
+    acepto_privacidad_en DATETIME NULL,
     creado_en     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uq_usuarios_usuario (usuario),
@@ -218,4 +222,33 @@ CREATE TABLE intentos_acceso (
     PRIMARY KEY (id),
     KEY idx_intentos_ip (tipo, ip, creado_en),
     KEY idx_intentos_clave (tipo, clave, creado_en)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- auditoria: quién hizo qué, sobre qué paciente, cuándo y desde dónde.
+-- Sobre todo, quién consultó datos clínicos: la historia clínica es un dato
+-- sensible (Ley 29733 de Protección de Datos Personales) y la clínica debe
+-- poder decir quién la vio. Solo se AGREGAN filas: la web nunca las edita
+-- ni las borra.
+-- ---------------------------------------------------------------------
+CREATE TABLE auditoria (
+    id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    usuario_id  INT UNSIGNED  NULL,
+    accion      VARCHAR(40)   NOT NULL,
+    paciente_id INT UNSIGNED  NULL,
+    detalle     VARCHAR(255)  NULL,
+    ip          VARCHAR(45)   NOT NULL,
+    creado_en   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_auditoria_fecha (creado_en),
+    KEY idx_auditoria_paciente (paciente_id, creado_en),
+    KEY idx_auditoria_accion (accion, creado_en),
+    -- Si se borra la cuenta o la ficha, el registro se conserva (queda vacío
+    -- el enlace, pero no se pierde lo que pasó).
+    CONSTRAINT fk_auditoria_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_auditoria_paciente
+        FOREIGN KEY (paciente_id) REFERENCES pacientes (id)
+        ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

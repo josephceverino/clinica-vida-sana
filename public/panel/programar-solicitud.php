@@ -4,6 +4,7 @@
 // médico en su agenda y al paciente en "Mis citas".
 require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/solicitudes.php';
+require_once __DIR__ . '/../../app/core/auditoria.php';
 
 // Regla 6: solo admin y admisión.
 requerir_rol(['admin', 'admision']);
@@ -73,6 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $solicitud) {
 
         // Quién programa la cita sale de la SESIÓN, no del formulario.
         $cita_id = convertir_solicitud_en_cita($id, $valores, usuario_actual()['id']);
+        registrar_auditoria(
+            'programar_cita',
+            (int) $solicitud['paciente_id'],
+            'Solicitud ' . $id . ' → cita ' . $cita_id
+        );
 
         // Se muestra la cita recién creada, con su mensaje de éxito.
         $_SESSION['gestion_cita_mensaje'] = 'Cita programada y confirmada. '

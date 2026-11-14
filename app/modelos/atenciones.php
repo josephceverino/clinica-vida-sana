@@ -46,7 +46,7 @@ function cita_del_medico(int $cita_id, int $medico_id): ?array
 {
     $consulta = db()->prepare(
         'SELECT citas.id, citas.fecha, citas.hora, citas.motivo,
-                citas.estado,
+                citas.estado, citas.paciente_id,
                 areas.nombre AS area,
                 pacientes.nombres, pacientes.apellidos,
                 pacientes.tipo_documento, pacientes.numero_documento,

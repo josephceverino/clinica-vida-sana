@@ -2,6 +2,7 @@
 // Inicio de sesión (Portal del paciente y acceso del personal).
 // Es el único login: según el rol, lleva al portal o al panel.
 require_once __DIR__ . '/../app/core/auth.php';
+require_once __DIR__ . '/../app/core/auditoria.php';
 
 // Si ya inició sesión, no tiene sentido ver el login.
 $sesion = usuario_actual();
@@ -34,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($fila !== null) {
             limpiar_intentos('login', $identificador);
             iniciar_login($fila);
+            registrar_auditoria('iniciar_sesion');
             redirigir(ruta_inicio_por_rol($fila['rol']));
         }
 

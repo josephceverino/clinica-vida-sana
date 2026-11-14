@@ -807,3 +807,44 @@ select {
         padding-right: 1.5rem;
     }
 }
+
+/* ---------- Política de privacidad y registro ---------- */
+/* Texto largo: líneas más cortas para leer cómodo */
+.texto-legal {
+    max-width: 760px;
+}
+
+.texto-legal h2 {
+    margin-top: 2rem;
+    font-size: 1.3rem;
+}
+
+.texto-legal li {
+    margin-bottom: 0.4rem;
+}
+
+/* Casilla "Acepto la política de privacidad" del registro */
+.casilla-privacidad {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    background: #F3F6F8;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.casilla-privacidad input {
+    width: 18px;
+    height: 18px;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+    accent-color: var(--color-principal);
+}
+
+.pie p {
+    margin: 0.25rem 0;
+}

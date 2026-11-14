@@ -2,7 +2,7 @@
 // "Mi perfil": datos de la propia cuenta y cambio de contraseña.
 // Sirve para todos los roles (personal y pacientes).
 // El ID de la cuenta sale SIEMPRE de la sesión, nunca de un formulario.
-require_once __DIR__ . '/../core/db.php';
+require_once __DIR__ . '/../core/auditoria.php';
 
 /**
  * Datos de la cuenta para mostrarlos en "Mi perfil".
@@ -83,4 +83,6 @@ function cambiar_password(
 
     // Nueva sesión (nuevo ID de cookie) tras un cambio de seguridad.
     session_regenerate_id(true);
+
+    registrar_auditoria('cambiar_password');
 }

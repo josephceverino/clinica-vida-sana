@@ -135,6 +135,18 @@ require __DIR__ . '/../app/layout/publico_header.php';
             Tu cuenta quedará <strong>pendiente</strong> hasta que admisión compruebe tu identidad.
         </p>
 
+        <!-- Consentimiento (Ley 29733). Obligatorio: también se valida en PHP. -->
+        <label class="casilla-privacidad">
+            <input type="checkbox" name="acepto_privacidad" value="1" required
+                <?= isset($_POST['acepto_privacidad']) ? 'checked' : '' ?>>
+            <span>
+                He leído y acepto la
+                <a href="<?= e(url('/privacidad.php')) ?>" target="_blank" rel="noopener">política
+                de privacidad</a> y autorizo el tratamiento de mis datos personales y de salud
+                para mi atención en la clínica.
+            </span>
+        </label>
+
         <button class="boton" type="submit">Crear cuenta</button>
     </form>
 

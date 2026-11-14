@@ -55,10 +55,11 @@ INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, 
 
 -- Pacientes con cuenta: correo obligatorio, enlazados a su ficha.
 -- paciente1 fue verificada por admision1 (id 2); la otra espera verificación.
-INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, paciente_id, activo, verificado, verificado_por, verificado_en) VALUES
-    (5, 'Ana María Paredes Ficticia', NULL, 'paciente1@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 1, 1, 1, 2, '2026-10-15 10:00:00'),
-    (6, 'Nuevo Registro Demo',        NULL, 'pendiente@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 6, 1, 0, NULL, NULL),
-    (7, 'Carlos Rojas Ejemplo',       NULL, 'paciente2@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 2, 1, 1, 2, '2026-10-16 11:00:00');
+-- Todos aceptaron la política de privacidad al registrarse.
+INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, paciente_id, activo, verificado, verificado_por, verificado_en, acepto_privacidad_en) VALUES
+    (5, 'Ana María Paredes Ficticia', NULL, 'paciente1@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 1, 1, 1, 2, '2026-10-15 10:00:00', '2026-10-14 18:30:00'),
+    (6, 'Nuevo Registro Demo',        NULL, 'pendiente@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 6, 1, 0, NULL, NULL, '2026-11-10 09:15:00'),
+    (7, 'Carlos Rojas Ejemplo',       NULL, 'paciente2@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 2, 1, 1, 2, '2026-10-16 11:00:00', '2026-10-15 20:05:00');
 
 -- Fecha de referencia: el día en que se importa este archivo.
 -- Todas las fechas de abajo se cuentan desde aquí (hoy, hoy + 2 días...).

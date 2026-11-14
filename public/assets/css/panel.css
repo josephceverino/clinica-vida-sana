@@ -934,3 +934,8 @@ a.calendario-cita:hover {
     margin-top: 0.25rem;
     color: #6B7C8B;
 }
+
+/* Filtros de la auditoría: separados de la tabla */
+.filtro-auditoria {
+    margin-bottom: 0.75rem;
+}

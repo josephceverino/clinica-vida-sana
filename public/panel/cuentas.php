@@ -4,6 +4,7 @@
 // si verifica la cuenta o la rechaza.
 require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/cuentas.php';
+require_once __DIR__ . '/../../app/core/auditoria.php';
 
 requerir_rol(['admin', 'admision']);
 
@@ -33,9 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accion = (string) ($_POST['accion'] ?? '');
     $cuenta_id = (int) ($_POST['id'] ?? 0);
 
+    // Ficha del paciente de esa cuenta (para la auditoría).
+    $paciente_de_cuenta = paciente_de_cuenta($cuenta_id);
+
     if ($accion === 'verificar' && verificar_cuenta($cuenta_id, $yo['id'])) {
+        registrar_auditoria('verificar_cuenta', $paciente_de_cuenta, 'Cuenta ' . $cuenta_id);
         mensaje_guardar('Cuenta verificada. El paciente ya puede ver su información.');
     } elseif ($accion === 'rechazar' && rechazar_cuenta($cuenta_id)) {
+        registrar_auditoria('rechazar_cuenta', $paciente_de_cuenta, 'Cuenta ' . $cuenta_id);
         mensaje_guardar('Cuenta rechazada: ya no puede iniciar sesión.');
     } else {
         mensaje_guardar('No se pudo completar la acción.', 'error');
