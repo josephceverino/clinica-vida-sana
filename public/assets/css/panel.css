@@ -665,3 +665,272 @@ a.dato-enlace:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---------- Botones dentro de una fila de tabla ---------- */
+/* Varios botones juntos en la última columna (ej. "Programar" y "Descartar") */
+.acciones-fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.acciones-fila form {
+    margin: 0;
+}
+
+/* El "botón" también puede ser un enlace <a>: que se vea igual */
+a.boton-tabla {
+    display: inline-block;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* Versión gris, para la acción secundaria (ej. "Descartar") */
+.boton-tabla-claro {
+    color: #5A6B7A;
+    border-color: #C5D0D8;
+}
+
+.boton-tabla-claro:hover {
+    color: var(--color-blanco);
+    background: #5A6B7A;
+    border-color: #5A6B7A;
+}
+
+/* ---------- "Mi día" del médico ---------- */
+
+/* Siguiente paciente: franja destacada con el color principal */
+.siguiente-paciente {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.4rem 1.75rem;
+    color: var(--color-blanco);
+    background: linear-gradient(135deg, var(--color-principal), #0F5D75);
+    border-radius: 14px;
+}
+
+.siguiente-paciente p {
+    margin: 0 0 0.25rem;
+}
+
+.siguiente-etiqueta {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.siguiente-nombre {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+/* Sin pacientes en espera: versión clara */
+.siguiente-libre {
+    color: var(--color-texto);
+    background: var(--color-blanco);
+    border: 2px dashed #C5D0D8;
+}
+
+.siguiente-libre .siguiente-nombre {
+    color: var(--color-titulos);
+}
+
+/* Botones de la agenda de hoy, alineados a la derecha */
+.agenda li .boton-tabla,
+.agenda li .estado {
+    margin-left: auto;
+}
+
+/* ---------- Gráfico de barras (SVG) ---------- */
+.grafico-barras {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    margin-top: 0.5rem;
+}
+
+.grafico-base {
+    stroke: #DDE5EA;
+    stroke-width: 1;
+}
+
+.barra {
+    fill: var(--color-principal);
+}
+
+/* Zona para señalar con el ratón: transparente */
+.barra-zona {
+    fill: transparent;
+}
+
+.barra-grupo:hover .barra {
+    fill: var(--color-titulos);
+}
+
+.barra-valor,
+.barra-mes {
+    font-size: 12px;
+    text-anchor: middle;
+    fill: #5A6B7A;
+}
+
+/* El número de cada barra solo aparece al pasar el ratón */
+.barra-valor {
+    font-weight: 700;
+    fill: var(--color-titulos);
+    opacity: 0;
+}
+
+.barra-grupo:hover .barra-valor {
+    opacity: 1;
+}
+
+/* ---------- Agenda semanal (calendario) ---------- */
+.agenda-controles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.agenda-navegacion,
+.agenda-filtro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.panel-contenido .agenda-filtro select {
+    width: auto;
+}
+
+/* 7 columnas (lunes a domingo). En pantallas chicas se desliza de lado. */
+.calendario {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(130px, 1fr));
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.calendario-dia {
+    min-height: 220px;
+    padding: 0.5rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 10px;
+}
+
+/* Hoy: borde con el color de acento */
+.calendario-dia.es-hoy {
+    border: 2px solid var(--color-acento);
+}
+
+/* Días pasados: un poco apagados */
+.calendario-dia.es-pasado {
+    background: #F8FAFB;
+}
+
+.calendario-cabecera {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #EDF1F4;
+    color: #6B7C8B;
+}
+
+.calendario-cabecera strong {
+    font-size: 1.3rem;
+    color: var(--color-titulos);
+}
+
+.calendario-vacio {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #9AA8B4;
+}
+
+/* Cada cita: tarjetita con una franja de color a la izquierda según el estado */
+.calendario-cita {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.4rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    color: var(--color-texto);
+    text-decoration: none;
+    background: #F3F6F8;
+    border-left: 4px solid #9AA8B4;
+    border-radius: 6px;
+}
+
+a.calendario-cita:hover {
+    background: #E6EEF2;
+}
+
+.calendario-cita strong {
+    color: var(--color-titulos);
+}
+
+.calendario-cita small {
+    color: #6B7C8B;
+}
+
+/* Colores por estado (los mismos tonos que las etiquetas de estado) */
+.cita-pendiente  { border-left-color: #E0A526; }
+.cita-confirmada { border-left-color: var(--color-acento); }
+.cita-atendida   { border-left-color: #6B8599; }
+
+/* Leyenda de colores */
+.calendario-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.85rem;
+}
+
+.leyenda {
+    padding-left: 0.5rem;
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+/* ---------- Enlace "Mi perfil" en el recuadro del usuario ---------- */
+.panel-perfil {
+    grid-column: 1 / -1;
+    padding: 0.45rem;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #C9D6DF;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.panel-perfil:hover,
+.panel-perfil.activo {
+    color: var(--color-blanco);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Formulario de contraseña dentro de una caja del panel: sin doble borde */
+.caja .form-password {
+    padding: 0;
+    border: none;
+}
+
+.form-password small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #6B7C8B;
+}

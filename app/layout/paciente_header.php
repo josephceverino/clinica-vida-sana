@@ -7,8 +7,6 @@
 require_once __DIR__ . '/../core/auth.php';
 enviar_cabeceras_seguridad();
 
-date_default_timezone_set('America/Lima');
-
 $usuario = usuario_actual();
 $titulo_pagina = $titulo_pagina ?? 'Mi cuenta';
 $pagina_activa = $pagina_activa ?? 'index.php';
@@ -48,7 +46,9 @@ $menu_paciente = [
     </nav>
 
     <div class="paciente-sesion">
-        <span><?= e($usuario['nombre']) ?></span>
+        <a class="paciente-perfil <?= $pagina_activa === 'perfil.php' ? 'activo' : '' ?>"
+           href="<?= e(url('/paciente/perfil.php')) ?>"
+           title="Mi perfil y contraseña"><?= e($usuario['nombre']) ?></a>
         <form method="post" action="<?= e(url('/logout.php')) ?>">
             <?= csrf_campo() ?>
             <button type="submit" class="boton boton-claro boton-chico">Salir</button>

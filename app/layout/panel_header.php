@@ -7,8 +7,6 @@
 require_once __DIR__ . '/../core/auth.php';
 enviar_cabeceras_seguridad();
 
-date_default_timezone_set('America/Lima');
-
 $usuario = usuario_actual();
 $titulo_pagina = $titulo_pagina ?? 'Panel';
 $pagina_activa = $pagina_activa ?? 'index.php';
@@ -29,6 +27,7 @@ $menu_panel = [
         'enlaces' => [
             'pacientes.php'   => ['Pacientes',            ['admin', 'admision']],
             'citas.php'       => ['Citas',                ['admin', 'admision', 'medico']],
+            'agenda.php'      => ['Agenda semanal',       ['admin', 'admision', 'medico']],
             'solicitudes.php' => ['Solicitudes',          ['admin', 'admision']],
             'cuentas.php'     => ['Cuentas por verificar', ['admin', 'admision']],
         ],
@@ -46,6 +45,10 @@ $globitos_menu = [];
 if (in_array($usuario['rol'], ['admin', 'admision'], true)) {
     require_once __DIR__ . '/../modelos/cuentas.php';
     $globitos_menu['cuentas.php'] = contar_cuentas_pendientes();
+    // Solicitudes que esperan que admisión las programe o descarte.
+    $globitos_menu['solicitudes.php'] = (int) db()->query(
+        "SELECT COUNT(*) FROM solicitudes_cita WHERE estado = 'nueva'"
+    )->fetchColumn();
 }
 
 // Iniciales para el círculo del usuario (ej. "Administrador Demo" -> "AD").
@@ -110,6 +113,8 @@ $iniciales = mb_strtoupper(
                 <strong><?= e($usuario['nombre']) ?></strong>
                 <small><?= e($usuario['rol']) ?></small>
             </div>
+            <a class="panel-perfil <?= $pagina_activa === 'perfil.php' ? 'activo' : '' ?>"
+               href="<?= e(url('/panel/perfil.php')) ?>">Mi perfil</a>
             <form method="post" action="<?= e(url('/logout.php')) ?>">
                 <?= csrf_campo() ?>
                 <button type="submit" class="panel-salir">Salir</button>

@@ -299,7 +299,10 @@ a {
     color: var(--color-titulos);
 }
 
-.campo input {
+/* Cajas de texto de una línea (input) y de varias líneas (textarea):
+   mismo ancho, letra, borde y esquinas, para que todo el formulario se vea igual. */
+.campo input,
+.campo textarea {
     width: 100%;
     padding: 0.7rem 0.8rem;
     font: inherit;
@@ -307,7 +310,8 @@ a {
     border-radius: 8px;
 }
 
-.campo input:focus {
+.campo input:focus,
+.campo textarea:focus {
     outline: 2px solid var(--color-principal);
     outline-offset: 1px;
 }
@@ -436,5 +440,370 @@ select {
 @media (max-width: 640px) {
     .formulario-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- Accesibilidad ---------- */
+/* Oculto a la vista, pero los lectores de pantalla sí lo leen
+   (ej. la tabla con los datos de un gráfico). */
+.solo-lectores {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Botón blanco sobre fondo de color (carrusel, franjas destacadas) */
+.boton-blanco {
+    color: var(--color-principal);
+    background: var(--color-blanco);
+}
+
+.boton-blanco:hover {
+    color: var(--color-blanco);
+    background: var(--color-titulos);
+}
+
+/* =====================================================================
+   PORTADA ANIMADA (index.php + assets/js/portada.js)
+   ===================================================================== */
+
+/* ---------- Carrusel ---------- */
+.carrusel {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border-radius: 18px;
+}
+
+/* Sin JavaScript: las diapositivas una debajo de otra (todo se ve). */
+.carrusel-pista {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Con JavaScript: una al lado de otra, y la pista se desliza. */
+.carrusel-activo .carrusel-pista {
+    flex-direction: row;
+    gap: 0;
+    transition: transform 0.6s ease;
+}
+
+.diapositiva {
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    align-items: center;
+    gap: 1rem;
+    min-height: 360px;
+    padding: 2.5rem 3rem;
+    color: var(--color-blanco);
+    border-radius: 18px;
+}
+
+.carrusel-activo .diapositiva {
+    border-radius: 0;
+}
+
+/* Fondos de cada diapositiva (colores de la clínica) */
+.tono-azul   { background: linear-gradient(135deg, #0B6E8A 0%, #0F4D63 100%); }
+.tono-verde  { background: linear-gradient(135deg, #1F9A5E 0%, #0B6E8A 100%); }
+.tono-oscuro { background: linear-gradient(135deg, #0F2A3D 0%, #0B6E8A 100%); }
+
+.diapositiva h1,
+.diapositiva h2 {
+    margin: 0 0 0.75rem;
+    font-size: 2.4rem;
+    line-height: 1.15;
+    color: var(--color-blanco);
+}
+
+.diapositiva p {
+    margin: 0 0 1.25rem;
+    font-size: 1.1rem;
+    opacity: 0.92;
+}
+
+.diapositiva-etiqueta {
+    font-size: 0.8rem !important;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.diapositiva-imagen {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    justify-self: center;
+}
+
+/* Flechas a los lados */
+.carrusel-flecha {
+    position: absolute;
+    top: 50%;
+    width: 44px;
+    height: 44px;
+    margin-top: -22px;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--color-blanco);
+    background: rgba(255, 255, 255, 0.18);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.carrusel-flecha:hover,
+.carrusel-flecha:focus-visible {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.carrusel-anterior  { left: 0.75rem; }
+.carrusel-siguiente { right: 0.75rem; }
+
+/* Puntos de abajo: el actual es más largo y verde */
+.carrusel-puntos {
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.carrusel-puntos button {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+.carrusel-puntos button.activo {
+    width: 28px;
+    background: var(--color-acento);
+}
+
+/* ---------- Franja de horarios ---------- */
+.franja-horario {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-blanco);
+    border: 1px solid #DDE5EA;
+    border-radius: 14px;
+}
+
+.franja-horario div {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.9rem;
+    border-left: 3px solid var(--color-acento);
+}
+
+.franja-horario span {
+    font-size: 0.85rem;
+    color: #5A6B7A;
+}
+
+.franja-horario strong {
+    font-size: 1.1rem;
+    color: var(--color-titulos);
+}
+
+/* ---------- Tarjetas que se levantan al pasar el ratón ---------- */
+.punto,
+.servicio {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.punto:hover,
+.servicio:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(15, 42, 61, 0.10);
+}
+
+/* ---------- Aparecer al bajar ---------- */
+/* Solo se esconden si portada.js puso la clase "animar" en <body>:
+   sin JavaScript, todo se ve normal. */
+.animar .aparecer {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.animar .aparecer.visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* ---------- Aviso emergente (<dialog>) ---------- */
+.aviso-emergente {
+    position: relative;
+    width: min(92vw, 440px);
+    padding: 2rem 1.75rem 1.25rem;
+    text-align: center;
+    color: var(--color-texto);
+    background: var(--color-blanco);
+    border: none;
+    border-top: 6px solid var(--color-acento);
+    border-radius: 16px;
+    box-shadow: 0 24px 60px rgba(15, 42, 61, 0.35);
+}
+
+/* Fondo oscuro detrás de la ventana */
+.aviso-emergente::backdrop {
+    background: rgba(15, 42, 61, 0.55);
+}
+
+.aviso-emergente[open] {
+    animation: aviso-entrar 0.35s ease;
+}
+
+@keyframes aviso-entrar {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* La imagen del aviso va sobre un círculo con el color principal */
+.aviso-emergente img {
+    width: 120px;
+    height: auto;
+    padding: 0.5rem;
+    background: var(--color-principal);
+    border-radius: 50%;
+}
+
+.aviso-emergente h2 {
+    margin: 0.5rem 0;
+    font-size: 1.4rem;
+}
+
+.aviso-etiqueta {
+    margin: 0.75rem 0 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-acento);
+}
+
+/* La X de cerrar, arriba a la derecha */
+.aviso-cerrar {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #5A6B7A;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.aviso-cerrar:hover,
+.aviso-cerrar:focus-visible {
+    color: var(--color-titulos);
+    background: #EDF1F4;
+}
+
+.aviso-botones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.aviso-botones .boton {
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.aviso-nota {
+    margin: 1rem 0 0;
+    font-size: 0.75rem;
+    color: #8A99A6;
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 800px) {
+    .diapositiva {
+        grid-template-columns: 1fr;
+        padding: 2rem 1.5rem 3rem;
+        text-align: center;
+    }
+
+    .diapositiva-imagen {
+        max-width: 220px;
+        grid-row: 1;
+    }
+
+    .diapositiva h1,
+    .diapositiva h2 {
+        font-size: 1.8rem;
+    }
+
+    .carrusel-flecha {
+        display: none;   /* en el celular se desliza con el dedo */
+    }
+
+    .franja-horario {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ---------- Menos movimiento (accesibilidad) ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .carrusel-activo .carrusel-pista,
+    .punto,
+    .servicio,
+    .carrusel-puntos button {
+        transition: none;
+    }
+
+    .aviso-emergente[open] {
+        animation: none;
+    }
+}
+
+/* "hidden" debe ganar aunque arriba se diga display: flex
+   (sin JavaScript, los controles del carrusel no se muestran). */
+.carrusel [hidden] {
+    display: none;
+}
+
+/* Ajustes tras revisar las capturas:
+   - más espacio a los lados, para que las flechas no toquen el texto;
+   - imagen del aviso en un círculo perfecto (mismo ancho y alto). */
+.diapositiva {
+    padding-left: 4.5rem;
+    padding-right: 4.5rem;
+}
+
+.aviso-emergente img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+}
+
+@media (max-width: 800px) {
+    .diapositiva {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
     }
 }

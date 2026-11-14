@@ -20,6 +20,12 @@ function config(string $clave, $por_defecto = null)
     return $config[$clave] ?? $por_defecto;
 }
 
+// Hora de Perú para TODO el sistema. Se pone aquí (y no en cada plantilla)
+// porque helpers.php se carga antes que cualquier otra cosa. Así date() da
+// la misma fecha en todas las páginas, sin importar cómo esté configurado
+// el PHP del equipo (XAMPP viene con Europa/Berlín; Fedora suele usar UTC).
+date_default_timezone_set('America/Lima');
+
 // Regla 9: los errores detallados solo se muestran en desarrollo.
 // Con 'debug' => false (producción) se guardan en el log, no en pantalla.
 error_reporting(E_ALL);
@@ -147,4 +153,42 @@ function csrf_verificar(): bool
     $guardado = $_SESSION['csrf_token'] ?? '';
 
     return $guardado !== '' && hash_equals($guardado, $enviado);
+}
+
+/**
+ * Fecha en palabras, en español: "viernes 14 de noviembre".
+ * Se hace con listas propias (sin la extensión intl) para no depender de
+ * cómo esté instalado PHP en el servidor.
+ * Uso: <?= e(fecha_larga('2026-11-14')) ?>
+ */
+function fecha_larga(string $fecha): string
+{
+    $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    $meses = [
+        1 => 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+    ];
+
+    $momento = strtotime($fecha);
+
+    return $dias[(int) date('w', $momento)] . ' ' . date('j', $momento)
+        . ' de ' . $meses[(int) date('n', $momento)];
+}
+
+/**
+ * "Hoy", "Mañana" o la fecha en palabras. Para destacar lo más cercano.
+ */
+function fecha_relativa(string $fecha): string
+{
+    $dia = date('Y-m-d', strtotime($fecha));
+
+    if ($dia === date('Y-m-d')) {
+        return 'Hoy';
+    }
+
+    if ($dia === date('Y-m-d', strtotime('+1 day'))) {
+        return 'Mañana';
+    }
+
+    return ucfirst(fecha_larga($dia));
 }

@@ -17,6 +17,12 @@ $sesion_publica = isset($_COOKIE[session_name()]) ? usuario_actual() : null;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($titulo_pagina) ?> | Clínica Vida Sana</title>
     <link rel="stylesheet" href="<?= e(url('/assets/css/base.css')) ?>">
+    <?php if (!empty($script_pagina)): ?>
+        <!-- JavaScript propio de esta página. "defer": se ejecuta cuando el
+             HTML ya cargó. Va en un archivo aparte (no dentro del HTML)
+             porque la política de seguridad (CSP) bloquea el JS incrustado. -->
+        <script src="<?= e(url('/assets/js/' . $script_pagina)) ?>" defer></script>
+    <?php endif; ?>
 </head>
 <body>
 <header class="cabecera">
