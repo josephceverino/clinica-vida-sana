@@ -130,13 +130,8 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                         </td>
                         <td><?= e($solicitud['mensaje'] ?? '') ?></td>
                         <td>
-                            <?php if ($solicitud['estado'] === 'atendida'): ?>
-                                <span class="estado estado-confirmada">programada</span>
-                            <?php else: ?>
-                                <span class="estado estado-<?= e($solicitud['estado']) ?>">
-                                    <?= e($solicitud['estado']) ?>
-                                </span>
-                            <?php endif; ?>
+                            <?php [$clase, $texto] = etiqueta_solicitud($solicitud); ?>
+                            <span class="estado estado-<?= e($clase) ?>"><?= e($texto) ?></span>
                         </td>
                         <td>
                             <?php if ($solicitud['estado'] === 'nueva'): ?>

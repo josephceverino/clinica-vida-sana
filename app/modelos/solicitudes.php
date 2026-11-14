@@ -37,6 +37,7 @@ function buscar_solicitudes(string $estado = ''): array
                    solicitudes_cita.cita_id,
                    citas.fecha AS cita_fecha,
                    citas.hora AS cita_hora,
+                   citas.estado AS cita_estado,
                    areas.nombre AS area
             FROM solicitudes_cita
             INNER JOIN pacientes
@@ -64,6 +65,35 @@ function buscar_solicitudes(string $estado = ''): array
 }
 
 /**
+ * Etiqueta que se muestra para una solicitud: [clase CSS, texto].
+ * Si la solicitud se convirtió en cita, manda el estado ACTUAL de esa cita:
+ * si el paciente la canceló, ya no se dice "programada".
+ * $solicitud debe traer estado, cita_id y cita_estado.
+ */
+function etiqueta_solicitud(array $solicitud): array
+{
+    if ($solicitud['estado'] === 'atendida' && $solicitud['cita_id']) {
+        switch ($solicitud['cita_estado']) {
+            case 'cancelada':
+                return ['cancelada', 'cita cancelada'];
+            case 'no_asistio':
+                return ['no_asistio', 'no asistió'];
+            case 'atendida':
+                return ['atendida', 'cita atendida'];
+            default:
+                // pendiente o confirmada: la cita sigue en pie.
+                return ['confirmada', 'programada'];
+        }
+    }
+
+    if ($solicitud['estado'] === 'atendida') {
+        return ['confirmada', 'programada'];
+    }
+
+    return [$solicitud['estado'], $solicitud['estado']];
+}
+
+/**
  * Solicitudes de UN paciente (para "Mis citas" en su portal).
  * $paciente_id debe salir siempre de la sesión, nunca de un formulario.
  */
@@ -78,6 +108,7 @@ function solicitudes_del_paciente(int $paciente_id): array
                 solicitudes_cita.cita_id,
                 citas.fecha AS cita_fecha,
                 citas.hora AS cita_hora,
+                citas.estado AS cita_estado,
                 areas.nombre AS area
          FROM solicitudes_cita
          INNER JOIN areas

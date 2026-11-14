@@ -147,17 +147,18 @@ require __DIR__ . '/../../app/layout/paciente_header.php';
                                 : 'Sin preferencia') ?></td>
                             <td><?= e($solicitud['mensaje']) ?></td>
                             <td>
-                                <?php if ($solicitud['estado'] === 'atendida' && $solicitud['cita_id']): ?>
-                                    <!-- Admisión la convirtió en cita: le decimos cuándo es. -->
-                                    <span class="estado estado-confirmada">programada</span><br>
-                                    <small>
-                                        Cita el <?= e(date('d/m/Y', strtotime($solicitud['cita_fecha']))) ?>
-                                        a las <?= e(substr($solicitud['cita_hora'], 0, 5)) ?>
-                                    </small>
-                                <?php elseif ($solicitud['estado'] === 'nueva'): ?>
+                                <?php [$clase, $texto] = etiqueta_solicitud($solicitud); ?>
+                                <?php if ($solicitud['estado'] === 'nueva'): ?>
                                     <span class="estado estado-nueva">en revisión</span>
                                 <?php else: ?>
-                                    <span class="estado estado-<?= e($solicitud['estado']) ?>"><?= e($solicitud['estado']) ?></span>
+                                    <span class="estado estado-<?= e($clase) ?>"><?= e($texto) ?></span>
+                                <?php endif; ?>
+                                <?php if ($solicitud['cita_id']): ?>
+                                    <!-- Admisión la convirtió en cita: le decimos de cuándo era. -->
+                                    <br><small>
+                                        Cita del <?= e(date('d/m/Y', strtotime($solicitud['cita_fecha']))) ?>
+                                        a las <?= e(substr($solicitud['cita_hora'], 0, 5)) ?>
+                                    </small>
                                 <?php endif; ?>
                             </td>
                         </tr>
