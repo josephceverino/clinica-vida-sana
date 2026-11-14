@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/citas.php';
 require_once __DIR__ . '/../../app/modelos/solicitudes.php';
+require_once __DIR__ . '/../../app/core/auditoria.php';
 
 // Solo pacientes con la cuenta verificada por admisión.
 requerir_paciente_verificado();
@@ -13,6 +14,32 @@ $pagina_activa = 'citas.php';
 // Importante: el paciente sale de la SESIÓN. Nunca de la dirección ni de un
 // formulario, así nadie puede pedir las citas de otra persona.
 $paciente_id = (int) usuario_actual()['paciente_id'];
+
+// --- Cancelar una cita (POST) ----------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        // Regla 4: token CSRF.
+        if (!csrf_verificar()) {
+            throw new InvalidArgumentException('La sesión del formulario venció. Recarga la página.');
+        }
+
+        $cita_id = (int) ($_POST['cita_id'] ?? 0);
+
+        // Solo puede cancelar SUS citas: el paciente sale de la sesión.
+        cancelar_cita_paciente($cita_id, $paciente_id);
+        registrar_auditoria('cancelar_cita', $paciente_id, 'Cita ' . $cita_id);
+
+        mensaje_guardar('Tu cita fue cancelada. Ese horario quedó libre para otra persona.');
+    } catch (InvalidArgumentException $excepcion) {
+        mensaje_guardar($excepcion->getMessage(), 'error');
+    } catch (PDOException $excepcion) {
+        // Regla 9: mensaje genérico; el detalle va al log.
+        error_log($excepcion->getMessage());
+        mensaje_guardar('No se pudo cancelar la cita. Inténtalo más tarde.', 'error');
+    }
+
+    redirigir('/paciente/citas.php');
+}
 
 $citas = citas_del_paciente($paciente_id);
 $solicitudes = solicitudes_del_paciente($paciente_id);
@@ -62,6 +89,7 @@ require __DIR__ . '/../../app/layout/paciente_header.php';
                         <th scope="col">Área</th>
                         <th scope="col">Médico</th>
                         <th scope="col">Estado</th>
+                        <th scope="col"><span class="solo-lectores">Acción</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,7 +99,18 @@ require __DIR__ . '/../../app/layout/paciente_header.php';
                             <td><?= e(substr($cita['hora'], 0, 5)) ?></td>
                             <td><?= e($cita['area']) ?></td>
                             <td><?= e($cita['medico'] ?? 'Por asignar') ?></td>
-                            <td><span class="estado estado-<?= e($cita['estado']) ?>"><?= e($cita['estado']) ?></span></td>
+                            <td><span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span></td>
+                            <td>
+                                <?php if (puede_cancelar_paciente($cita)): ?>
+                                    <form method="post" action="<?= e(url('/paciente/citas.php')) ?>">
+                                        <?= csrf_campo() ?>
+                                        <input type="hidden" name="cita_id" value="<?= (int) $cita['id'] ?>">
+                                        <button class="boton-cancelar" type="submit">Cancelar</button>
+                                    </form>
+                                <?php else: ?>
+                                    <small class="vacio">Para cambios, llama a admisión</small>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -149,7 +188,7 @@ require __DIR__ . '/../../app/layout/paciente_header.php';
                             <td><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?></td>
                             <td><?= e($cita['area']) ?></td>
                             <td><?= e($cita['motivo']) ?></td>
-                            <td><span class="estado estado-<?= e($cita['estado']) ?>"><?= e($cita['estado']) ?></span></td>
+                            <td><span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

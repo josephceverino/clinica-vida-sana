@@ -147,7 +147,7 @@ $primer_nombre = explode(' ', trim($usuario['nombre']))[0];
                             <small><?= e($cita['area']) ?> &middot; <?= e($cita['motivo']) ?></small>
                         </div>
                         <span class="estado estado-<?= e($cita['estado']) ?>">
-                            <?= e($cita['estado']) ?>
+                            <?= e(texto_estado($cita['estado'])) ?>
                         </span>
                     </li>
                 <?php endforeach; ?>

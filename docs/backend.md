@@ -147,3 +147,20 @@ Los registros creados durante las pruebas locales **no** forman parte de `seed.s
 - El **paciente** ve en su historia clínica quién del personal la consultó.
 
 **Privacidad** (Ley 29733): el registro exige marcar la casilla de aceptación (también se valida en PHP) y se guarda la fecha en `usuarios.acepto_privacidad_en`. El texto está en `public/privacidad.php`, enlazado en el pie de todas las páginas públicas.
+
+## Horarios, reservas, cancelación e inasistencias
+
+**Horarios** (`app/modelos/horarios.php`, tabla `horarios_medico`): el admin define en *Panel → Horarios de médicos* bloques por día (ej. lunes 08:00–13:00, turnos de 20 min). Los bloques del mismo médico y día no pueden cruzarse. Quitar un bloque no borra las citas ya reservadas.
+
+**Huecos libres** = turnos del bloque − citas vigentes (pendiente/confirmada) − horas que ya pasaron (si es hoy).
+
+**Reservar** (*Pedir cita* del paciente): área + día → horarios libres por médico → motivo → cita **confirmada** al momento.
+- `reservar_hueco()` bloquea al médico (`FOR UPDATE`) y vuelve a calcular el hueco dentro de la transacción: dos pacientes no pueden quedarse con la misma hora.
+- Máximo **3 citas activas** por paciente y hasta **60 días** adelante.
+- Si el día está lleno, se sugieren los próximos días con horarios. La solicitud a admisión sigue disponible como plan B.
+
+**Cancelar** (*Mis citas* del paciente): solo sus citas vigentes y hasta **2 horas antes**. La hora vuelve a quedar libre.
+
+**No asistió** (*Gestionar cita*, admisión): solo citas `confirmada` cuya hora ya pasó. Estado nuevo `no_asistio`.
+
+Todo queda en la auditoría: `reservar_cita`, `cancelar_cita` y `marcar_no_asistio`.

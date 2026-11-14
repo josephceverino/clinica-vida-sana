@@ -141,3 +141,19 @@ INSERT INTO solicitudes_cita (paciente_id, area_id, fecha_preferida, mensaje, es
         TIMESTAMP(DATE_SUB(@hoy, INTERVAL 30 DAY), '12:00:00')),
     (1, 2, DATE_SUB(@hoy, INTERVAL 40 DAY), 'Pedí la misma cita dos veces.',             'descartada', NULL,
         TIMESTAMP(DATE_SUB(@hoy, INTERVAL 45 DAY), '12:05:00'));
+
+-- Horarios de los médicos ------------------------------------------------
+-- dia_semana: 1 = lunes ... 7 = domingo. De aquí salen los huecos libres
+-- que el paciente ve al pedir cita.
+INSERT INTO horarios_medico (medico_id, dia_semana, hora_inicio, hora_fin, duracion_min) VALUES
+    -- medico1 (Medicina General): lunes a viernes por la mañana, turnos de 20 min,
+    -- y lunes y miércoles también por la tarde.
+    (3, 1, '08:00', '13:00', 20), (3, 2, '08:00', '13:00', 20), (3, 3, '08:00', '13:00', 20),
+    (3, 4, '08:00', '13:00', 20), (3, 5, '08:00', '13:00', 20),
+    (3, 1, '15:00', '18:00', 20), (3, 3, '15:00', '18:00', 20),
+    -- medico2 (Pediatría): lunes a viernes de 09:00 a 13:00, turnos de 30 min.
+    (4, 1, '09:00', '13:00', 30), (4, 2, '09:00', '13:00', 30), (4, 3, '09:00', '13:00', 30),
+    (4, 4, '09:00', '13:00', 30), (4, 5, '09:00', '13:00', 30),
+    -- medico3 (Laboratorio): lunes a sábado de 07:00 a 11:00, turnos de 15 min.
+    (8, 1, '07:00', '11:00', 15), (8, 2, '07:00', '11:00', 15), (8, 3, '07:00', '11:00', 15),
+    (8, 4, '07:00', '11:00', 15), (8, 5, '07:00', '11:00', 15), (8, 6, '07:00', '11:00', 15);

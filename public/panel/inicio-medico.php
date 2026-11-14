@@ -142,7 +142,7 @@ $saludo = $hora < 12 ? 'Buenos días' : ($hora < 19 ? 'Buenas tardes' : 'Buenas 
                             <a class="boton-tabla boton-tabla-claro"
                                href="<?= e(url('/panel/atender-cita.php?id=' . (int) $cita['id'])) ?>">Ver</a>
                         <?php else: ?>
-                            <span class="estado estado-<?= e($cita['estado']) ?>"><?= e($cita['estado']) ?></span>
+                            <span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span>
                         <?php endif; ?>
                     </li>
                 <?php endforeach; ?>

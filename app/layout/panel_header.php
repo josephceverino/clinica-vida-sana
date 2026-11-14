@@ -36,6 +36,7 @@ $menu_panel = [
         'titulo'  => 'Administración',
         'enlaces' => [
             'usuarios.php'  => ['Usuarios del personal', ['admin']],
+            'horarios.php'  => ['Horarios de médicos',   ['admin']],
             'auditoria.php' => ['Auditoría',             ['admin']],
         ],
     ],

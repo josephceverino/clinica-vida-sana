@@ -140,7 +140,7 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                     <?= e($cita['motivo'] ?? 'Sin motivo registrado') ?><br>
 
                     <strong>Estado:</strong>
-                    <?= e($cita['estado']) ?>
+                    <?= e(texto_estado($cita['estado'])) ?>
                 </p>
 
                 <?php if ($puede_gestionar): ?>

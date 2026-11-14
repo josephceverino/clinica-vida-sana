@@ -939,3 +939,7 @@ a.calendario-cita:hover {
 .filtro-auditoria {
     margin-bottom: 0.75rem;
 }
+
+/* Estado "no asistió" (etiqueta y franja del calendario) */
+.estado-no_asistio { background: #EDE7F6; color: #4A2F7A; }
+.cita-no_asistio   { border-left-color: #7E57C2; }
