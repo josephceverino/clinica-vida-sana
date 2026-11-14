@@ -252,7 +252,7 @@ function cambiar_estado_cita(
     try {
         // Bloquea la cita mientras se comprueba y actualiza.
         $consulta = $conexion->prepare(
-            'SELECT estado FROM citas
+            'SELECT estado, medico_id FROM citas
              WHERE id = :id FOR UPDATE'
         );
         $consulta->execute(['id' => $cita_id]);
@@ -261,6 +261,14 @@ function cambiar_estado_cita(
         if (!$cita) {
             throw new InvalidArgumentException(
                 'La cita no existe.'
+            );
+        }
+
+        // Una cita confirmada sin médico no la podría atender nadie
+        // (el médico solo ve y atiende las citas que tiene asignadas).
+        if ($nuevo_estado === 'confirmada' && $cita['medico_id'] === null) {
+            throw new InvalidArgumentException(
+                'Asigna un médico antes de confirmar la cita.'
             );
         }
 

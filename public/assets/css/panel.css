@@ -665,3 +665,34 @@ a.dato-enlace:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---------- Botones dentro de una fila de tabla ---------- */
+/* Varios botones juntos en la última columna (ej. "Programar" y "Descartar") */
+.acciones-fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.acciones-fila form {
+    margin: 0;
+}
+
+/* El "botón" también puede ser un enlace <a>: que se vea igual */
+a.boton-tabla {
+    display: inline-block;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* Versión gris, para la acción secundaria (ej. "Descartar") */
+.boton-tabla-claro {
+    color: #5A6B7A;
+    border-color: #C5D0D8;
+}
+
+.boton-tabla-claro:hover {
+    color: var(--color-blanco);
+    background: #5A6B7A;
+    border-color: #5A6B7A;
+}

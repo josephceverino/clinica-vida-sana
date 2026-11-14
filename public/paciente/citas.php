@@ -107,7 +107,20 @@ require __DIR__ . '/../../app/layout/paciente_header.php';
                                 ? date('d/m/Y', strtotime($solicitud['fecha_preferida']))
                                 : 'Sin preferencia') ?></td>
                             <td><?= e($solicitud['mensaje']) ?></td>
-                            <td><span class="estado estado-<?= e($solicitud['estado']) ?>"><?= e($solicitud['estado']) ?></span></td>
+                            <td>
+                                <?php if ($solicitud['estado'] === 'atendida' && $solicitud['cita_id']): ?>
+                                    <!-- Admisión la convirtió en cita: le decimos cuándo es. -->
+                                    <span class="estado estado-confirmada">programada</span><br>
+                                    <small>
+                                        Cita el <?= e(date('d/m/Y', strtotime($solicitud['cita_fecha']))) ?>
+                                        a las <?= e(substr($solicitud['cita_hora'], 0, 5)) ?>
+                                    </small>
+                                <?php elseif ($solicitud['estado'] === 'nueva'): ?>
+                                    <span class="estado estado-nueva">en revisión</span>
+                                <?php else: ?>
+                                    <span class="estado estado-<?= e($solicitud['estado']) ?>"><?= e($solicitud['estado']) ?></span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

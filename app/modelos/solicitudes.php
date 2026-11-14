@@ -34,12 +34,17 @@ function buscar_solicitudes(string $estado = ''): array
                    solicitudes_cita.mensaje,
                    solicitudes_cita.estado,
                    solicitudes_cita.creado_en,
+                   solicitudes_cita.cita_id,
+                   citas.fecha AS cita_fecha,
+                   citas.hora AS cita_hora,
                    areas.nombre AS area
             FROM solicitudes_cita
             INNER JOIN pacientes
                 ON pacientes.id = solicitudes_cita.paciente_id
             INNER JOIN areas
-                ON areas.id = solicitudes_cita.area_id";
+                ON areas.id = solicitudes_cita.area_id
+            LEFT JOIN citas
+                ON citas.id = solicitudes_cita.cita_id";
 
     $parametros = [];
 
@@ -70,10 +75,15 @@ function solicitudes_del_paciente(int $paciente_id): array
                 solicitudes_cita.mensaje,
                 solicitudes_cita.estado,
                 solicitudes_cita.creado_en,
+                solicitudes_cita.cita_id,
+                citas.fecha AS cita_fecha,
+                citas.hora AS cita_hora,
                 areas.nombre AS area
          FROM solicitudes_cita
          INNER JOIN areas
              ON areas.id = solicitudes_cita.area_id
+         LEFT JOIN citas
+             ON citas.id = solicitudes_cita.cita_id
          WHERE solicitudes_cita.paciente_id = :paciente
          ORDER BY solicitudes_cita.creado_en DESC,
                   solicitudes_cita.id DESC
@@ -216,7 +226,216 @@ function registrar_solicitud_paciente(int $paciente_id, array $datos): int
 }
 
 /**
- * Cambia el estado de una solicitud nueva.
+ * Una solicitud con los datos que admisión necesita para programarla.
+ * Devuelve null si no existe.
+ */
+function obtener_solicitud(int $solicitud_id): ?array
+{
+    $consulta = db()->prepare(
+        "SELECT solicitudes_cita.id,
+                solicitudes_cita.paciente_id,
+                solicitudes_cita.area_id,
+                solicitudes_cita.fecha_preferida,
+                solicitudes_cita.mensaje,
+                solicitudes_cita.estado,
+                solicitudes_cita.creado_en,
+                CONCAT(pacientes.nombres, ' ', pacientes.apellidos) AS nombre,
+                pacientes.tipo_documento,
+                pacientes.numero_documento,
+                pacientes.telefono,
+                areas.nombre AS area
+         FROM solicitudes_cita
+         INNER JOIN pacientes ON pacientes.id = solicitudes_cita.paciente_id
+         INNER JOIN areas ON areas.id = solicitudes_cita.area_id
+         WHERE solicitudes_cita.id = :id"
+    );
+    $consulta->execute(['id' => $solicitud_id]);
+    $fila = $consulta->fetch();
+
+    return $fila ?: null;
+}
+
+/**
+ * Convierte una solicitud NUEVA en una cita CONFIRMADA con fecha, hora y
+ * médico. Devuelve el ID de la cita creada.
+ *
+ * Todo pasa en una sola transacción: o se crea la cita Y la solicitud queda
+ * "atendida" (enlazada a esa cita), o no cambia nada.
+ *
+ * $datos viene del formulario: fecha (Y-m-d), hora (H:i) y medico_id.
+ * $usuario_id sale de la SESIÓN (quien programa la cita).
+ */
+function convertir_solicitud_en_cita(
+    int $solicitud_id,
+    array $datos,
+    int $usuario_id
+): int {
+    if ($solicitud_id < 1) {
+        throw new InvalidArgumentException('La solicitud no es válida.');
+    }
+
+    foreach (['fecha', 'hora', 'medico_id'] as $campo) {
+        if (!isset($datos[$campo]) || !is_string($datos[$campo])) {
+            throw new InvalidArgumentException(
+                'Indica la fecha, la hora y el médico.'
+            );
+        }
+    }
+
+    $fecha = trim($datos['fecha']);
+    $hora = trim($datos['hora']);
+    $medico_id = filter_var(
+        $datos['medico_id'],
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
+
+    if (!$medico_id) {
+        throw new InvalidArgumentException('Selecciona un médico.');
+    }
+
+    // La fecha y la hora deben ser válidas y futuras.
+    $zona = new DateTimeZone('America/Lima');
+    $texto = $fecha . ' ' . $hora;
+    $fecha_hora = DateTimeImmutable::createFromFormat('!Y-m-d H:i', $texto, $zona);
+
+    if (
+        !$fecha_hora
+        || $fecha_hora->format('Y-m-d H:i') !== $texto
+        || $fecha_hora <= new DateTimeImmutable('now', $zona)
+    ) {
+        throw new InvalidArgumentException(
+            'Indica una fecha y hora válidas y futuras.'
+        );
+    }
+
+    $conexion = db();
+
+    // Solo admin y admisión programan citas.
+    $consulta = $conexion->prepare(
+        "SELECT id FROM usuarios
+         WHERE id = :id AND activo = 1
+           AND rol IN ('admin', 'admision')"
+    );
+    $consulta->execute(['id' => $usuario_id]);
+
+    if (!$consulta->fetch()) {
+        throw new InvalidArgumentException('El usuario no está autorizado.');
+    }
+
+    $conexion->beginTransaction();
+
+    try {
+        // 1. La solicitud debe seguir "nueva". FOR UPDATE la bloquea: si dos
+        //    personas de admisión la programan a la vez, solo una lo logra.
+        $consulta = $conexion->prepare(
+            'SELECT id, paciente_id, area_id, mensaje, estado
+             FROM solicitudes_cita WHERE id = :id FOR UPDATE'
+        );
+        $consulta->execute(['id' => $solicitud_id]);
+        $solicitud = $consulta->fetch();
+
+        if (!$solicitud || $solicitud['estado'] !== 'nueva') {
+            throw new InvalidArgumentException(
+                'La solicitud no existe o ya fue procesada.'
+            );
+        }
+
+        // 2. El médico debe estar activo y ser del área que pidió el paciente.
+        $consulta = $conexion->prepare(
+            "SELECT id FROM usuarios
+             WHERE id = :id AND rol = 'medico' AND activo = 1
+               AND area_id = :area
+             FOR UPDATE"
+        );
+        $consulta->execute([
+            'id'   => $medico_id,
+            'area' => $solicitud['area_id'],
+        ]);
+
+        if (!$consulta->fetch()) {
+            throw new InvalidArgumentException(
+                'El médico no existe o no atiende en esa área.'
+            );
+        }
+
+        // 3. Ni el médico ni el paciente pueden tener otra cita a esa hora.
+        $consulta = $conexion->prepare(
+            "SELECT
+                SUM(medico_id = :medico)     AS choca_medico,
+                SUM(paciente_id = :paciente) AS choca_paciente
+             FROM citas
+             WHERE fecha = :fecha AND hora = :hora
+               AND estado IN ('pendiente', 'confirmada')"
+        );
+        $consulta->execute([
+            'medico'   => $medico_id,
+            'paciente' => $solicitud['paciente_id'],
+            'fecha'    => $fecha,
+            'hora'     => $hora . ':00',
+        ]);
+        $choques = $consulta->fetch();
+
+        if ((int) $choques['choca_medico'] > 0) {
+            throw new InvalidArgumentException(
+                'El médico ya tiene una cita a esa hora. Elige otro horario.'
+            );
+        }
+
+        if ((int) $choques['choca_paciente'] > 0) {
+            throw new InvalidArgumentException(
+                'El paciente ya tiene una cita a esa hora.'
+            );
+        }
+
+        // 4. Crear la cita ya confirmada (tiene médico, fecha y hora).
+        //    El motivo es el mensaje del paciente (recortado a 255 letras).
+        $consulta = $conexion->prepare(
+            "INSERT INTO citas
+                (paciente_id, area_id, medico_id, fecha, hora,
+                 motivo, estado, registrado_por)
+             VALUES
+                (:paciente, :area, :medico, :fecha, :hora,
+                 :motivo, 'confirmada', :usuario)"
+        );
+        $consulta->execute([
+            'paciente' => $solicitud['paciente_id'],
+            'area'     => $solicitud['area_id'],
+            'medico'   => $medico_id,
+            'fecha'    => $fecha,
+            'hora'     => $hora . ':00',
+            'motivo'   => mb_substr((string) $solicitud['mensaje'], 0, 255),
+            'usuario'  => $usuario_id,
+        ]);
+        $cita_id = (int) $conexion->lastInsertId();
+
+        // 5. Marcar la solicitud como atendida y enlazarla a la cita.
+        $consulta = $conexion->prepare(
+            "UPDATE solicitudes_cita
+             SET estado = 'atendida', cita_id = :cita
+             WHERE id = :id"
+        );
+        $consulta->execute([
+            'cita' => $cita_id,
+            'id'   => $solicitud_id,
+        ]);
+
+        $conexion->commit();
+
+        return $cita_id;
+    } catch (Throwable $error) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+
+        throw $error;
+    }
+}
+
+/**
+ * Descarta una solicitud nueva (por ejemplo, si está repetida).
+ * Para aceptarla se usa convertir_solicitud_en_cita(): así ninguna
+ * solicitud queda "atendida" sin su cita.
  * El usuario debe obtenerse de la sesión.
  */
 function cambiar_estado_solicitud(
@@ -230,9 +449,9 @@ function cambiar_estado_solicitud(
         );
     }
 
-    if (!in_array($estado, ['atendida', 'descartada'], true)) {
+    if ($estado !== 'descartada') {
         throw new InvalidArgumentException(
-            'Selecciona atendida o descartada.'
+            'Para aceptar una solicitud, prográmala como cita.'
         );
     }
 

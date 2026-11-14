@@ -1,71 +1,58 @@
 <?php
-
+// Solicitudes de cita que envían los pacientes desde su portal.
+// Admisión decide: "Programar cita" (la convierte en cita con médico) o
+// "Descartar" (por ejemplo, si está repetida).
 require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/solicitudes.php';
 
-requerir_login();
+// Regla 6: solo admin y admisión.
 requerir_rol(['admin', 'admision']);
-
 iniciar_sesion_segura();
 
 $titulo_pagina = 'Solicitudes de cita';
+$pagina_activa = 'solicitudes.php';
 $error = '';
 $solicitudes = [];
 
-$exito = $_SESSION['solicitud_actualizada'] ?? false;
-unset($_SESSION['solicitud_actualizada']);
+// Pestañas: estado de la base => texto que se muestra.
+// '' (vacío) significa "todas".
+$filtros = [
+    'nueva'      => 'Nuevas',
+    'atendida'   => 'Programadas',
+    'descartada' => 'Descartadas',
+    ''           => 'Todas',
+];
 
+$filtro = is_string($_GET['estado'] ?? null) ? $_GET['estado'] : 'nueva';
+if (!array_key_exists($filtro, $filtros)) {
+    $filtro = 'nueva';
+}
+
+// --- Descartar una solicitud (POST) ---------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $exito = false;
-
     try {
-        if (
-            !isset($_POST['csrf_token'])
-            || !is_string($_POST['csrf_token'])
-            || !csrf_verificar()
-        ) {
+        // Regla 4: token CSRF.
+        if (!csrf_verificar()) {
             throw new InvalidArgumentException(
                 'La sesión del formulario venció. Recarga la página.'
             );
         }
 
-        if (
-            !isset($_POST['solicitud_id'], $_POST['estado'])
-            || !is_string($_POST['solicitud_id'])
-            || !is_string($_POST['estado'])
-        ) {
-            throw new InvalidArgumentException(
-                'Los datos enviados no son válidos.'
-            );
-        }
-
         $id = filter_var(
-            $_POST['solicitud_id'],
+            is_string($_POST['solicitud_id'] ?? null) ? $_POST['solicitud_id'] : '',
             FILTER_VALIDATE_INT,
             ['options' => ['min_range' => 1]]
         );
 
         if ($id === false) {
-            throw new InvalidArgumentException(
-                'La solicitud no es válida.'
-            );
+            throw new InvalidArgumentException('La solicitud no es válida.');
         }
 
-        // El usuario se obtiene de la sesión, no del formulario.
-        cambiar_estado_solicitud(
-            $id,
-            $_POST['estado'],
-            usuario_actual()['id']
-        );
+        // Solo se puede descartar. Para aceptarla se usa "Programar cita".
+        cambiar_estado_solicitud($id, 'descartada', usuario_actual()['id']);
 
-        $_SESSION['solicitud_actualizada'] = true;
-
-        header(
-            'Location: ' . url('/panel/solicitudes.php'),
-            true,
-            303
-        );
-        exit;
+        mensaje_guardar('Solicitud descartada.');
+        redirigir('/panel/solicitudes.php?estado=' . $filtro);
     } catch (InvalidArgumentException $excepcion) {
         $error = $excepcion->getMessage();
     } catch (PDOException $excepcion) {
@@ -75,109 +62,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 try {
-    $solicitudes = buscar_solicitudes();
+    $solicitudes = buscar_solicitudes($filtro);
 } catch (PDOException $excepcion) {
     error_log($excepcion->getMessage());
     $error = 'No se pudieron consultar las solicitudes.';
 }
 
-csrf_token();
+$mensaje = mensaje_tomar();
 
-// Sección del menú lateral que se marca como activa.
-$pagina_activa = 'solicitudes.php';
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<section class="seccion">
-    <h1>Solicitudes de cita</h1>
+<header class="panel-titulo">
+    <div>
+        <h1>Solicitudes de cita</h1>
+        <p>Lo que piden los pacientes desde su portal. Prográmalas como cita o descártalas.</p>
+    </div>
+</header>
 
-    <p>
-        <a href="<?= e(url('/panel/index.php')) ?>">
-            Volver al panel
-        </a>
-    </p>
+<?php if ($mensaje): ?>
+    <p role="status"><?= e($mensaje['texto']) ?></p>
+<?php endif; ?>
 
-    <p>
-        Marcar una solicitud como atendida indica que fue procesada.
-        No crea automáticamente una cita.
-    </p>
+<?php if ($error !== ''): ?>
+    <p role="alert"><?= e($error) ?></p>
+<?php endif; ?>
 
-    <?php if ($exito): ?>
-        <p role="status">Estado actualizado correctamente.</p>
-    <?php endif; ?>
-
-    <?php if ($error !== ''): ?>
-        <p role="alert"><?= e($error) ?></p>
-    <?php endif; ?>
-
-    <p>Se muestran hasta 100 solicitudes recientes.</p>
-
-    <?php if ($solicitudes === [] && $error === ''): ?>
-        <p>No hay solicitudes registradas.</p>
-    <?php endif; ?>
-
-    <?php foreach ($solicitudes as $solicitud): ?>
-        <article class="punto">
-            <h2>
-                Solicitud <?= e($solicitud['id']) ?>:
-                <?= e($solicitud['nombre']) ?>
-            </h2>
-
-            <p>
-                <strong>Documento:</strong>
-                <?= e($solicitud['tipo_documento']) ?>
-                <?= e($solicitud['numero_documento']) ?><br>
-
-                <strong>Teléfono:</strong>
-                <?= e($solicitud['telefono'] ?? 'Sin teléfono') ?><br>
-
-                <strong>Área:</strong>
-                <?= e($solicitud['area']) ?><br>
-
-                <strong>Fecha preferida:</strong>
-                <?= e($solicitud['fecha_preferida'] ?? 'Sin preferencia') ?><br>
-
-                <strong>Mensaje:</strong>
-                <?= e($solicitud['mensaje'] ?? 'Sin mensaje') ?><br>
-
-                <strong>Estado:</strong>
-                <?= e($solicitud['estado']) ?>
-            </p>
-
-            <?php if ($solicitud['estado'] === 'nueva'): ?>
-                <form
-                    method="post"
-                    action="<?= e(url('/panel/solicitudes.php')) ?>"
-                >
-                    <?= csrf_campo() ?>
-
-                    <input
-                        type="hidden"
-                        name="solicitud_id"
-                        value="<?= e($solicitud['id']) ?>"
-                    >
-
-                    <button
-                        class="boton"
-                        type="submit"
-                        name="estado"
-                        value="atendida"
-                    >
-                        Marcar atendida
-                    </button>
-
-                    <button
-                        class="boton boton-claro"
-                        type="submit"
-                        name="estado"
-                        value="descartada"
-                    >
-                        Descartar
-                    </button>
-                </form>
-            <?php endif; ?>
-        </article>
+<nav class="pestanas" aria-label="Filtro de solicitudes">
+    <?php foreach ($filtros as $clave => $texto): ?>
+        <a href="<?= e(url('/panel/solicitudes.php?estado=' . $clave)) ?>"
+           class="<?= $clave === $filtro ? 'activo' : '' ?>"><?= e($texto) ?></a>
     <?php endforeach; ?>
-</section>
+</nav>
+
+<?php if ($solicitudes === [] && $error === ''): ?>
+    <section class="caja">
+        <p class="vacio">No hay solicitudes en esta lista.</p>
+    </section>
+<?php else: ?>
+    <div class="caja tabla-scroll">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Área</th>
+                    <th>Fecha preferida</th>
+                    <th>Motivo</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($solicitudes as $solicitud): ?>
+                    <tr>
+                        <td>
+                            <strong><?= e($solicitud['nombre']) ?></strong><br>
+                            <small>
+                                <?= e($solicitud['tipo_documento'] . ' ' . $solicitud['numero_documento']) ?>
+                                &middot; Tel. <?= e($solicitud['telefono'] ?? '—') ?>
+                            </small>
+                        </td>
+                        <td><?= e($solicitud['area']) ?></td>
+                        <td>
+                            <?= $solicitud['fecha_preferida']
+                                ? e(date('d/m/Y', strtotime($solicitud['fecha_preferida'])))
+                                : '<span class="vacio">Sin preferencia</span>' ?>
+                        </td>
+                        <td><?= e($solicitud['mensaje'] ?? '') ?></td>
+                        <td>
+                            <?php if ($solicitud['estado'] === 'atendida'): ?>
+                                <span class="estado estado-confirmada">programada</span>
+                            <?php else: ?>
+                                <span class="estado estado-<?= e($solicitud['estado']) ?>">
+                                    <?= e($solicitud['estado']) ?>
+                                </span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if ($solicitud['estado'] === 'nueva'): ?>
+                                <div class="acciones-fila">
+                                    <a class="boton-tabla"
+                                       href="<?= e(url('/panel/programar-solicitud.php?id=' . $solicitud['id'])) ?>">
+                                        Programar cita
+                                    </a>
+                                    <form method="post"
+                                          action="<?= e(url('/panel/solicitudes.php?estado=' . $filtro)) ?>">
+                                        <?= csrf_campo() ?>
+                                        <input type="hidden" name="solicitud_id"
+                                               value="<?= (int) $solicitud['id'] ?>">
+                                        <button class="boton-tabla boton-tabla-claro" type="submit">
+                                            Descartar
+                                        </button>
+                                    </form>
+                                </div>
+                            <?php elseif ($solicitud['cita_id']): ?>
+                                <a href="<?= e(url('/panel/gestionar-cita.php?id=' . $solicitud['cita_id'])) ?>">
+                                    Ver cita del
+                                    <?= e(date('d/m', strtotime($solicitud['cita_fecha']))) ?>
+                                    a las <?= e(substr($solicitud['cita_hora'], 0, 5)) ?>
+                                </a>
+                            <?php else: ?>
+                                <span class="vacio">—</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+<?php endif; ?>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>
