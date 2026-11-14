@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../core/db.php';
+require_once __DIR__ . '/horarios.php'; // duracion_turno()
 
 /**
  * Consulta citas con los datos del paciente y del área.
@@ -393,11 +394,17 @@ function asignar_medico_cita(
             );
         }
 
+        // El médico no puede tener otra cita que se cruce con esta.
+        // Dos citas se cruzan si empiezan a menos de "un turno" de distancia.
+        // Ej.: turnos de 20 min y cita a las 10:30 -> choca con cualquier
+        // cita entre las 10:11 y las 10:49.
+        $minutos = duracion_turno($medico_id, $cita['fecha'], $cita['hora']);
+
         $consulta = $conexion->prepare(
             "SELECT id FROM citas
              WHERE medico_id = :medico
                AND fecha = :fecha
-               AND hora = :hora
+               AND ABS(TIME_TO_SEC(TIMEDIFF(hora, :hora))) < :segundos
                AND id <> :cita
                AND estado IN ('pendiente', 'confirmada')
              LIMIT 1 FOR UPDATE"
@@ -406,6 +413,7 @@ function asignar_medico_cita(
             'medico' => $medico_id,
             'fecha' => $cita['fecha'],
             'hora' => $cita['hora'],
+            'segundos' => $minutos * 60,
             'cita' => $cita_id,
         ]);
 
