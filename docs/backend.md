@@ -126,3 +126,24 @@ Los registros creados durante las pruebas locales **no** forman parte de `seed.s
 ## Reiniciar la base de datos
 
 `sql/schema.sql` **elimina y vuelve a crear** todas las tablas. Úsalo solo en una instalación nueva o para reiniciar a propósito una base de desarrollo. Nunca en producción con datos reales.
+
+## Auditoría y privacidad
+
+**Auditoría** (`app/core/auditoria.php`, tabla `auditoria`). Se anota quién hizo qué, sobre qué paciente, cuándo y desde qué IP:
+
+| Acción | Cuándo se registra |
+|---|---|
+| `iniciar_sesion` | Login correcto (cualquier rol). |
+| `ver_historia` | El paciente abre su historia clínica. |
+| `ver_atencion` | El médico abre una cita en "Atender" (ve datos del paciente). |
+| `registrar_atencion` | El médico guarda una atención. |
+| `cambiar_password` | Cualquiera cambia su contraseña en "Mi perfil". |
+| `verificar_cuenta` / `rechazar_cuenta` | Admisión verifica o rechaza una cuenta de paciente. |
+| `programar_cita` | Admisión convierte una solicitud en cita. |
+
+- Solo se **agregan** filas: la web nunca edita ni borra la auditoría.
+- Si falla el registro, la página sigue funcionando y el error va al log (no se deja de atender a un paciente por eso).
+- El **admin** la consulta en `panel/auditoria.php` (filtros por acción y paciente). Admisión y médicos reciben 403.
+- El **paciente** ve en su historia clínica quién del personal la consultó.
+
+**Privacidad** (Ley 29733): el registro exige marcar la casilla de aceptación (también se valida en PHP) y se guarda la fecha en `usuarios.acepto_privacidad_en`. El texto está en `public/privacidad.php`, enlazado en el pie de todas las páginas públicas.

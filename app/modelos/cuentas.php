@@ -71,6 +71,12 @@ function validar_registro(array $entrada): array
         $errores[] = 'Las contraseñas no coinciden.';
     }
 
+    // Consentimiento obligatorio (Ley 29733). Se valida aquí aunque la
+    // casilla ya sea "required" en el HTML: eso se puede saltar (regla 8).
+    if (($entrada['acepto_privacidad'] ?? '') !== '1') {
+        $errores[] = 'Debes aceptar la política de privacidad para crear tu cuenta.';
+    }
+
     return [$errores, [
         'nombres'          => $nombres,
         'apellidos'        => $apellidos,
@@ -150,10 +156,13 @@ function registrar_cuenta_paciente(array $datos): bool
             $paciente_id = (int) $pdo->lastInsertId();
         }
 
+        // acepto_privacidad_en = NOW(): queda la prueba de cuándo aceptó.
+        // (validar_registro() ya comprobó que marcó la casilla.)
         $insertar = $pdo->prepare(
             "INSERT INTO usuarios
-                (nombre, correo, password_hash, rol, paciente_id, activo, verificado)
-             VALUES (?, ?, ?, 'paciente', ?, 1, 0)"
+                (nombre, correo, password_hash, rol, paciente_id, activo, verificado,
+                 acepto_privacidad_en)
+             VALUES (?, ?, ?, 'paciente', ?, 1, 0, NOW())"
         );
         $insertar->execute([$nombre_cuenta, $datos['correo'], $hash, $paciente_id]);
 
@@ -289,4 +298,19 @@ function rechazar_cuenta(int $cuenta_id): bool
     $actualizar->execute([$cuenta_id]);
 
     return true;
+}
+
+/**
+ * ID de la ficha de paciente enlazada a una cuenta (o null si no existe).
+ * Se usa para anotar en la auditoría a qué paciente afectó una acción.
+ */
+function paciente_de_cuenta(int $cuenta_id): ?int
+{
+    $consulta = db()->prepare(
+        "SELECT paciente_id FROM usuarios WHERE id = ? AND rol = 'paciente'"
+    );
+    $consulta->execute([$cuenta_id]);
+    $id = $consulta->fetchColumn();
+
+    return $id === false || $id === null ? null : (int) $id;
 }

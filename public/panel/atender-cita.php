@@ -4,6 +4,7 @@
 // Solo entra el médico, y solo a sus propias citas.
 require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/atenciones.php';
+require_once __DIR__ . '/../../app/core/auditoria.php';
 
 // Regla 6: panel protegido. Solo médicos (ni admin ni admisión leen ni
 // escriben datos clínicos).
@@ -30,6 +31,12 @@ if ($cita === null) {
 $error = '';
 $valores = ['diagnostico' => '', 'tratamiento' => '', 'notas' => ''];
 
+// Auditoría: el médico está viendo datos del paciente (y su atención, si
+// ya existe). Solo al ABRIR la página (GET); el guardado se anota aparte.
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    registrar_auditoria('ver_atencion', (int) $cita['paciente_id'], 'Cita ' . (int) $cita['id']);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($valores as $campo => $vacio) {
         $valores[$campo] = is_string($_POST[$campo] ?? null) ? trim($_POST[$campo]) : '';
@@ -46,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // El médico sale de la SESIÓN y el paciente de la CITA. Nada de eso
         // se lee del formulario.
         registrar_atencion($cita['id'], $yo['id'], $valores);
+        registrar_auditoria('registrar_atencion', (int) $cita['paciente_id'], 'Cita ' . (int) $cita['id']);
 
         mensaje_guardar('Atención registrada. La cita quedó como atendida.');
         redirigir('/panel/atender-cita.php?id=' . (int) $cita['id']);
