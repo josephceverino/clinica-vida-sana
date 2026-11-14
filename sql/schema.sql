@@ -17,6 +17,7 @@ USE clinica_vida_sana;
 -- Se borran en orden inverso a las dependencias (claves foráneas).
 -- (Útil para volver a importar en desarrollo. ¡Cuidado en producción!)
 DROP TABLE IF EXISTS auditoria;
+DROP TABLE IF EXISTS horarios_medico;
 DROP TABLE IF EXISTS intentos_acceso;
 DROP TABLE IF EXISTS atenciones;
 DROP TABLE IF EXISTS solicitudes_cita;
@@ -125,7 +126,8 @@ CREATE TABLE citas (
     fecha          DATE         NOT NULL,
     hora           TIME         NOT NULL,
     motivo         VARCHAR(255) NULL,
-    estado         ENUM('pendiente', 'confirmada', 'atendida', 'cancelada')
+    -- no_asistio: la hora pasó y el paciente no llegó (lo marca admisión).
+    estado         ENUM('pendiente', 'confirmada', 'atendida', 'cancelada', 'no_asistio')
                    NOT NULL DEFAULT 'pendiente',
     registrado_por INT UNSIGNED NULL,
     creado_en      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -251,4 +253,28 @@ CREATE TABLE auditoria (
     CONSTRAINT fk_auditoria_paciente
         FOREIGN KEY (paciente_id) REFERENCES pacientes (id)
         ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- horarios_medico: cuándo atiende cada médico, por día de la semana.
+-- Cada fila es un bloque (ej. lunes de 08:00 a 13:00, turnos de 20 min).
+-- Un médico puede tener varios bloques el mismo día (mañana y tarde).
+-- De aquí salen los "huecos libres" que el paciente puede reservar.
+-- dia_semana: 1 = lunes ... 7 = domingo (igual que date('N') de PHP).
+-- ---------------------------------------------------------------------
+CREATE TABLE horarios_medico (
+    id           INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+    medico_id    INT UNSIGNED     NOT NULL,
+    dia_semana   TINYINT UNSIGNED NOT NULL,
+    hora_inicio  TIME             NOT NULL,
+    hora_fin     TIME             NOT NULL,
+    duracion_min SMALLINT UNSIGNED NOT NULL DEFAULT 20,
+    PRIMARY KEY (id),
+    KEY idx_horarios_medico (medico_id, dia_semana),
+    CONSTRAINT fk_horarios_medico
+        FOREIGN KEY (medico_id) REFERENCES usuarios (id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT ck_horarios_dia CHECK (dia_semana BETWEEN 1 AND 7),
+    CONSTRAINT ck_horarios_horas CHECK (hora_inicio < hora_fin),
+    CONSTRAINT ck_horarios_duracion CHECK (duracion_min BETWEEN 10 AND 120)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
