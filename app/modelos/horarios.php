@@ -152,6 +152,33 @@ function turnos_de_bloque(string $inicio, string $fin, int $duracion): array
     return $turnos;
 }
 
+// Duración que se supone para una cita fuera del horario del médico.
+const DURACION_TURNO_POR_DEFECTO = 20;
+
+/**
+ * Cuántos minutos dura el turno del médico a esa fecha y hora: la duración
+ * del bloque de horario que contiene esa hora. Si la hora cae fuera de sus
+ * bloques (cita creada a mano), usa DURACION_TURNO_POR_DEFECTO.
+ */
+function duracion_turno(int $medico_id, string $fecha, string $hora): int
+{
+    $consulta = db()->prepare(
+        'SELECT duracion_min FROM horarios_medico
+         WHERE medico_id = :medico AND dia_semana = :dia
+           AND hora_inicio <= :hora AND hora_fin > :hora2
+         LIMIT 1'
+    );
+    $consulta->execute([
+        'medico' => $medico_id,
+        'dia' => (int) date('N', strtotime($fecha)),
+        'hora' => $hora,
+        'hora2' => $hora,
+    ]);
+    $duracion = $consulta->fetchColumn();
+
+    return $duracion !== false ? (int) $duracion : DURACION_TURNO_POR_DEFECTO;
+}
+
 /**
  * Huecos libres de UN médico en una fecha (Y-m-d): sus turnos de ese día de
  * la semana, menos los que ya tienen cita vigente, menos los que ya pasaron.
@@ -173,28 +200,46 @@ function huecos_libres(int $medico_id, string $fecha): array
     );
     $consulta->execute(['medico' => $medico_id, 'dia' => (int) $dia->format('N')]);
 
+    // Cada turno se guarda como hora de inicio => hora de fin.
+    // Ej.: ['08:00' => '08:20', '08:20' => '08:40', ...]
     $turnos = [];
     foreach ($consulta->fetchAll() as $bloque) {
-        $turnos = array_merge(
-            $turnos,
-            turnos_de_bloque($bloque['hora_inicio'], $bloque['hora_fin'], (int) $bloque['duracion_min'])
-        );
+        $duracion = (int) $bloque['duracion_min'];
+        foreach (turnos_de_bloque($bloque['hora_inicio'], $bloque['hora_fin'], $duracion) as $inicio) {
+            $turnos[$inicio] = date('H:i', strtotime('2000-01-01 ' . $inicio) + $duracion * 60);
+        }
     }
 
     if ($turnos === []) {
         return [];
     }
 
-    // Horas que ya están ocupadas por una cita vigente.
+    // Horas en que empiezan las citas vigentes de ese médico ese día.
     $consulta = db()->prepare(
         "SELECT TIME_FORMAT(hora, '%H:%i') FROM citas
          WHERE medico_id = :medico AND fecha = :fecha
            AND estado IN ('pendiente', 'confirmada')"
     );
     $consulta->execute(['medico' => $medico_id, 'fecha' => $fecha]);
-    $ocupadas = $consulta->fetchAll(PDO::FETCH_COLUMN);
+    $horas_citas = $consulta->fetchAll(PDO::FETCH_COLUMN);
 
-    $libres = array_diff($turnos, $ocupadas);
+    // Un turno está ocupado si alguna cita empieza DENTRO de él
+    // (desde su inicio y antes de su fin). Así una cita a las 10:30,
+    // creada a mano por admisión, bloquea el turno de 10:20 a 10:40.
+    // Las horas "HH:MM" se pueden comparar como texto.
+    $libres = [];
+    foreach ($turnos as $inicio => $fin) {
+        $ocupado = false;
+        foreach ($horas_citas as $hora_cita) {
+            if ($hora_cita >= $inicio && $hora_cita < $fin) {
+                $ocupado = true;
+                break;
+            }
+        }
+        if (!$ocupado) {
+            $libres[] = $inicio;
+        }
+    }
 
     // Si es hoy, solo los turnos que aún no empiezan.
     if ($fecha === date('Y-m-d')) {
@@ -271,9 +316,18 @@ function reservar_hueco(int $paciente_id, int $usuario_id, array $datos): int
         throw new InvalidArgumentException('Cuéntanos el motivo de la consulta (de 5 a 255 caracteres).');
     }
 
+    // La fecha debe ser real (ej. no "2026-02-30") y estar en el rango.
+    $fecha_valida = DateTimeImmutable::createFromFormat('!Y-m-d', $fecha);
+    if (!$fecha_valida || $fecha_valida->format('Y-m-d') !== $fecha) {
+        throw new InvalidArgumentException('La fecha no es válida. Elige el día otra vez.');
+    }
+
     $hoy = date('Y-m-d');
     $limite = date('Y-m-d', strtotime('+' . DIAS_RESERVA_MAXIMO . ' days'));
-    if ($fecha < $hoy || $fecha > $limite) {
+    if ($fecha < $hoy) {
+        throw new InvalidArgumentException('Ese día ya pasó. Elige otra fecha.');
+    }
+    if ($fecha > $limite) {
         throw new InvalidArgumentException('Elige una fecha de hoy a ' . DIAS_RESERVA_MAXIMO . ' días.');
     }
 

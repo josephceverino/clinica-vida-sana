@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../app/modelos/cuentas.php';
 // Regla 6: toda página del panel empieza protegida.
 // Solo entra el personal: los pacientes tienen su propio portal y no deben
 // ver datos de otras personas (requerir_rol ya incluye requerir_login).
+requerir_login();
 requerir_rol(['admin', 'admision', 'medico']);
 
 // El médico tiene su propio resumen ("Mi día"), pensado para su trabajo.

@@ -12,7 +12,8 @@
 #   4. Restaura las etiquetas de SELinux (restorecon).
 #
 # Se puede ejecutar muchas veces sin romper nada.
-# No toca la configuración de Apache ni la base de datos.
+# No toca la configuración de Apache ni la base de datos
+# (si cambió sql/, avisa; ver docs/despliegue.md, paso 7.1).
 # =====================================================================
 
 # Detener el script si un comando falla o si se usa una variable sin definir.
@@ -50,7 +51,15 @@ cd "$APP_DIR"
 paso "Descargando cambios de GitHub (rama main)"
 # --ff-only: si hay cambios hechos a mano en el servidor, se detiene en vez
 # de mezclarlos. Así nunca se crea un "merge" raro en producción.
+# Se guarda la versión de antes para saber luego si cambió sql/.
+ANTES=$(git rev-parse HEAD)
 git pull --ff-only origin main
+
+# deploy.sh no toca la base de datos. Si cambiaron los archivos SQL, avisa.
+if ! git diff --quiet "$ANTES" HEAD -- sql/; then
+    echo "AVISO: cambiaron archivos de sql/. Puede que la base necesite"
+    echo "       actualizarse: revisa el paso 7.1 de docs/despliegue.md."
+fi
 
 # --- 2. Comprobar la configuración --------------------------------------
 

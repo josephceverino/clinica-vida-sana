@@ -63,6 +63,10 @@ INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, 
 
 -- Fecha de referencia: el día en que se importa este archivo.
 -- Todas las fechas de abajo se cuentan desde aquí (hoy, hoy + 2 días...).
+-- Se usa la hora de Lima (-05:00), igual que la web (app/core/db.php).
+-- Si no, en un servidor con hora UTC, importar después de las 7 p.m. de
+-- Lima daría "hoy" = mañana y la demo quedaría sin citas del día.
+SET time_zone = '-05:00';
 SET @hoy = CURDATE();
 
 -- Citas -----------------------------------------------------------------

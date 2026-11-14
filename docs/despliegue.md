@@ -259,6 +259,26 @@ cd /var/www/clinica && sudo ./deploy.sh
 
 > `deploy.sh` publica la rama **`main`**. Primero se une el Pull Request y después se despliega.
 
+### 7.1 Actualizar la base de datos
+
+`deploy.sh` actualiza el **código**, pero **no la base de datos**. Si el código nuevo trae tablas o columnas nuevas, hay que pasarlas a la base del servidor. Si no, el registro, las solicitudes o "Pedir cita" fallan.
+
+**Si la base ya tiene datos que quieres conservar**, aplica la migración. Se puede ejecutar varias veces sin romper nada:
+
+```bash
+sudo mariadb < /var/www/clinica/sql/migracion-2026-11.sql
+```
+
+- Sirve para bases importadas desde la versión del portal del paciente en adelante.
+- Si tu tabla `pacientes` todavía tiene una columna `dni` (versión muy vieja), no se puede migrar: vuelve a importar `schema.sql` y `seed.sql` (paso 2.3).
+- Después crea los horarios de los médicos desde el panel (**Horarios**). Sin horarios no hay huecos para reservar.
+
+**Si los datos te dan igual** (son ficticios), es más rápido volver a importar todo con el paso 2.3.
+
+> ⚠️ `schema.sql` **borra** todas las tablas antes de crearlas. Úsalo solo si aceptas perder los datos.
+>
+> Después de reimportar, repite el **paso 3**: cambiar las contraseñas de prueba.
+
 ✅ **Comprobar:**
 - `getenforce` dice `Enforcing` y la web funciona.
 - `ls -lZ /var/www/clinica/public` muestra `httpd_sys_content_t`.
@@ -287,5 +307,6 @@ El cliente Windows tiene que saber que `www.clinica.lan` es `192.168.10.1`. Hay 
 | Página en blanco o error 500 | `sudo tail -n 30 /var/log/httpd/clinica_error.log` y `sudo tail -n 30 /var/log/php-fpm/www-error.log` |
 | "Permission denied" con SELinux | `sudo ausearch -m avc -ts recent` y luego `sudo restorecon -Rv /var/www/clinica` |
 | No conecta a la base | Revisa usuario y contraseña en `config/config.php` y prueba el `mariadb -u clinica_web -p` del paso 2.4 |
+| Error "Unknown column" o "Table doesn't exist" | La base es más vieja que el código: paso 7.1 |
 | `git pull` se detiene en `deploy.sh` | Alguien cambió archivos a mano en el servidor: `git status` para verlos |
 | El navegador no encuentra `www.clinica.lan` | DNS o `hosts` del paso 8 |

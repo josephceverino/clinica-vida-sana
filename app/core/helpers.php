@@ -152,6 +152,12 @@ function csrf_verificar(): bool
     $enviado = $_POST['csrf_token'] ?? '';
     $guardado = $_SESSION['csrf_token'] ?? '';
 
+    // El token debe ser TEXTO. Si alguien manda una lista (csrf_token[]=x),
+    // hash_equals() daría un error fatal; así se rechaza sin romper la página.
+    if (!is_string($enviado) || !is_string($guardado)) {
+        return false;
+    }
+
     return $guardado !== '' && hash_equals($guardado, $enviado);
 }
 

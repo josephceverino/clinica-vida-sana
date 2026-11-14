@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/solicitudes.php';
 
 // Regla 6: solo admin y admisión.
+requerir_login();
 requerir_rol(['admin', 'admision']);
 iniciar_sesion_segura();
 
@@ -130,13 +131,8 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                         </td>
                         <td><?= e($solicitud['mensaje'] ?? '') ?></td>
                         <td>
-                            <?php if ($solicitud['estado'] === 'atendida'): ?>
-                                <span class="estado estado-confirmada">programada</span>
-                            <?php else: ?>
-                                <span class="estado estado-<?= e($solicitud['estado']) ?>">
-                                    <?= e($solicitud['estado']) ?>
-                                </span>
-                            <?php endif; ?>
+                            <?php [$clase, $texto] = etiqueta_solicitud($solicitud); ?>
+                            <span class="estado estado-<?= e($clase) ?>"><?= e($texto) ?></span>
                         </td>
                         <td>
                             <?php if ($solicitud['estado'] === 'nueva'): ?>

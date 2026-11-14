@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/cuentas.php';
 require_once __DIR__ . '/../../app/core/auditoria.php';
 
+requerir_login();
 requerir_rol(['admin', 'admision']);
 
 $titulo_pagina = 'Cuentas por verificar';

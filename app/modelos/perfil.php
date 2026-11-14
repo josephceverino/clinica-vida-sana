@@ -3,6 +3,7 @@
 // Sirve para todos los roles (personal y pacientes).
 // El ID de la cuenta sale SIEMPRE de la sesión, nunca de un formulario.
 require_once __DIR__ . '/../core/auditoria.php';
+require_once __DIR__ . '/../core/auth.php'; // huella_password()
 
 /**
  * Datos de la cuenta para mostrarlos en "Mi perfil".
@@ -76,13 +77,19 @@ function cambiar_password(
     $consulta = db()->prepare(
         'UPDATE usuarios SET password_hash = :hash WHERE id = :id'
     );
+    $nuevo_hash = password_hash($nueva, PASSWORD_DEFAULT);
     $consulta->execute([
-        'hash' => password_hash($nueva, PASSWORD_DEFAULT),
+        'hash' => $nuevo_hash,
         'id'   => $usuario_id,
     ]);
 
     // Nueva sesión (nuevo ID de cookie) tras un cambio de seguridad.
     session_regenerate_id(true);
+
+    // Esta sesión sigue abierta con la huella nueva. Las demás sesiones de
+    // la cuenta (otras PC o navegadores) se cierran solas en su próxima
+    // página, porque su huella ya no coincide (ver requerir_login()).
+    $_SESSION['usuario']['huella'] = huella_password($nuevo_hash);
 
     registrar_auditoria('cambiar_password');
 }

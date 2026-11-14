@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../app/core/auditoria.php';
 
 // Regla 6: panel protegido. Solo médicos (ni admin ni admisión leen ni
 // escriben datos clínicos).
+requerir_login();
 requerir_rol(['medico']);
 
 $titulo_pagina = 'Atender cita';
