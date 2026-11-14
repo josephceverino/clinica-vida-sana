@@ -53,6 +53,7 @@ Todos entran por el mismo login (`/login.php`): el personal con su **usuario** y
 | `admision1` | admision | `Clinica2026!` |
 | `medico1` | medico (Medicina General) | `Clinica2026!` |
 | `medico2` | medico (Pediatría) | `Clinica2026!` |
+| `medico3` | medico (Laboratorio) | `Clinica2026!` |
 
 Cuentas de **paciente** (entran con su correo):
 

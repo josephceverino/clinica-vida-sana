@@ -78,14 +78,17 @@ Al registrar una cita se rechaza:
 
 **Citas**
 - `pendiente` → `confirmada` o `cancelada`
+- Para confirmar una cita **debe tener médico asignado**: si no, nadie podría atenderla.
 - `confirmada` → `cancelada` (admisión) o `atendida` (solo cuando el médico registra la atención)
 - `atendida` y `cancelada` no admiten más cambios.
 - Una cita futura no se puede atender: debe haber llegado su fecha y hora.
 
 **Solicitudes**
-- `nueva` → `atendida` o `descartada`
+- `nueva` → `atendida` (en pantalla: "programada") o `descartada`.
+- **Programar** (`public/panel/programar-solicitud.php`): admisión elige fecha, hora y médico del área. En una sola transacción se crea la cita **confirmada** y la solicitud pasa a `atendida` con `cita_id` apuntando a esa cita. Se rechaza si el médico o el paciente ya tienen cita a esa hora.
+- **Descartar**: solo cambia el estado, sin crear cita.
 - Una solicitud procesada no puede modificarse otra vez.
-- Marcar una solicitud como `atendida` **no** crea una cita.
+- El paciente ve en "Mis citas" la fecha y hora de la cita en la que se convirtió su solicitud.
 
 ## Seguridad aplicada
 
@@ -98,7 +101,9 @@ Al registrar una cita se rechaza:
 
 ## Datos de prueba
 
-`sql/seed.sql` crea 5 áreas, 7 cuentas (admin, admisión, 2 médicos y 3 de paciente), 6 pacientes, 10 citas, 4 atenciones (historia clínica) y 4 solicitudes. La cita 8 está **confirmada para el 12/11/2026 a las 08:00** (sirve para probar "Atender" con `medico1`). Las citas de Medicina General son de `medico1` y las de Pediatría de `medico2`; Laboratorio aún no tiene médico. Las fechas son ejemplos fijos de octubre y noviembre de 2026.
+`sql/seed.sql` crea 5 áreas, 8 cuentas (admin, admisión, 3 médicos y 3 de paciente), 6 pacientes, 13 citas, 4 atenciones (historia clínica) y 4 solicitudes. Las citas de Medicina General son de `medico1`, las de Pediatría de `medico2` y las de Laboratorio de `medico3`.
+
+**Las fechas son relativas al día en que se importa** (`CURDATE()`): siempre hay 4 citas para hoy (la de las 08:00 sirve para probar "Atender" con `medico1`), algunas en los próximos días y otras pasadas con su historia clínica. Si la demo es otro día, basta con volver a importar `schema.sql` y `seed.sql`.
 
 ## Cambios del portal del paciente en la base de datos
 

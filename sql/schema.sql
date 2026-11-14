@@ -144,7 +144,9 @@ CREATE TABLE citas (
 
 -- ---------------------------------------------------------------------
 -- solicitudes_cita: citas pedidas por los pacientes desde su portal.
--- Admisión las revisa y, si corresponde, registra la cita.
+-- Admisión las revisa y la convierte en cita (fecha, hora y médico) o la
+-- descarta. Al convertirla, cita_id guarda qué cita se creó y el estado
+-- pasa a 'atendida'.
 -- El paciente se identifica por su cuenta (paciente_id), así que su nombre,
 -- documento y teléfono se leen de su ficha: no se guardan aquí otra vez.
 -- ---------------------------------------------------------------------
@@ -156,9 +158,14 @@ CREATE TABLE solicitudes_cita (
     mensaje         VARCHAR(500) NULL,
     estado          ENUM('nueva', 'atendida', 'descartada')
                     NOT NULL DEFAULT 'nueva',
+    cita_id         INT UNSIGNED NULL,
     creado_en       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     KEY idx_solicitudes_estado (estado),
+    -- Cita en la que se convirtió la solicitud (vacío si aún no o si se descartó).
+    CONSTRAINT fk_solicitudes_cita
+        FOREIGN KEY (cita_id) REFERENCES citas (id)
+        ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT fk_solicitudes_area
         FOREIGN KEY (area_id) REFERENCES areas (id)
         ON DELETE RESTRICT ON UPDATE CASCADE,

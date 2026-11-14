@@ -8,6 +8,7 @@
 --     admision1  rol admision
 --     medico1    rol medico (Medicina General)
 --     medico2    rol medico (Pediatría)
+--     medico3    rol medico (Laboratorio)
 --   Pacientes (entran con "correo"):
 --     paciente1@example.test    cuenta VERIFICADA (Ana: citas, historial y solicitudes)
 --     paciente2@example.test    cuenta VERIFICADA (Carlos: sirve para comprobar
@@ -16,6 +17,10 @@
 -- Las contraseñas están guardadas como hash (password_hash de PHP).
 -- ¡Cambiarlas antes de publicar en el servidor Fedora!
 -- Los correos usan el dominio reservado .test: no existen de verdad.
+--
+-- Las fechas de citas, atenciones y solicitudes se calculan a partir del
+-- día en que se importa (CURDATE()). Así siempre hay citas "de hoy" para
+-- la demo, sin editar el archivo.
 -- =====================================================================
 
 USE clinica_vida_sana;
@@ -43,7 +48,10 @@ INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, 
     (1, 'Administrador Demo',    'admin',     NULL, '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'admin',    5, NULL, 1, 1),
     (2, 'Lucía Admisión Demo',   'admision1', NULL, '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'admision', 1, NULL, 1, 1),
     (3, 'Dr. Mateo Médico Demo', 'medico1',   NULL, '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'medico',   2, NULL, 1, 1),
-    (4, 'Dra. Camila Pediatra Demo', 'medico2', NULL, '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'medico', 3, NULL, 1, 1);
+    (4, 'Dra. Camila Pediatra Demo', 'medico2', NULL, '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'medico', 3, NULL, 1, 1),
+    -- Responsable de Laboratorio: sin él, lo que se pide a Laboratorio no
+    -- llegaría a nadie. Usa el rol "medico" para ver y atender sus citas.
+    (8, 'Lic. Rosa Laboratorio Demo', 'medico3', NULL, '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'medico', 4, NULL, 1, 1);
 
 -- Pacientes con cuenta: correo obligatorio, enlazados a su ficha.
 -- paciente1 fue verificada por admision1 (id 2); la otra espera verificación.
@@ -52,41 +60,61 @@ INSERT INTO usuarios (id, nombre, usuario, correo, password_hash, rol, area_id, 
     (6, 'Nuevo Registro Demo',        NULL, 'pendiente@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 6, 1, 0, NULL, NULL),
     (7, 'Carlos Rojas Ejemplo',       NULL, 'paciente2@example.test', '$2y$10$0PMYbo0/EJ4MdkUz3h/QJ.LtO9/VpKf7QhRBhad0GOZqftrkWpMs6', 'paciente', NULL, 2, 1, 1, 2, '2026-10-16 11:00:00');
 
--- Citas (fechas fijas de ejemplo; se pueden editar desde el panel) -----
+-- Fecha de referencia: el día en que se importa este archivo.
+-- Todas las fechas de abajo se cuentan desde aquí (hoy, hoy + 2 días...).
+SET @hoy = CURDATE();
+
+-- Citas -----------------------------------------------------------------
 -- Medicina General -> medico1 (id 3). Pediatría -> medico2 (id 4).
--- Laboratorio no tiene médico asignado todavía.
+-- Laboratorio -> medico3 (id 8).
+-- Toda cita confirmada tiene médico: si no, nadie podría atenderla.
 INSERT INTO citas (id, paciente_id, area_id, medico_id, fecha, hora, motivo, estado, registrado_por) VALUES
-    (1, 1, 2, 3,    '2026-11-12', '09:00:00', 'Control general',         'confirmada', 2),
-    (2, 2, 2, 3,    '2026-11-12', '10:30:00', 'Dolor de cabeza',         'pendiente',  2),
-    (3, 3, 3, 4,    '2026-11-12', '11:00:00', 'Control de crecimiento',  'confirmada', 2),
-    (4, 4, 4, NULL, '2026-11-13', '08:30:00', 'Análisis de sangre',      'pendiente',  2),
-    (5, 5, 2, 3,    '2026-11-10', '15:00:00', 'Resfrío',                 'atendida',   2),
-    (6, 2, 3, NULL, '2026-11-09', '16:00:00', 'Consulta cancelada',      'cancelada',  2),
-    (7, 1, 2, 3,    '2026-10-20', '09:00:00', 'Chequeo anual',           'atendida',   2),
-    -- Confirmada para HOY a las 08:00: sirve para probar "Atender" con medico1.
-    (8, 2, 2, 3,    '2026-11-12', '08:00:00', 'Seguimiento del dolor de cabeza', 'confirmada', 2),
-    -- Atendidas antes, con su historia clínica (ver "atenciones" más abajo).
-    (9, 1, 2, 3,    '2026-09-15', '10:00:00', 'Dolor de espalda',        'atendida',   2),
-    (10, 2, 2, 3,   '2026-10-05', '11:30:00', 'Control de presión',      'atendida',   2);
+    -- HOY: sirven para probar "Atender" y el resumen del día.
+    (1, 1, 2, 3, @hoy, '09:00:00', 'Control general',                 'confirmada', 2),
+    (2, 2, 2, 3, @hoy, '10:30:00', 'Dolor de cabeza',                 'pendiente',  2),
+    (3, 3, 3, 4, @hoy, '11:00:00', 'Control de crecimiento',          'confirmada', 2),
+    (8, 2, 2, 3, @hoy, '08:00:00', 'Seguimiento del dolor de cabeza', 'confirmada', 2),
+    -- PRÓXIMOS DÍAS: llenan el calendario semanal.
+    (4,  4, 4, 8, DATE_ADD(@hoy, INTERVAL 1 DAY), '08:30:00', 'Análisis de sangre',     'confirmada', 2),
+    (11, 1, 2, 3, DATE_ADD(@hoy, INTERVAL 2 DAY), '10:00:00', 'Revisión de resultados', 'confirmada', 2),
+    (12, 5, 2, 3, DATE_ADD(@hoy, INTERVAL 3 DAY), '16:00:00', 'Dolor de garganta',      'pendiente',  2),
+    (13, 3, 3, 4, DATE_ADD(@hoy, INTERVAL 5 DAY), '09:30:00', 'Vacunación',             'confirmada', 2),
+    -- PASADAS: atendidas (con historia clínica) y una cancelada.
+    (5,  5, 2, 3,    DATE_SUB(@hoy, INTERVAL 3 DAY),  '15:00:00', 'Resfrío',            'atendida',  2),
+    (6,  2, 3, NULL, DATE_SUB(@hoy, INTERVAL 4 DAY),  '16:00:00', 'Consulta cancelada', 'cancelada', 2),
+    (7,  1, 2, 3,    DATE_SUB(@hoy, INTERVAL 24 DAY), '09:00:00', 'Chequeo anual',      'atendida',  2),
+    (9,  1, 2, 3,    DATE_SUB(@hoy, INTERVAL 59 DAY), '10:00:00', 'Dolor de espalda',   'atendida',  2),
+    (10, 2, 2, 3,    DATE_SUB(@hoy, INTERVAL 39 DAY), '11:30:00', 'Control de presión', 'atendida',  2);
 
 -- Historia clínica: atenciones de las citas ya atendidas -----------------
-INSERT INTO atenciones (cita_id, paciente_id, medico_id, motivo, diagnostico, tratamiento, notas) VALUES
+-- creado_en = el día de la cita, un rato después de la hora.
+INSERT INTO atenciones (cita_id, paciente_id, medico_id, motivo, diagnostico, tratamiento, notas, creado_en) VALUES
     (5, 5, 3, 'Resfrío',        'Resfrío común sin complicaciones.',
         'Reposo, abundante líquido y paracetamol si hay malestar.',
-        'Volver a consulta si la fiebre dura más de 3 días.'),
+        'Volver a consulta si la fiebre dura más de 3 días.',
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 3 DAY), '15:25:00')),
     (7, 1, 3, 'Chequeo anual',  'Paciente en buen estado general.',
         'Mantener alimentación balanceada y actividad física regular.',
-        'Se recomienda control de rutina en 12 meses.'),
+        'Se recomienda control de rutina en 12 meses.',
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 24 DAY), '09:30:00')),
     (9, 1, 3, 'Dolor de espalda', 'Contractura muscular lumbar leve.',
         'Reposo relativo y calor local durante 3 días.',
-        'Evitar cargar peso. Volver si el dolor continúa.'),
+        'Evitar cargar peso. Volver si el dolor continúa.',
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 59 DAY), '10:20:00')),
     (10, 2, 3, 'Control de presión', 'Presión arterial dentro de lo normal.',
         'Sin medicación. Reducir el consumo de sal.',
-        NULL);
+        NULL,
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 39 DAY), '11:50:00'));
 
 -- Solicitudes de cita hechas desde el portal (de pacientes con cuenta) ----
-INSERT INTO solicitudes_cita (paciente_id, area_id, fecha_preferida, mensaje, estado) VALUES
-    (1, 4, '2026-11-20', 'Quisiera un análisis de sangre de rutina.', 'nueva'),
-    (2, 2, '2026-11-18', 'Dolor de cabeza que no se me quita.',       'nueva'),
-    (1, 2, '2026-10-20', 'Chequeo anual.',                            'atendida'),
-    (1, 2, '2026-10-01', 'Pedí la misma cita dos veces.',             'descartada');
+-- Las "nuevas" esperan a admisión. La "atendida" se convirtió en la cita 7
+-- (por eso tiene cita_id). La "descartada" no generó cita.
+INSERT INTO solicitudes_cita (paciente_id, area_id, fecha_preferida, mensaje, estado, cita_id, creado_en) VALUES
+    (1, 4, DATE_ADD(@hoy, INTERVAL 7 DAY),  'Quisiera un análisis de sangre de rutina.', 'nueva',      NULL,
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 1 DAY), '18:10:00')),
+    (2, 2, DATE_ADD(@hoy, INTERVAL 5 DAY),  'Dolor de cabeza que no se me quita.',       'nueva',      NULL,
+        TIMESTAMP(@hoy, '07:45:00')),
+    (1, 2, DATE_SUB(@hoy, INTERVAL 24 DAY), 'Chequeo anual.',                            'atendida',   7,
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 30 DAY), '12:00:00')),
+    (1, 2, DATE_SUB(@hoy, INTERVAL 40 DAY), 'Pedí la misma cita dos veces.',             'descartada', NULL,
+        TIMESTAMP(DATE_SUB(@hoy, INTERVAL 45 DAY), '12:05:00'));
