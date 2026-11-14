@@ -103,6 +103,14 @@ function iniciar_login(array $fila): void
  */
 function requerir_login(): void
 {
+    // Las páginas llaman a requerir_login() y luego a requerir_rol(), que
+    // también lo llama. "static" recuerda el valor entre llamadas: así la
+    // comprobación en la base se hace una sola vez por página.
+    static $ya_comprobado = false;
+    if ($ya_comprobado) {
+        return;
+    }
+
     $actual = usuario_actual();
 
     if ($actual === null) {
@@ -138,6 +146,8 @@ function requerir_login(): void
     $_SESSION['usuario']['paciente_id'] = $fila['paciente_id'] === null
         ? null
         : (int) $fila['paciente_id'];
+
+    $ya_comprobado = true;
 }
 
 /**

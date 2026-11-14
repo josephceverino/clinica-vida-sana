@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../app/modelos/solicitudes.php';
 require_once __DIR__ . '/../../app/core/auditoria.php';
 
 // Regla 6: solo admin y admisión.
+requerir_login();
 requerir_rol(['admin', 'admision']);
 iniciar_sesion_segura();
 

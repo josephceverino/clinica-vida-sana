@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/core/auditoria.php';
 
 // Regla 6: solo el administrador.
+requerir_login();
 requerir_rol(['admin']);
 
 $titulo_pagina = 'Auditoría';

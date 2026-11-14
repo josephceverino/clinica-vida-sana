@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/agenda.php';
 
 // Regla 6: solo personal.
+requerir_login();
 requerir_rol(['admin', 'admision', 'medico']);
 
 $titulo_pagina = 'Agenda semanal';

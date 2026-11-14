@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../app/modelos/citas.php';
 require_once __DIR__ . '/../../app/modelos/agenda.php';
 
 // Regla 6: solo médicos.
+requerir_login();
 requerir_rol(['medico']);
 
 $titulo_pagina = 'Mi día';
