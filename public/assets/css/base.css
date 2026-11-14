@@ -299,7 +299,10 @@ a {
     color: var(--color-titulos);
 }
 
-.campo input {
+/* Cajas de texto de una línea (input) y de varias líneas (textarea):
+   mismo ancho, letra, borde y esquinas, para que todo el formulario se vea igual. */
+.campo input,
+.campo textarea {
     width: 100%;
     padding: 0.7rem 0.8rem;
     font: inherit;
@@ -307,7 +310,8 @@ a {
     border-radius: 8px;
 }
 
-.campo input:focus {
+.campo input:focus,
+.campo textarea:focus {
     outline: 2px solid var(--color-principal);
     outline-offset: 1px;
 }
