@@ -284,3 +284,132 @@
     margin-top: 0.25rem;
     color: #6B7C8B;
 }
+
+/* ---------- Pedir cita: buscador y horarios ---------- */
+
+/* Área, día y botón en una fila */
+.buscador-horarios {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1.5rem;
+}
+
+.buscador-horarios .campo {
+    margin-bottom: 0;
+}
+
+.horarios-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.horarios-dias {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Un recuadro por médico con sus horas */
+.horarios-medico {
+    margin: 0 0 1rem;
+}
+
+.horarios-medico legend {
+    padding: 0 0.4rem;
+    font-weight: 700;
+    color: var(--color-titulos);
+}
+
+.horas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Cada hora: el círculo del radio se oculta y se ve una "pastilla" */
+.hora input {
+    position: absolute;
+    opacity: 0;
+}
+
+.hora span {
+    display: inline-block;
+    min-width: 4.5rem;
+    padding: 0.5rem 0.8rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--color-principal);
+    background: var(--color-blanco);
+    border: 1px solid #C5D0D8;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.hora span:hover {
+    border-color: var(--color-principal);
+}
+
+/* Hora elegida: verde */
+.hora input:checked + span {
+    color: var(--color-blanco);
+    background: var(--color-acento);
+    border-color: var(--color-acento);
+}
+
+/* Con teclado se ve dónde está el foco */
+.hora input:focus-visible + span {
+    outline: 2px solid var(--color-principal);
+    outline-offset: 2px;
+}
+
+/* Días sugeridos cuando el elegido está lleno */
+.dias-sugeridos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.dia-sugerido {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem 1rem;
+    text-decoration: none;
+    border: 1px solid #C5D0D8;
+    border-left: 4px solid var(--color-acento);
+    border-radius: 10px;
+}
+
+.dia-sugerido span {
+    font-size: 0.85rem;
+    color: #5A6B7A;
+}
+
+/* "¿No encuentras horario?": desplegable */
+.otra-opcion summary {
+    font-weight: 600;
+    color: var(--color-principal);
+    cursor: pointer;
+}
+
+.otra-opcion .formulario {
+    margin-top: 1rem;
+    padding: 0;
+    border: none;
+}
+
+@media (max-width: 640px) {
+    .buscador-horarios {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hora span {
+        transition: none;
+    }
+}

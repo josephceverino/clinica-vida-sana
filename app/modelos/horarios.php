@@ -233,3 +233,134 @@ function huecos_por_area(int $area_id, string $fecha): array
 
     return $resultado;
 }
+
+// Máximo de citas futuras vigentes que un paciente puede tener reservadas a
+// la vez. Evita que alguien acapare horarios que otros necesitan.
+const MAX_CITAS_ACTIVAS_POR_PACIENTE = 3;
+
+// Hasta cuántos días adelante se puede reservar.
+const DIAS_RESERVA_MAXIMO = 60;
+
+/**
+ * El paciente reserva un hueco libre. La cita queda CONFIRMADA al momento
+ * (el hueco es real y la cuenta ya está verificada). Devuelve el ID de la cita.
+ *
+ * $paciente_id y $usuario_id salen de la SESIÓN. Lo demás viene del
+ * formulario y se valida aquí (regla 8).
+ */
+function reservar_hueco(int $paciente_id, int $usuario_id, array $datos): int
+{
+    foreach (['area_id', 'fecha', 'hueco', 'motivo'] as $campo) {
+        if (!isset($datos[$campo]) || !is_string($datos[$campo])) {
+            throw new InvalidArgumentException('Elige un horario y escribe el motivo.');
+        }
+    }
+
+    $area_id = (int) $datos['area_id'];
+    $fecha = trim($datos['fecha']);
+    $motivo = trim($datos['motivo']);
+
+    // El hueco llega como "medico_id|hora", ej. "3|08:40".
+    if (!preg_match('/^([0-9]+)\|([0-2][0-9]:[0-5][0-9])$/', $datos['hueco'], $partes)) {
+        throw new InvalidArgumentException('Elige un horario de la lista.');
+    }
+    $medico_id = (int) $partes[1];
+    $hora = $partes[2];
+
+    if (mb_strlen($motivo) < 5 || mb_strlen($motivo) > 255) {
+        throw new InvalidArgumentException('Cuéntanos el motivo de la consulta (de 5 a 255 caracteres).');
+    }
+
+    $hoy = date('Y-m-d');
+    $limite = date('Y-m-d', strtotime('+' . DIAS_RESERVA_MAXIMO . ' days'));
+    if ($fecha < $hoy || $fecha > $limite) {
+        throw new InvalidArgumentException('Elige una fecha de hoy a ' . DIAS_RESERVA_MAXIMO . ' días.');
+    }
+
+    $conexion = db();
+    $conexion->beginTransaction();
+
+    try {
+        // 1. Bloquear al médico (debe ser del área elegida). Mientras dure
+        //    la transacción, nadie más puede reservar con él: así dos
+        //    pacientes no se quedan con el mismo hueco.
+        $consulta = $conexion->prepare(
+            "SELECT id FROM usuarios
+             WHERE id = :id AND rol = 'medico' AND activo = 1 AND area_id = :area
+             FOR UPDATE"
+        );
+        $consulta->execute(['id' => $medico_id, 'area' => $area_id]);
+        if (!$consulta->fetch()) {
+            throw new InvalidArgumentException('Ese médico no atiende en el área elegida.');
+        }
+
+        // 2. El hueco sigue libre (se vuelve a calcular, ya con el bloqueo).
+        if (!in_array($hora, huecos_libres($medico_id, $fecha), true)) {
+            throw new InvalidArgumentException(
+                'Ese horario acaba de ser reservado o ya no está disponible. Elige otro.'
+            );
+        }
+
+        // 3. Bloquear la ficha del paciente y revisar sus citas.
+        $consulta = $conexion->prepare('SELECT id FROM pacientes WHERE id = :id FOR UPDATE');
+        $consulta->execute(['id' => $paciente_id]);
+        if (!$consulta->fetch()) {
+            throw new InvalidArgumentException('No se pudo identificar al paciente.');
+        }
+
+        $consulta = $conexion->prepare(
+            "SELECT
+                SUM(fecha = :fecha AND hora = :hora) AS misma_hora,
+                COUNT(*) AS activas
+             FROM citas
+             WHERE paciente_id = :paciente
+               AND estado IN ('pendiente', 'confirmada')
+               AND fecha >= CURDATE()"
+        );
+        $consulta->execute([
+            'fecha'    => $fecha,
+            'hora'     => $hora . ':00',
+            'paciente' => $paciente_id,
+        ]);
+        $citas = $consulta->fetch();
+
+        if ((int) $citas['misma_hora'] > 0) {
+            throw new InvalidArgumentException('Ya tienes otra cita a esa misma hora.');
+        }
+
+        if ((int) $citas['activas'] >= MAX_CITAS_ACTIVAS_POR_PACIENTE) {
+            throw new InvalidArgumentException(
+                'Ya tienes ' . MAX_CITAS_ACTIVAS_POR_PACIENTE . ' citas reservadas. '
+                . 'Espera a que pase alguna o cancela una para reservar otra.'
+            );
+        }
+
+        // 4. Crear la cita confirmada.
+        $consulta = $conexion->prepare(
+            "INSERT INTO citas
+                (paciente_id, area_id, medico_id, fecha, hora, motivo, estado, registrado_por)
+             VALUES
+                (:paciente, :area, :medico, :fecha, :hora, :motivo, 'confirmada', :usuario)"
+        );
+        $consulta->execute([
+            'paciente' => $paciente_id,
+            'area'     => $area_id,
+            'medico'   => $medico_id,
+            'fecha'    => $fecha,
+            'hora'     => $hora . ':00',
+            'motivo'   => $motivo,
+            'usuario'  => $usuario_id,
+        ]);
+        $cita_id = (int) $conexion->lastInsertId();
+
+        $conexion->commit();
+
+        return $cita_id;
+    } catch (Throwable $error) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+
+        throw $error;
+    }
+}

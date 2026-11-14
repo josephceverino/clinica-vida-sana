@@ -21,6 +21,9 @@ function acciones_auditoria(): array
         'verificar_cuenta'   => 'Verificó una cuenta de paciente',
         'rechazar_cuenta'    => 'Rechazó una cuenta de paciente',
         'programar_cita'     => 'Programó una cita desde una solicitud',
+        'reservar_cita'      => 'Reservó una cita en un horario libre',
+        'cancelar_cita'      => 'Canceló una cita',
+        'marcar_no_asistio'  => 'Marcó una cita como "no asistió"',
     ];
 }
 
