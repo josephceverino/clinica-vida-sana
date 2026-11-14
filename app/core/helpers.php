@@ -154,3 +154,41 @@ function csrf_verificar(): bool
 
     return $guardado !== '' && hash_equals($guardado, $enviado);
 }
+
+/**
+ * Fecha en palabras, en español: "viernes 14 de noviembre".
+ * Se hace con listas propias (sin la extensión intl) para no depender de
+ * cómo esté instalado PHP en el servidor.
+ * Uso: <?= e(fecha_larga('2026-11-14')) ?>
+ */
+function fecha_larga(string $fecha): string
+{
+    $dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    $meses = [
+        1 => 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+    ];
+
+    $momento = strtotime($fecha);
+
+    return $dias[(int) date('w', $momento)] . ' ' . date('j', $momento)
+        . ' de ' . $meses[(int) date('n', $momento)];
+}
+
+/**
+ * "Hoy", "Mañana" o la fecha en palabras. Para destacar lo más cercano.
+ */
+function fecha_relativa(string $fecha): string
+{
+    $dia = date('Y-m-d', strtotime($fecha));
+
+    if ($dia === date('Y-m-d')) {
+        return 'Hoy';
+    }
+
+    if ($dia === date('Y-m-d', strtotime('+1 day'))) {
+        return 'Mañana';
+    }
+
+    return ucfirst(fecha_larga($dia));
+}
