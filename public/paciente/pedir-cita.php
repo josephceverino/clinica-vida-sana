@@ -41,6 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fecha = is_string($_POST['fecha'] ?? null) ? $_POST['fecha'] : $fecha;
 }
 
+// La fecha TAL COMO LLEGÓ. Para reservar se usa esta, no la corregida de
+// abajo: si ya pasó (ej. el paciente reservó justo después de medianoche),
+// debe dar un error, no reservar en silencio otro día.
+$fecha_enviada = $fecha;
+
 // Validar: el área debe estar en la lista y el día en el rango permitido.
 if (!in_array($area_id, $ids_areas, true)) {
     $area_id = '';
@@ -71,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $cita_id = reservar_hueco($paciente_id, (int) $yo['id'], [
                 'area_id' => $area_id,
-                'fecha'   => $fecha,
+                'fecha'   => $fecha_enviada,
                 'hueco'   => $hueco_elegido,
                 'motivo'  => $motivo,
             ]);

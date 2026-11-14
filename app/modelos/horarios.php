@@ -316,9 +316,18 @@ function reservar_hueco(int $paciente_id, int $usuario_id, array $datos): int
         throw new InvalidArgumentException('Cuéntanos el motivo de la consulta (de 5 a 255 caracteres).');
     }
 
+    // La fecha debe ser real (ej. no "2026-02-30") y estar en el rango.
+    $fecha_valida = DateTimeImmutable::createFromFormat('!Y-m-d', $fecha);
+    if (!$fecha_valida || $fecha_valida->format('Y-m-d') !== $fecha) {
+        throw new InvalidArgumentException('La fecha no es válida. Elige el día otra vez.');
+    }
+
     $hoy = date('Y-m-d');
     $limite = date('Y-m-d', strtotime('+' . DIAS_RESERVA_MAXIMO . ' days'));
-    if ($fecha < $hoy || $fecha > $limite) {
+    if ($fecha < $hoy) {
+        throw new InvalidArgumentException('Ese día ya pasó. Elige otra fecha.');
+    }
+    if ($fecha > $limite) {
         throw new InvalidArgumentException('Elige una fecha de hoy a ' . DIAS_RESERVA_MAXIMO . ' días.');
     }
 
