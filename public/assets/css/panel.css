@@ -740,17 +740,6 @@ a.boton-tabla {
     color: var(--color-titulos);
 }
 
-/* Botón blanco sobre fondo de color */
-.boton-blanco {
-    color: var(--color-principal);
-    background: var(--color-blanco);
-}
-
-.boton-blanco:hover {
-    color: var(--color-blanco);
-    background: var(--color-titulos);
-}
-
 /* Botones de la agenda de hoy, alineados a la derecha */
 .agenda li .boton-tabla,
 .agenda li .estado {

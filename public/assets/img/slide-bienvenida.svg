@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-label="Corazón con línea de pulso">
+  <!-- Ilustración propia (Clínica Vida Sana). Se puede cambiar por una foto. -->
+  <circle cx="240" cy="180" r="150" fill="#FFFFFF" opacity="0.10"/>
+  <circle cx="240" cy="180" r="105" fill="#FFFFFF" opacity="0.12"/>
+  <!-- Corazón -->
+  <path d="M240 255 C 150 195, 150 120, 200 112 C 222 109, 236 122, 240 135 C 244 122, 258 109, 280 112 C 330 120, 330 195, 240 255 Z"
+        fill="#2BB673"/>
+  <!-- Línea de pulso que cruza el corazón -->
+  <polyline points="60,185 170,185 195,150 215,225 240,165 258,200 275,185 420,185"
+            fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Cruces decorativas -->
+  <g fill="#FFFFFF" opacity="0.55">
+    <rect x="388" y="70" width="10" height="34" rx="3"/><rect x="376" y="82" width="34" height="10" rx="3"/>
+    <rect x="80" y="270" width="8" height="26" rx="3"/><rect x="71" y="279" width="26" height="8" rx="3"/>
+  </g>
+</svg>
