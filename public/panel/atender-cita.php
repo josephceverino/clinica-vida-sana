@@ -90,7 +90,7 @@ require __DIR__ . '/../../app/layout/panel_header.php';
         <h1>Atender cita</h1>
         <p><a href="<?= e(url('/panel/citas.php?fecha=' . $cita['fecha'])) ?>">&larr; Volver a mis citas</a></p>
     </div>
-    <span class="estado estado-<?= e($cita['estado']) ?>"><?= e($cita['estado']) ?></span>
+    <span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span>
 </header>
 
 <?php if ($mensaje !== null): ?>

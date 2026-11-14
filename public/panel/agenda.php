@@ -154,7 +154,7 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                     <span><?= e($cita['paciente']) ?></span>
                     <small>
                         <?= $es_medico ? e($cita['area']) : e($cita['medico'] ?? 'Sin médico') ?>
-                        &middot; <?= e($cita['estado']) ?>
+                        &middot; <?= e(texto_estado($cita['estado'])) ?>
                     </small>
                 <?php if ($enlace): ?>
                     </a>

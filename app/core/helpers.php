@@ -192,3 +192,16 @@ function fecha_relativa(string $fecha): string
 
     return ucfirst(fecha_larga($dia));
 }
+
+/**
+ * Texto para mostrar el estado de una cita o solicitud
+ * (ej. 'no_asistio' -> 'no asistió').
+ */
+function texto_estado(string $estado): string
+{
+    $textos = [
+        'no_asistio' => 'no asistió',
+    ];
+
+    return $textos[$estado] ?? $estado;
+}

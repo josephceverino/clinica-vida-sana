@@ -413,3 +413,23 @@
         transition: none;
     }
 }
+
+/* Botón "Cancelar" de una cita: discreto, en rojo suave */
+.boton-cancelar {
+    padding: 0.3rem 0.7rem;
+    font: inherit;
+    font-size: 0.85rem;
+    color: #8A1F14;
+    background: transparent;
+    border: 1px solid #F5B5AE;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.boton-cancelar:hover {
+    color: var(--color-blanco);
+    background: #B23A2B;
+    border-color: #B23A2B;
+}
+
+.estado-no_asistio { background: #EDE7F6; color: #4A2F7A; }

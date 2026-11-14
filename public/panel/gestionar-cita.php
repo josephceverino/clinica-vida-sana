@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../app/core/auth.php';
 require_once __DIR__ . '/../../app/modelos/citas.php';
+require_once __DIR__ . '/../../app/core/auditoria.php';
 
 requerir_login();
 requerir_rol(['admin', 'admision']);
@@ -96,6 +97,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_POST['estado'],
                 $usuario_id
             );
+
+            if ($_POST['estado'] === 'no_asistio') {
+                // Auditoría: queda quién marcó la inasistencia.
+                $consulta = db()->prepare('SELECT paciente_id FROM citas WHERE id = ?');
+                $consulta->execute([$id]);
+                registrar_auditoria('marcar_no_asistio', (int) $consulta->fetchColumn(), 'Cita ' . $id);
+            }
 
             $mensaje = 'Estado actualizado correctamente.';
         } else {
@@ -204,7 +212,7 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                 <?= e($cita['hora']) ?><br>
 
                 <strong>Estado:</strong>
-                <?= e($cita['estado']) ?><br>
+                <?= e(texto_estado($cita['estado'])) ?><br>
 
                 <strong>Médico asignado:</strong>
                 <?= e($cita['medico'] ?? 'Sin médico asignado') ?>
@@ -286,15 +294,31 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                     >
                         Cancelar cita
                     </button>
+
+                    <?php // Solo si estaba confirmada y su hora ya pasó. ?>
+                    <?php if (
+                        $cita['estado'] === 'confirmada'
+                        && strtotime($cita['fecha'] . ' ' . $cita['hora']) <= time()
+                    ): ?>
+                        <button
+                            class="boton boton-claro"
+                            name="estado"
+                            value="no_asistio"
+                            type="submit"
+                        >
+                            No asistió
+                        </button>
+                    <?php endif; ?>
                 </form>
 
                 <p>
                     La cita pasa a <strong>atendida</strong> cuando el médico
-                    registra la atención, no desde aquí.
+                    registra la atención, no desde aquí. Si ya pasó su hora y el
+                    paciente no llegó, márcala como <strong>no asistió</strong>.
                 </p>
             <?php elseif (in_array(
                 $cita['estado'],
-                ['atendida', 'cancelada'],
+                ['atendida', 'cancelada', 'no_asistio'],
                 true
             )): ?>
                 <p>Esta cita ya no admite cambios.</p>

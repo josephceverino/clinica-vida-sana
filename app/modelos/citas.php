@@ -224,6 +224,8 @@ function cambiar_estado_cita(
     $transiciones = [
         'confirmada' => ['pendiente'],
         'cancelada' => ['pendiente', 'confirmada'],
+        // El paciente no llegó: solo una cita confirmada cuya hora ya pasó.
+        'no_asistio' => ['confirmada'],
     ];
 
     if (!isset($transiciones[$nuevo_estado])) {
@@ -252,7 +254,7 @@ function cambiar_estado_cita(
     try {
         // Bloquea la cita mientras se comprueba y actualiza.
         $consulta = $conexion->prepare(
-            'SELECT estado, medico_id FROM citas
+            'SELECT estado, medico_id, fecha, hora FROM citas
              WHERE id = :id FOR UPDATE'
         );
         $consulta->execute(['id' => $cita_id]);
@@ -269,6 +271,16 @@ function cambiar_estado_cita(
         if ($nuevo_estado === 'confirmada' && $cita['medico_id'] === null) {
             throw new InvalidArgumentException(
                 'Asigna un médico antes de confirmar la cita.'
+            );
+        }
+
+        // No se puede decir que "no asistió" a una cita que aún no llega.
+        if (
+            $nuevo_estado === 'no_asistio'
+            && strtotime($cita['fecha'] . ' ' . $cita['hora']) > time()
+        ) {
+            throw new InvalidArgumentException(
+                'Solo puedes marcar "no asistió" cuando ya pasó la hora de la cita.'
             );
         }
 
@@ -502,4 +514,70 @@ function citas_del_paciente(int $paciente_id): array
     $consulta->execute(['paciente' => $paciente_id]);
 
     return $consulta->fetchAll();
+}
+
+// Hasta cuántas horas antes de la cita puede cancelar el paciente.
+// Más tarde ya no: el médico no alcanzaría a ofrecer ese turno a otro.
+const HORAS_MINIMAS_PARA_CANCELAR = 2;
+
+/**
+ * ¿El paciente todavía puede cancelar esta cita? (estado vigente y faltan
+ * al menos HORAS_MINIMAS_PARA_CANCELAR horas).
+ */
+function puede_cancelar_paciente(array $cita): bool
+{
+    if (!in_array($cita['estado'], ['pendiente', 'confirmada'], true)) {
+        return false;
+    }
+
+    $momento_cita = strtotime($cita['fecha'] . ' ' . $cita['hora']);
+
+    return $momento_cita - time() >= HORAS_MINIMAS_PARA_CANCELAR * 3600;
+}
+
+/**
+ * El paciente cancela SU cita. La hora vuelve a quedar libre para otros.
+ * $paciente_id sale de la SESIÓN: así nadie cancela la cita de otra persona.
+ */
+function cancelar_cita_paciente(int $cita_id, int $paciente_id): void
+{
+    $conexion = db();
+    $conexion->beginTransaction();
+
+    try {
+        // La cita debe ser de ESTE paciente (si no, se responde igual que si
+        // no existiera, para no revelar citas ajenas).
+        $consulta = $conexion->prepare(
+            'SELECT id, fecha, hora, estado FROM citas
+             WHERE id = :id AND paciente_id = :paciente
+             FOR UPDATE'
+        );
+        $consulta->execute(['id' => $cita_id, 'paciente' => $paciente_id]);
+        $cita = $consulta->fetch();
+
+        if (!$cita) {
+            throw new InvalidArgumentException('La cita no existe.');
+        }
+
+        if (!puede_cancelar_paciente($cita)) {
+            throw new InvalidArgumentException(
+                'Esta cita ya no se puede cancelar desde la web (faltan menos de '
+                . HORAS_MINIMAS_PARA_CANCELAR . ' horas o ya no está vigente). '
+                . 'Llama a admisión.'
+            );
+        }
+
+        $consulta = $conexion->prepare(
+            "UPDATE citas SET estado = 'cancelada' WHERE id = :id"
+        );
+        $consulta->execute(['id' => $cita_id]);
+
+        $conexion->commit();
+    } catch (Throwable $error) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+
+        throw $error;
+    }
 }
