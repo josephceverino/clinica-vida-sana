@@ -23,9 +23,18 @@ Lo que sigue (ver [`plan-portal-paciente.md`](plan-portal-paciente.md)):
 | Portal: historia clínica | `public/paciente/historia.php` | paciente con cuenta verificada | **Hecho** (rama `feature/historia-clinica`) |
 | Atenciones (el médico escribe) | `public/panel/atender-cita.php` | medico | **Hecho** (rama `feature/historia-clinica`) |
 
+Después se agregaron (ya están en `main`):
+
+| Qué | Archivo(s) | Quién puede entrar |
+|---|---|---|
+| Horarios de los médicos | `public/panel/horarios.php`, `app/modelos/horarios.php` | admin |
+| Reserva directa de un horario libre (la cita queda **confirmada** al momento) | `public/paciente/pedir-cita.php` | paciente con cuenta verificada |
+| Cancelar cita (hasta 2 horas antes) y marcar "no asistió" | `public/paciente/citas.php`, `public/panel/gestionar-cita.php` | paciente / admisión |
+| Auditoría de accesos a datos clínicos | `public/panel/auditoria.php` | admin |
+
 Con eso **el plan del portal está completo**. Lo que queda es revisar el código, probarlo en tu PC y el paso 8 (pruebas finales con los 4 roles). Lee `docs/backend.md`, sección *Historia clínica*, para ver las reglas.
 
-**El formulario público `solicitar-cita.php` ya se retiró**: cualquiera podía enviar solicitudes con datos inventados. Ahora el paciente se registra, y las solicitudes salen de su cuenta (el `paciente_id` sale de la sesión, nunca de un campo del formulario). Un buen ejemplo de cómo se hace es `public/paciente/pedir-cita.php` y `registrar_solicitud_paciente()` en `app/modelos/solicitudes.php`.
+**El formulario público `solicitar-cita.php` ya se retiró**: cualquiera podía enviar solicitudes con datos inventados. Ahora el paciente se registra y **reserva un horario libre** desde su cuenta (la cita queda confirmada al momento). Si no hay horarios, puede enviar una **solicitud** a admisión; en ambos casos el `paciente_id` sale de la sesión, nunca de un campo del formulario. Un buen ejemplo de cómo se hace es `public/paciente/pedir-cita.php` y `registrar_solicitud_paciente()` en `app/modelos/solicitudes.php`.
 
 Hazlas **una por una**, cada una en su propia rama. Para las páginas del portal usa `requerir_paciente_verificado()` (en `app/core/auth.php`) y la plantilla `paciente_header.php`. Un buen punto de partida es `public/paciente/index.php`.
 
@@ -42,12 +51,11 @@ cd clinica-vida-sana
 ```
 
 ### 2.2 Traer la rama más reciente
-Por ahora `main` solo tiene el `CLAUDE.md`. Todo el trabajo está en ramas, así que cámbiate a la última:
+`main` ya tiene todo el proyecto: páginas públicas, login, panel, portal del paciente, historia clínica y reservas. Basta con:
 ```
-git fetch
-git switch feature/usuarios
+git switch main
+git pull
 ```
-Esa rama ya incluye todo lo anterior: páginas públicas, login, panel y usuarios.
 
 ### 2.3 Iniciar XAMPP
 Abre el panel de XAMPP e inicia **Apache** y **MySQL**.
@@ -76,9 +84,11 @@ Las cuentas de paciente entran por el mismo login, escribiendo su **correo** (`p
 
 ## 3. Crear tu rama
 
-Una rama por tarea. Parte de `feature/usuarios` (hasta que se unan los primeros Pull Requests):
+Una rama por tarea. Parte de `main` actualizado:
 ```
-git switch -c feature/portal-citas
+git switch main
+git pull
+git switch -c feature/nombre-de-la-tarea
 ```
 Nunca trabajes directo en `main`.
 
@@ -93,7 +103,9 @@ Copia esta estructura. El menú lateral activa el enlace solo cuando el archivo 
 // Pacientes (zona privada).
 require_once __DIR__ . '/../../app/core/auth.php';
 
-// Regla 6: toda página del panel empieza protegida.
+// Regla 6: toda página del panel empieza protegida
+// (primero el login, luego el rol).
+requerir_login();
 requerir_rol(['admin', 'admision']);
 
 $titulo_pagina = 'Pacientes';
@@ -112,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // 2) Leer los datos que se van a mostrar.
-$pacientes = $pdo->query('SELECT id, dni, nombres, apellidos FROM pacientes ORDER BY apellidos')->fetchAll();
+$pacientes = $pdo->query('SELECT id, tipo_documento, numero_documento, nombres, apellidos FROM pacientes ORDER BY apellidos')->fetchAll();
 $mensaje = mensaje_tomar();
 
 require __DIR__ . '/../../app/layout/panel_header.php';
