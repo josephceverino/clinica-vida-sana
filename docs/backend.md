@@ -26,7 +26,9 @@ Las páginas de `public/panel/` solo muestran y reciben datos; la lógica y las 
 
 ### Paciente (cuenta verificada)
 - **Mis citas** (`public/paciente/citas.php`): sus próximas citas, su historial y sus solicitudes. Solo las suyas: el paciente se toma de la **sesión**, nunca de la dirección ni de un formulario.
-- **Pedir cita** (`public/paciente/pedir-cita.php`): área pública, fecha preferida opcional (hoy a 6 meses) y motivo obligatorio (5 a 500 caracteres). Crea una solicitud ligada a su cuenta.
+- **Pedir cita** (`public/paciente/pedir-cita.php`) tiene dos caminos:
+  - **Reservar un horario libre** (el principal): elige área y día, ve los horarios libres de los médicos y reserva. La cita queda **confirmada** al momento (ver *Horarios, reservas, cancelación e inasistencias*).
+  - **Enviar una solicitud** (plan B, si no hay horarios): área pública, fecha preferida opcional (hoy a 6 meses) y motivo obligatorio (5 a 500 caracteres). Crea una solicitud ligada a su cuenta, y admisión la programa.
 - Máximo **3 solicitudes pendientes** a la vez por paciente. El conteo y el guardado van dentro de una transacción con `FOR UPDATE`, así que enviar varias a la vez no salta el límite.
 - Una cuenta pendiente de verificación no puede entrar a estas páginas.
 
@@ -68,11 +70,11 @@ Páginas: `public/panel/atender-cita.php` (el médico) y `public/paciente/histor
 
 ## Reglas de la agenda
 
-Al registrar una cita se rechaza:
-- Dos citas activas del **mismo médico** en la misma fecha y hora.
-- Dos citas del **mismo paciente** en la misma fecha y hora, salvo que la anterior esté cancelada.
+Reglas contra citas dobles:
+- **Al registrar** una cita (admisión) todavía no hay médico, así que solo se rechazan dos citas del **mismo paciente** en la misma fecha y hora, salvo que la anterior esté cancelada.
+- **Al asignar médico**, al **reservar** y al **programar una solicitud** se rechaza que el **médico** tenga otra cita que se cruce. Se compara por tramos (desde la hora de la cita hasta el fin de su turno), no solo por la hora exacta. Ver *Citas que se cruzan* en la sección *Horarios, reservas, cancelación e inasistencias*.
 
-> **Alcance:** la comprobación compara la fecha y hora **exactas**. No calcula la duración de las consultas ni los solapamientos entre intervalos.
+> **Alcance:** la regla del paciente sigue comparando la fecha y hora **exactas**; la del médico usa tramos.
 
 ## Estados
 

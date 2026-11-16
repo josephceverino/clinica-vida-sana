@@ -167,14 +167,16 @@ require __DIR__ . '/../../app/layout/panel_header.php';
 
 ```php
 // BIEN: los datos del usuario van en ? (consulta preparada)
-$consulta = $pdo->prepare('SELECT id FROM pacientes WHERE dni = ?');
-$consulta->execute([$dni]);
+$consulta = $pdo->prepare(
+    'SELECT id FROM pacientes WHERE tipo_documento = ? AND numero_documento = ?'
+);
+$consulta->execute([$tipo_documento, $numero_documento]);
 
 // MAL: nunca pegues datos del usuario dentro del SQL
-// $pdo->query("SELECT id FROM pacientes WHERE dni = '$dni'");   // ¡inyección SQL!
+// $pdo->query("SELECT id FROM pacientes WHERE numero_documento = '$numero_documento'");   // ¡inyección SQL!
 ```
 
-Para el DNI duplicado, la columna es `UNIQUE`: captura `PDOException` con código `23000` (mira cómo lo hace `usuarios.php`).
+Para el documento duplicado, el par `tipo_documento` + `numero_documento` es `UNIQUE`: captura `PDOException` con código `23000` (mira cómo lo hace `usuarios.php`).
 
 ---
 
@@ -202,7 +204,7 @@ git push -u origin feature/pacientes    # -u solo la primera vez
 
 - Commits pequeños, en español e imperativo ("Agrega...", "Corrige...").
 - Cuando termines una tarea, abre un **Pull Request** en GitHub y pide revisión a Joseph.
-- Mientras los primeros PR no estén unidos a `main`, tu PR debe apuntar a `feature/usuarios` (en el desplegable **base**). Joseph te avisa cuando eso cambie.
+- Tu PR apunta a `main` (en el desplegable **base**). No lo unas hasta que Joseph lo revise.
 
 ---
 
