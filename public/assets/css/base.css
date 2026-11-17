@@ -8,6 +8,14 @@
     --color-blanco:    #FFFFFF;
     --color-texto:     #33475B;
 
+    /* Accesibilidad (contraste mínimo 4.5:1 para leer bien):
+       el verde de acento es muy claro para TEXTO sobre blanco (2.6:1),
+       así que las letras verdes usan este tono más oscuro (5.3:1).
+       El verde claro se sigue usando para fondos y adornos. */
+    --color-acento-texto: #1F7A4D;
+    /* Gris para textos secundarios (notas, "sin datos", cabeceras de tabla). */
+    --color-texto-suave:  #5B6B79;
+
     --fuente-texto: system-ui, -apple-system, "Segoe UI", sans-serif;
     --ancho-maximo: 1100px;
 }
@@ -128,7 +136,7 @@ a {
 
 .etiqueta {
     margin: 0 0 0.5rem;
-    color: var(--color-acento);
+    color: var(--color-acento-texto);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -444,6 +452,33 @@ select {
 }
 
 /* ---------- Accesibilidad ---------- */
+/* "Saltar al contenido": invisible hasta que se llega con la tecla Tab.
+   Así quien usa teclado no tiene que recorrer todo el menú en cada página. */
+.saltar-contenido {
+    position: absolute;
+    left: 1rem;
+    top: -3rem;
+    z-index: 100;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    background: var(--color-titulos);
+    color: var(--color-blanco);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.saltar-contenido:focus {
+    top: 1rem;
+    outline: 2px solid var(--color-acento);
+    outline-offset: 2px;
+}
+
+/* El contenido recibe el foco al saltar, pero no hace falta enmarcarlo:
+   es un contenedor, no un botón ni un enlace. */
+#contenido:focus {
+    outline: none;
+}
+
 /* Oculto a la vista, pero los lectores de pantalla sí lo leen
    (ej. la tabla con los datos de un gráfico). */
 .solo-lectores {
@@ -695,7 +730,7 @@ select {
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-acento);
+    color: var(--color-acento-texto);
 }
 
 /* La X de cerrar, arriba a la derecha */
@@ -737,7 +772,7 @@ select {
 .aviso-nota {
     margin: 1rem 0 0;
     font-size: 0.75rem;
-    color: #8A99A6;
+    color: var(--color-texto-suave);
 }
 
 /* ---------- Celular ---------- */

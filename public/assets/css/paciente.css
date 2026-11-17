@@ -79,7 +79,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
     background: #F8FAFB;
     border-bottom: 2px solid #EDF1F4;
 }
@@ -94,7 +94,7 @@
 }
 
 .vacio {
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 .estado {
@@ -144,7 +144,7 @@
 .atencion-datos dt {
     margin-top: 0.6rem;
     font-size: 0.8rem;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 .atencion-datos dd {
@@ -282,7 +282,7 @@
 .form-password small {
     display: block;
     margin-top: 0.25rem;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 /* ---------- Pedir cita: buscador y horarios ---------- */
@@ -356,7 +356,7 @@
 
 /* Hora elegida: verde */
 .hora input:checked + span {
-    color: var(--color-blanco);
+    color: var(--color-titulos); /* blanco sobre verde no se leía (2.6:1) */
     background: var(--color-acento);
     border-color: var(--color-acento);
 }
