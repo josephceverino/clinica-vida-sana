@@ -22,7 +22,7 @@ $valores = [
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($valores as $campo => $vacio) {
-        $valores[$campo] = trim((string) ($_POST[$campo] ?? ''));
+        $valores[$campo] = trim(campo_texto($_POST, $campo));
     }
 
     if (!csrf_verificar()) {
