@@ -25,14 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $valores[$campo] = trim(campo_texto($_POST, $campo));
     }
 
-    if (!csrf_verificar()) {
+    $token_valido = csrf_verificar();
+
+    if ($token_valido) {
+        // Cada envío cuenta para el límite, salga bien o mal. Se anota ANTES
+        // de contar, para que muchos envíos a la vez no pasen todos juntos.
+        registrar_intento('registro', $valores['numero_documento']);
+    }
+
+    if (!$token_valido) {
         $errores[] = 'La sesión expiró. Recarga la página e inténtalo otra vez.';
     } elseif (registro_bloqueado($valores['numero_documento'])) {
         $errores[] = 'Demasiados intentos. Espera un rato e inténtalo otra vez.';
     } else {
-        // Cada envío cuenta para el límite, salga bien o mal.
-        registrar_intento('registro', $valores['numero_documento']);
-
         [$errores, $datos] = validar_registro($_POST);
 
         if (count($errores) === 0) {

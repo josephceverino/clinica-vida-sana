@@ -25,23 +25,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         || mb_strlen($identificador) > 120 || strlen($password) > 200) {
         // Validación en el servidor (aunque el navegador también valide).
         $error = 'Escribe tu usuario o correo y tu contraseña.';
-    } elseif (login_bloqueado($identificador)) {
-        // Ni siquiera comprobamos la contraseña: así un ataque de fuerza
-        // bruta no puede seguir probando mientras dura el bloqueo.
-        $error = 'Demasiados intentos. Espera unos minutos e inténtalo otra vez.';
     } else {
-        $fila = verificar_credenciales($identificador, $password);
-
-        if ($fila !== null) {
-            limpiar_intentos('login', $identificador);
-            iniciar_login($fila);
-            registrar_auditoria('iniciar_sesion');
-            redirigir(ruta_inicio_por_rol($fila['rol']));
-        }
-
-        // Mensaje genérico: no decimos si falló la cuenta o la contraseña.
+        // El intento se anota ANTES de comprobar la contraseña. Si se anotara
+        // después, 30 intentos enviados a la vez pasarían todos el control
+        // antes de que se guarde ninguno (lo probamos: pasaban 10, no 5).
         registrar_intento('login', $identificador);
-        $error = 'Usuario, correo o contraseña incorrectos.';
+
+        if (login_bloqueado($identificador)) {
+            // Ni siquiera comprobamos la contraseña: así un ataque de fuerza
+            // bruta no puede seguir probando mientras dura el bloqueo.
+            $error = 'Demasiados intentos. Espera unos minutos e inténtalo otra vez.';
+        } else {
+            $fila = verificar_credenciales($identificador, $password);
+
+            if ($fila !== null) {
+                // Entró bien: se borran sus intentos (también el de ahora).
+                limpiar_intentos('login', $identificador);
+                iniciar_login($fila);
+                registrar_auditoria('iniciar_sesion');
+                redirigir(ruta_inicio_por_rol($fila['rol']));
+            }
+
+            // Mensaje genérico: no decimos si falló la cuenta o la contraseña.
+            $error = 'Usuario, correo o contraseña incorrectos.';
+        }
     }
 }
 
