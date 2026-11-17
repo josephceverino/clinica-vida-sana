@@ -89,18 +89,21 @@ function limpiar_intentos(string $tipo, string $clave): void
 
 /**
  * ¿Está bloqueado el login para esta IP o esta cuenta?
+ * Se llama DESPUÉS de registrar_intento(): el intento actual ya está
+ * contado, por eso es "más de" el límite. Con límite 5, pasan 5 intentos.
  */
 function login_bloqueado(string $identificador): bool
 {
-    return contar_intentos('login', 'ip', ip_cliente(), VENTANA_LOGIN_SEG) >= LIMITE_LOGIN_POR_IP
-        || contar_intentos('login', 'clave', clave_intento($identificador), VENTANA_LOGIN_SEG) >= LIMITE_LOGIN_POR_CUENTA;
+    return contar_intentos('login', 'ip', ip_cliente(), VENTANA_LOGIN_SEG) > LIMITE_LOGIN_POR_IP
+        || contar_intentos('login', 'clave', clave_intento($identificador), VENTANA_LOGIN_SEG) > LIMITE_LOGIN_POR_CUENTA;
 }
 
 /**
  * ¿Está bloqueado el registro para esta IP o este documento?
+ * También se llama DESPUÉS de registrar_intento() (ver login_bloqueado()).
  */
 function registro_bloqueado(string $documento): bool
 {
-    return contar_intentos('registro', 'ip', ip_cliente(), VENTANA_REGISTRO_SEG) >= LIMITE_REGISTRO_POR_IP
-        || contar_intentos('registro', 'clave', clave_intento($documento), VENTANA_REGISTRO_SEG) >= LIMITE_REGISTRO_POR_DOCUMENTO;
+    return contar_intentos('registro', 'ip', ip_cliente(), VENTANA_REGISTRO_SEG) > LIMITE_REGISTRO_POR_IP
+        || contar_intentos('registro', 'clave', clave_intento($documento), VENTANA_REGISTRO_SEG) > LIMITE_REGISTRO_POR_DOCUMENTO;
 }
