@@ -29,7 +29,7 @@ Dueño: Joseph. Ya está hecho y subido a las ramas; falta tu calificación.
 | ID | Ítem | Cómo se comprueba | Puntos | Resultado |
 |---|---|---|---|---|
 | 0.1 | Entorno local funcionando | Abrir `http://localhost/clinica-vida-sana/public` y ver la página sin errores. | __ | |
-| 0.2 | Base de datos importada | Existen las 5 tablas en `clinica_vida_sana` y `seed.sql` cargó datos. | __ | |
+| 0.2 | Base de datos importada | Existen las 9 tablas en `clinica_vida_sana` y `seed.sql` cargó datos. | __ | |
 | 0.3 | Plantilla base y página de inicio | Header, footer y portada se ven bien en PC y en celular (ancho angosto). | __ | |
 | 0.4 | Páginas Servicios, Nosotros y Contacto | Las tres abren y los enlaces del menú funcionan. Servicios muestra las áreas de la base de datos. | __ | |
 | 0.5 🔒 | Login y logout | Clave mala → error genérico. Clave buena → panel. Salir → vuelve al login y el panel queda cerrado. | __ | |
@@ -61,12 +61,12 @@ Dueño: Alexander. Usa la plantilla `panel_header.php` y las reglas de seguridad
 
 | ID | Ítem | Cómo se comprueba | Puntos | Resultado |
 |---|---|---|---|---|
-| 2.1 🔒 | Formulario público "Solicitar cita" | Guarda en `solicitudes_cita`. Tiene CSRF, validación en el servidor y consulta preparada. Datos inválidos muestran errores. | __ | |
+| 2.1 🔒 | "Pedir cita" del portal del paciente (reemplaza al antiguo formulario público, que se retiró) | Reserva un horario libre (cita confirmada) o envía una solicitud a `solicitudes_cita`. El paciente sale de la sesión. Tiene CSRF, validación en el servidor y consulta preparada. Datos inválidos muestran errores. | __ | |
 | 2.2 | Panel: Solicitudes | Lista las solicitudes nuevas y permite marcarlas como atendida o descartada. Solo admin y admisión. | __ | |
-| 2.3 🔒 | Panel: Pacientes | Listar, buscar por DNI o nombre, crear y editar. DNI único (error claro si se repite). | __ | |
+| 2.3 🔒 | Panel: Pacientes | Listar, buscar por documento o nombre, crear y editar. Documento único junto con su tipo (error claro si se repite). | __ | |
 | 2.4 🔒 | Panel: Citas | Crear cita para un paciente, cambiar estado, ver por fecha. El médico solo ve sus citas del día. | __ | |
 | 2.5 | Datos ficticios | No hay nombres, DNI ni teléfonos de personas reales en el seed ni en pantalla. | __ | |
-| 2.6 🔒 | Todas las páginas del panel protegidas | Cada archivo de `public/panel/` empieza con `requerir_login()` o `requerir_rol()`. | __ | |
+| 2.6 🔒 | Todas las páginas del panel protegidas | Cada archivo de `public/panel/` empieza con `requerir_login()` (y `requerir_rol()` si aplica). | __ | |
 
 **Fase 2 aprobada:** [ ] Sí  [ ] No — Fecha: ______
 
@@ -108,6 +108,26 @@ Se comprueban las 9 reglas del CLAUDE.md sobre el sistema completo.
 | 4.8 🔒 | Regla 8 — Validación en el servidor | Enviar datos inválidos saltándose el navegador: el servidor los rechaza. | __ | |
 | 4.9 🔒 | Regla 9 — Errores genéricos | Con `debug` en `false`, un error muestra mensaje genérico, sin detalles técnicos. | __ | |
 
+### Pruebas hechas en local (17/11/2026)
+
+Para que Joseph y Alexander califiquen con datos. Se hicieron con datos ficticios en XAMPP, enviando peticiones a mano (sin el navegador), y lo que se creó se borró al terminar.
+
+| ID | Qué se probó | Resultado |
+|---|---|---|
+| 4.1 | Búsqueda en el código de SQL armado con datos del usuario. | Ninguno. La única consulta sin `prepare` es fija (zona horaria). |
+| 4.2 | Las 8 contraseñas de la base y búsqueda de claves en el repo. | Todas son hash bcrypt. En el repo solo está la contraseña de prueba documentada. |
+| 4.3 | `<script>alert(1)</script>` en una solicitud de cita. | Se ve como texto en "Mis citas" y en el panel de solicitudes. |
+| 4.4 | Cada formulario POST y cada página que recibe POST. | Todos tienen `csrf_campo()` y todas llaman a `csrf_verificar()`. |
+| 4.5 | Cabecera de la cookie de sesión. | `HttpOnly` y `SameSite=Lax`; `Secure` se activa solo con HTTPS (falta verlo en Fedora). |
+| 4.6 | Las 16 páginas del panel sin sesión, con admin y con paciente. | Sin sesión → login; paciente → 403. |
+| 4.7 | Historial de Git. | `config/config.php` nunca se subió. |
+| 4.8 | 13 envíos manipulados: médico de otra área, horario falso, fecha pasada, área interna, texto largo, cancelar la cita de otro paciente, `paciente_id` falso, DNI con letras, rol inventado; y campos enviados como lista (`campo[]=x`) en todas las páginas. | Todos rechazados. Los campos como lista rompían el login: **corregido** (PR #13). |
+| 4.9 | Error de conexión con `debug` en `false`. | Página "Algo salió mal", sin detalles técnicos. |
+| Extra | 5 pacientes reservan la misma hora a la vez; un paciente pide 5 horas a la vez. | Solo uno consigue la hora; el paciente se queda en 3 citas (el máximo). |
+| Extra | Límite de intentos: 5 por cuenta, 20 por IP, registro, y 30 intentos a la vez. | Bloquea bien. Los 30 a la vez dejaban probar 10 contraseñas: **corregido** (PR #14), ahora 5. |
+
+Pendiente para Fedora: ver la cookie con `Secure` y repetir 4.9 con el `config.php` de producción.
+
 **Fase 4 aprobada:** [ ] Sí  [ ] No — Fecha: ______
 
 ---
@@ -136,7 +156,7 @@ Se deja para el final, como acordamos.
 | 6.1 | README claro | Explica qué es, cómo instalarlo y los usuarios de prueba. | __ | |
 | 6.2 | Instalación desde cero | Clonar el repo en otra PC y seguir "Cómo probar" del CLAUDE.md: funciona. | __ | |
 | 6.3 | Repositorio ordenado | `main` limpio, ramas viejas borradas, commits en español. | __ | |
-| 6.4 | Prueba completa del flujo | Visitante envía solicitud → admisión la ve → crea paciente y cita → médico la ve. | __ | |
+| 6.4 | Prueba completa del flujo | Visitante se registra → admisión verifica su cuenta → el paciente reserva un horario libre → el médico ve la cita y registra la atención → el paciente la ve en su historia clínica. | __ | |
 | 6.5 | Demostración ensayada | Ambos pueden explicar cada parte del sistema. | __ | |
 
 **Fase 6 aprobada:** [ ] Sí  [ ] No — Fecha: ______

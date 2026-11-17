@@ -85,7 +85,7 @@ require __DIR__ . '/../app/layout/publico_header.php';
         <div class="campo">
             <label for="correo">Correo</label>
             <input type="email" id="correo" name="correo" maxlength="120"
-                   placeholder="correo@ejemplo.com" value="<?= e($valores['correo']) ?>"
+                   placeholder="tu.correo@example.com" value="<?= e($valores['correo']) ?>"
                    autocomplete="email" required>
         </div>
 

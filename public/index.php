@@ -35,7 +35,7 @@ $diapositivas = [
     [
         'etiqueta' => 'Citas en línea',
         'titulo'   => 'Pide tu cita sin hacer cola.',
-        'texto'    => 'Crea tu cuenta, elige el área y admisión te confirma la fecha y la hora.',
+        'texto'    => 'Crea tu cuenta, elige el área y reserva un horario libre. Tu cita queda confirmada al momento.',
         'boton'    => ['Crear mi cuenta', '/registro.php'],
         'imagen'   => 'slide-citas.svg',
         'tono'     => 'tono-azul',
@@ -116,7 +116,7 @@ $diapositivas = [
         <article class="punto">
             <span class="punto-numero">03</span>
             <h3>Citas fáciles</h3>
-            <p>Pide tu cita desde la web y nuestro equipo de admisión te confirma.</p>
+            <p>Elige el día y la hora que te quedan mejor desde la web, y tu cita queda confirmada al instante.</p>
         </article>
     </div>
 </section>

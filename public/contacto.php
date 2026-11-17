@@ -58,7 +58,7 @@ require __DIR__ . '/../app/layout/publico_header.php';
 <!-- 3. Llamado final -->
 <section class="llamado">
     <h2>¿Quieres pedir una cita?</h2>
-    <p>Hazlo desde el Portal del paciente: admisión la confirmará.</p>
+    <p>Hazlo desde el Portal del paciente: eliges el horario y tu cita queda confirmada.</p>
     <a class="boton boton-claro" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
 </section>
 
