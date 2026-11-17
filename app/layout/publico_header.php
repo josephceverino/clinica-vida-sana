@@ -25,6 +25,8 @@ $sesion_publica = isset($_COOKIE[session_name()]) ? usuario_actual() : null;
     <?php endif; ?>
 </head>
 <body>
+<!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->
+<a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 <header class="cabecera">
     <a class="marca" href="<?= e(url('/')) ?>">Clínica Vida Sana</a>
     <nav class="menu">
@@ -40,4 +42,4 @@ $sesion_publica = isset($_COOKIE[session_name()]) ? usuario_actual() : null;
         <?php endif; ?>
     </nav>
 </header>
-<main class="contenido">
+<main class="contenido" id="contenido" tabindex="-1">

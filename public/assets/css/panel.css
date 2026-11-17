@@ -228,7 +228,7 @@
 
 .vacio {
     margin: 0;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 .agenda {
@@ -262,7 +262,7 @@
 }
 
 .agenda-hora small {
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 .agenda-detalle {
@@ -273,7 +273,7 @@
 }
 
 .agenda-detalle small {
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 /* Etiquetas de estado */
@@ -312,7 +312,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
     border-bottom: 2px solid #EDF1F4;
 }
 
@@ -327,7 +327,7 @@
 }
 
 .tabla small {
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 .boton-tabla {
@@ -439,7 +439,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
     background: #F8FAFB;
     border-bottom: 2px solid #EDF1F4;
 }
@@ -608,7 +608,7 @@ a.dato-enlace:hover {
     font-size: 0.85rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 .cuenta-comparacion {
@@ -625,7 +625,7 @@ a.dato-enlace:hover {
 .datos dt {
     margin-top: 0.5rem;
     font-size: 0.8rem;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 .datos dd {
@@ -846,7 +846,7 @@ a.boton-tabla {
     margin-bottom: 0.5rem;
     padding-bottom: 0.4rem;
     border-bottom: 1px solid #EDF1F4;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 .calendario-cabecera strong {
@@ -857,7 +857,7 @@ a.boton-tabla {
 .calendario-vacio {
     margin: 0;
     font-size: 0.85rem;
-    color: #9AA8B4;
+    color: var(--color-texto-suave);
 }
 
 /* Cada cita: tarjetita con una franja de color a la izquierda según el estado */
@@ -884,7 +884,7 @@ a.calendario-cita:hover {
 }
 
 .calendario-cita small {
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 /* Colores por estado (los mismos tonos que las etiquetas de estado) */
@@ -932,7 +932,7 @@ a.calendario-cita:hover {
 .form-password small {
     display: block;
     margin-top: 0.25rem;
-    color: #6B7C8B;
+    color: var(--color-texto-suave);
 }
 
 /* Filtros de la auditoría: separados de la tabla */

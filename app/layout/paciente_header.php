@@ -31,6 +31,8 @@ $menu_paciente = [
     <link rel="stylesheet" href="<?= e(url('/assets/css/paciente.css')) ?>">
 </head>
 <body>
+<!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->
+<a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 <header class="paciente-barra">
     <a class="marca" href="<?= e(url('/paciente/index.php')) ?>">Vida Sana <span>Portal del paciente</span></a>
 
@@ -55,4 +57,4 @@ $menu_paciente = [
         </form>
     </div>
 </header>
-<main class="contenido">
+<main class="contenido" id="contenido" tabindex="-1">

@@ -70,6 +70,8 @@ $iniciales = mb_strtoupper(
     <link rel="stylesheet" href="<?= e(url('/assets/css/panel.css')) ?>">
 </head>
 <body class="panel-body">
+<!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->
+<a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 <div class="panel">
 
     <aside class="panel-lateral">
@@ -125,4 +127,4 @@ $iniciales = mb_strtoupper(
     </aside>
 
     <div class="panel-principal">
-        <main class="panel-contenido">
+        <main class="panel-contenido" id="contenido" tabindex="-1">
