@@ -119,6 +119,18 @@ function mensaje_tomar(): ?array
 }
 
 /**
+ * Lee un campo de un formulario ($_POST o $_GET) como TEXTO.
+ * Si no llegó, o llegó como lista (campo[]=x, un truco para romper la
+ * página), devuelve $por_defecto. Así trim() y compañía nunca fallan.
+ * Uso: $usuario = campo_texto($_POST, 'usuario');
+ */
+function campo_texto(array $origen, string $campo, string $por_defecto = ''): string
+{
+    $valor = $origen[$campo] ?? $por_defecto;
+    return is_string($valor) ? $valor : $por_defecto;
+}
+
+/**
  * Devuelve el token CSRF de la sesión (lo crea si no existe).
  */
 function csrf_token(): string

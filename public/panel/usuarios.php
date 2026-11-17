@@ -27,15 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirigir('/panel/usuarios.php');
     }
 
-    $accion = $_POST['accion'] ?? '';
+    $accion = campo_texto($_POST, 'accion');
 
     // ---------- Crear usuario ----------
     if ($accion === 'crear') {
-        $form['nombre']  = trim($_POST['nombre'] ?? '');
-        $form['usuario'] = strtolower(trim($_POST['usuario'] ?? ''));
-        $form['rol']     = $_POST['rol'] ?? '';
-        $form['area_id'] = $_POST['area_id'] ?? '';
-        $password        = $_POST['password'] ?? '';
+        $form['nombre']  = trim(campo_texto($_POST, 'nombre'));
+        $form['usuario'] = strtolower(trim(campo_texto($_POST, 'usuario')));
+        $form['rol']     = campo_texto($_POST, 'rol');
+        $form['area_id'] = campo_texto($_POST, 'area_id');
+        $password        = campo_texto($_POST, 'password');
 
         // Regla 8: validar siempre en el servidor.
         if (mb_strlen($form['nombre']) < 3 || mb_strlen($form['nombre']) > 100) {

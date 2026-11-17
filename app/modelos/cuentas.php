@@ -26,14 +26,15 @@ function validar_registro(array $entrada): array
     $errores = [];
     $tipos = tipos_documento();
 
-    $nombres   = trim((string) ($entrada['nombres'] ?? ''));
-    $apellidos = trim((string) ($entrada['apellidos'] ?? ''));
-    $tipo      = (string) ($entrada['tipo_documento'] ?? '');
-    $numero    = strtoupper(trim((string) ($entrada['numero_documento'] ?? '')));
-    $correo    = mb_strtolower(trim((string) ($entrada['correo'] ?? '')));
-    $celular   = trim((string) ($entrada['celular'] ?? ''));
-    $password  = (string) ($entrada['password'] ?? '');
-    $confirmar = (string) ($entrada['confirmar_password'] ?? '');
+    // campo_texto(): si algún campo llega como lista, se toma como vacío.
+    $nombres   = trim(campo_texto($entrada, 'nombres'));
+    $apellidos = trim(campo_texto($entrada, 'apellidos'));
+    $tipo      = campo_texto($entrada, 'tipo_documento');
+    $numero    = strtoupper(trim(campo_texto($entrada, 'numero_documento')));
+    $correo    = mb_strtolower(trim(campo_texto($entrada, 'correo')));
+    $celular   = trim(campo_texto($entrada, 'celular'));
+    $password  = campo_texto($entrada, 'password');
+    $confirmar = campo_texto($entrada, 'confirmar_password');
 
     // Letras (con tildes), espacios, apóstrofo, punto y guion.
     $patron_nombre = '/^[\p{L}][\p{L}\p{M} \'.-]{1,99}$/u';

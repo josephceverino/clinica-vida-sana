@@ -15,8 +15,8 @@ $error = '';
 $identificador = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $identificador = trim($_POST['identificador'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $identificador = trim(campo_texto($_POST, 'identificador'));
+    $password = campo_texto($_POST, 'password');
 
     if (!csrf_verificar()) {
         // El token no coincide: el formulario no vino de esta página.

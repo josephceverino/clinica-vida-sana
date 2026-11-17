@@ -20,7 +20,7 @@ $filtros = [
 ];
 
 // Pestaña elegida (solo valores de la lista; cualquier otra cosa = pendientes).
-$filtro = (string) ($_GET['estado'] ?? 'pendientes');
+$filtro = campo_texto($_GET, 'estado', 'pendientes');
 if (!isset($filtros[$filtro])) {
     $filtro = 'pendientes';
 }
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirigir('/panel/cuentas.php');
     }
 
-    $accion = (string) ($_POST['accion'] ?? '');
+    $accion = campo_texto($_POST, 'accion');
     $cuenta_id = (int) ($_POST['id'] ?? 0);
 
     // Ficha del paciente de esa cuenta (para la auditoría).
