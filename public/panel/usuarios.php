@@ -122,135 +122,171 @@ $usuarios = $pdo->query(
 $mensaje = mensaje_tomar();
 
 require __DIR__ . '/../../app/layout/panel_header.php';
+
+// Nombres de los roles para mostrar (el valor guardado no cambia).
+$nombres_rol = ['admin' => 'Administrador', 'admision' => 'Admisión', 'medico' => 'Médico'];
+$clase_mensaje = $mensaje !== null && $mensaje['tipo'] === 'error' ? 'ui-aviso-error' : 'ui-aviso-exito';
 ?>
 
-<header class="panel-titulo">
-    <div>
-        <h1>Usuarios</h1>
-        <p>Personal que puede entrar al panel.</p>
-    </div>
-</header>
+<div class="ui-pagina ui-animada">
 
-<?php if ($mensaje !== null): ?>
-    <p class="aviso aviso-<?= e($mensaje['tipo']) ?>" role="status"><?= e($mensaje['texto']) ?></p>
-<?php endif; ?>
-
-<div class="panel-columnas panel-columnas-usuarios">
-
-    <!-- Lista -->
-    <section class="caja">
-        <h2>Usuarios registrados (<?= count($usuarios) ?>)</h2>
-        <div class="tabla-scroll">
-            <table class="tabla">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Rol</th>
-                        <th>Área</th>
-                        <th>Estado</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($usuarios as $u): ?>
-                        <tr>
-                            <td>
-                                <strong><?= e($u['nombre']) ?></strong><br>
-                                <small><?= e($u['usuario']) ?></small>
-                            </td>
-                            <td><?= e($u['rol']) ?></td>
-                            <td><?= e($u['area'] ?? '—') ?></td>
-                            <td>
-                                <?php if ((int) $u['activo'] === 1): ?>
-                                    <span class="estado estado-confirmada">activo</span>
-                                <?php else: ?>
-                                    <span class="estado estado-cancelada">inactivo</span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <?php if ((int) $u['id'] !== $yo['id']): ?>
-                                    <form method="post" action="<?= e(url('/panel/usuarios.php')) ?>">
-                                        <?= csrf_campo() ?>
-                                        <input type="hidden" name="accion" value="estado">
-                                        <input type="hidden" name="id" value="<?= (int) $u['id'] ?>">
-                                        <button type="submit" class="boton-tabla">
-                                            <?= (int) $u['activo'] === 1 ? 'Desactivar' : 'Activar' ?>
-                                        </button>
-                                    </form>
-                                <?php else: ?>
-                                    <small>(tú)</small>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+    <header class="ui-cabecera">
+        <div>
+            <h1>Usuarios</h1>
+            <p>Personal que puede entrar al panel.</p>
         </div>
-    </section>
+    </header>
 
-    <!-- Formulario para crear -->
-    <section class="caja">
-        <h2>Nuevo usuario</h2>
+    <?php if ($mensaje !== null): ?>
+        <div class="ui-aviso <?= e($clase_mensaje) ?>" role="<?= $mensaje['tipo'] === 'error' ? 'alert' : 'status' ?>">
+            <?= $icono_panel($mensaje['tipo'] === 'error' ? 'i-alerta' : 'i-visto') ?>
+            <p><?= e($mensaje['texto']) ?></p>
+        </div>
+    <?php endif; ?>
 
-        <?php if (count($errores) > 0): ?>
-            <div class="aviso aviso-error" role="alert">
-                <?php foreach ($errores as $error): ?>
-                    <div><?= e($error) ?></div>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+    <div class="ui-columnas ui-columnas-anchas">
 
-        <form method="post" action="<?= e(url('/panel/usuarios.php')) ?>" class="form-panel">
-            <?= csrf_campo() ?>
-            <input type="hidden" name="accion" value="crear">
-
-            <div class="campo">
-                <label for="nombre">Nombre completo</label>
-                <input type="text" id="nombre" name="nombre" maxlength="100"
-                       value="<?= e($form['nombre']) ?>" required>
+        <!-- Lista -->
+        <section class="ui-tarjeta">
+            <div class="ui-tarjeta-cabecera">
+                <h2>Usuarios registrados</h2>
+                <span class="ui-insignia"><?= count($usuarios) ?> en total</span>
             </div>
 
-            <div class="campo">
-                <label for="usuario">Usuario</label>
-                <input type="text" id="usuario" name="usuario" maxlength="50"
-                       value="<?= e($form['usuario']) ?>" autocomplete="off" required>
+            <div class="ui-tabla-contenedor">
+                <table class="ui-tabla ui-tabla-apilable ui-tabla-apilable-ancha" role="table">
+                    <caption class="solo-lectores">Usuarios del personal</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col" role="columnheader">Nombre</th>
+                            <th scope="col" role="columnheader">Rol</th>
+                            <th scope="col" role="columnheader">Área</th>
+                            <th scope="col" role="columnheader">Estado</th>
+                            <th scope="col" role="columnheader"><span class="solo-lectores">Acción</span></th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <?php foreach ($usuarios as $u): ?>
+                            <tr role="row">
+                                <td class="ui-celda-fuerte" role="cell" data-etiqueta="Nombre">
+                                    <span class="ui-celda-valor">
+                                        <?= e($u['nombre']) ?>
+                                        <small><?= e($u['usuario']) ?></small>
+                                    </span>
+                                </td>
+                                <td role="cell" data-etiqueta="Rol"><?= e($nombres_rol[$u['rol']] ?? $u['rol']) ?></td>
+                                <td role="cell" data-etiqueta="Área"><?= e($u['area'] ?? '—') ?></td>
+                                <td role="cell" data-etiqueta="Estado">
+                                    <?php if ((int) $u['activo'] === 1): ?>
+                                        <span class="estado estado-confirmada">activo</span>
+                                    <?php else: ?>
+                                        <span class="estado estado-cancelada">inactivo</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td role="cell" data-etiqueta="Acción">
+                                    <?php if ((int) $u['id'] !== $yo['id']): ?>
+                                        <form method="post" action="<?= e(url('/panel/usuarios.php')) ?>" data-cargando>
+                                            <?= csrf_campo() ?>
+                                            <input type="hidden" name="accion" value="estado">
+                                            <input type="hidden" name="id" value="<?= (int) $u['id'] ?>">
+                                            <?php if ((int) $u['activo'] === 1): ?>
+                                                <button type="submit" class="ui-boton ui-boton-peligro ui-boton-chico"
+                                                        data-texto-cargando="Guardando…">Desactivar</button>
+                                            <?php else: ?>
+                                                <button type="submit" class="ui-boton ui-boton-secundario ui-boton-chico"
+                                                        data-texto-cargando="Guardando…">Activar</button>
+                                            <?php endif; ?>
+                                        </form>
+                                    <?php else: ?>
+                                        <span class="ui-insignia">tú</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
+        </section>
 
-            <div class="campo">
-                <label for="password">Contraseña (mínimo 8)</label>
-                <input type="password" id="password" name="password"
-                       autocomplete="new-password" required>
-            </div>
+        <!-- Formulario para crear -->
+        <section class="ui-tarjeta">
+            <h2>Nuevo usuario</h2>
 
-            <div class="campo">
-                <label for="rol">Rol</label>
-                <select id="rol" name="rol" required>
-                    <?php foreach ($roles_validos as $rol_opcion): ?>
-                        <option value="<?= e($rol_opcion) ?>"
-                            <?= $form['rol'] === $rol_opcion ? 'selected' : '' ?>>
-                            <?= e($rol_opcion) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+            <?php if (count($errores) > 0): ?>
+                <div class="ui-aviso ui-aviso-error" role="alert">
+                    <?= $icono_panel('i-alerta') ?>
+                    <div>
+                        <?php foreach ($errores as $error): ?>
+                            <p><?= e($error) ?></p>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
 
-            <div class="campo">
-                <label for="area_id">Área (opcional)</label>
-                <select id="area_id" name="area_id">
-                    <option value="">— Sin área —</option>
-                    <?php foreach ($areas as $area): ?>
-                        <option value="<?= (int) $area['id'] ?>"
-                            <?= (string) $form['area_id'] === (string) $area['id'] ? 'selected' : '' ?>>
-                            <?= e($area['nombre']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+            <form method="post" action="<?= e(url('/panel/usuarios.php')) ?>" data-cargando>
+                <?= csrf_campo() ?>
+                <input type="hidden" name="accion" value="crear">
 
-            <button type="submit" class="boton">Crear usuario</button>
-        </form>
-    </section>
+                <div class="ui-rejilla">
+                    <div class="ui-campo ui-campo-ancho">
+                        <label for="nombre">Nombre completo</label>
+                        <input class="ui-entrada" type="text" id="nombre" name="nombre" maxlength="100"
+                               aria-describedby="ayuda-nombre"
+                               value="<?= e($form['nombre']) ?>" required>
+                        <span class="ui-ayuda" id="ayuda-nombre">Entre 3 y 100 caracteres.</span>
+                    </div>
 
+                    <div class="ui-campo ui-campo-ancho">
+                        <label for="usuario">Usuario</label>
+                        <input class="ui-entrada" type="text" id="usuario" name="usuario" maxlength="50"
+                               aria-describedby="ayuda-usuario"
+                               value="<?= e($form['usuario']) ?>" autocomplete="off" required>
+                        <span class="ui-ayuda" id="ayuda-usuario">Letras, números, punto o guion bajo (3 a 50).</span>
+                    </div>
+
+                    <div class="ui-campo ui-campo-ancho">
+                        <label for="password">Contraseña (mínimo 8)</label>
+                        <input class="ui-entrada" type="password" id="password" name="password"
+                               aria-describedby="ayuda-password"
+                               autocomplete="new-password" required>
+                        <span class="ui-ayuda" id="ayuda-password">Entre 8 y 72 caracteres.</span>
+                    </div>
+
+                    <div class="ui-campo">
+                        <label for="rol">Rol</label>
+                        <select class="ui-entrada" id="rol" name="rol" required>
+                            <?php foreach ($roles_validos as $rol_opcion): ?>
+                                <option value="<?= e($rol_opcion) ?>"
+                                    <?= $form['rol'] === $rol_opcion ? 'selected' : '' ?>>
+                                    <?= e($rol_opcion) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="ui-campo">
+                        <label for="area_id">Área (opcional)</label>
+                        <select class="ui-entrada" id="area_id" name="area_id">
+                            <option value="">— Sin área —</option>
+                            <?php foreach ($areas as $area): ?>
+                                <option value="<?= (int) $area['id'] ?>"
+                                    <?= (string) $form['area_id'] === (string) $area['id'] ? 'selected' : '' ?>>
+                                    <?= e($area['nombre']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ui-acciones">
+                    <button type="submit" class="ui-boton" data-texto-cargando="Creando…">
+                        <?= $icono_panel('i-agregar') ?>
+                        Crear usuario
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
 </div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>

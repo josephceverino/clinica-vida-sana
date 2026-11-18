@@ -2792,3 +2792,231 @@ a.ui-cita:focus-visible {
         justify-content: flex-end;
     }
 }
+
+/* =====================================================================
+   Rediseño 2.0 — Cuentas, Usuarios, Horarios, Auditoría y Mi perfil
+   ===================================================================== */
+
+/* Aviso de advertencia (ámbar): algo a revisar antes de actuar */
+.panel-contenido .ui-aviso-advertencia {
+    color: #5C3D00;
+    background: #FFF6E5;
+    border-color: #F2D49A;
+}
+
+.ui-aviso-advertencia .icono {
+    color: #A86B00;
+}
+
+/* Las tarjetas animadas también incluyen la comparación de cuentas */
+.ui-animada .ui-cuenta:nth-of-type(2) { animation-delay: 40ms; }
+.ui-animada .ui-cuenta:nth-of-type(3) { animation-delay: 80ms; }
+
+/* Lista ancha a la izquierda y formulario de ancho fijo (~340 px) a la derecha */
+.ui-columnas-anchas {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 21rem);
+}
+
+/* Los botones de una celda no se parten en dos líneas */
+.ui-tabla td .ui-boton {
+    white-space: nowrap;
+}
+
+/* ---------- Cuenta por verificar: lo escrito vs. la ficha ---------- */
+.ui-comparacion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.ui-comparacion > div {
+    min-width: 0;
+    padding: 1rem;
+    background: #F7FAFB;
+    border: 1px solid var(--panel-borde);
+    border-radius: 10px;
+}
+
+.ui-comparacion h3 {
+    margin: 0 0 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--panel-primario);
+}
+
+.ui-comparacion .datos {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.ui-comparacion + .ui-aviso,
+.ui-comparacion ~ .ui-aviso {
+    margin: 1rem 0 0;
+}
+
+/* Pie de una tarjeta: estado a la izquierda, botones a la derecha */
+.ui-pie {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--panel-borde);
+}
+
+.ui-pie-estado {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+/* ---------- Filtros en rejilla (Auditoría) ---------- */
+.ui-filtros {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 0.75rem 1rem;
+}
+
+.ui-filtros .ui-grupo {
+    flex-wrap: nowrap;
+}
+
+/* Etiqueta pequeña "dato clínico" encima de la acción, en la auditoría */
+.ui-dato-clinico {
+    display: block;
+    width: fit-content;
+    margin-bottom: 0.25rem;
+}
+
+/* ---------- "Cambiar contraseña" (app/layout/form_password.php) ----------
+   Ese formulario también lo usa el portal del paciente, así que no se
+   cambia su HTML: aquí solo se ajusta su aspecto dentro del panel nuevo. */
+.ui-pagina .form-password {
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+}
+
+.ui-pagina .form-password .campo {
+    margin-bottom: 1.1rem;
+}
+
+.panel-contenido .ui-pagina .form-password label {
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--panel-texto);
+}
+
+.panel-contenido .ui-pagina .form-password input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) {
+    max-width: none;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+    color: var(--panel-texto);
+    border: 1px solid var(--panel-borde-fuerte);
+    border-radius: 8px;
+    transition: border-color var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.panel-contenido .ui-pagina .form-password input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):focus {
+    outline: none;
+    border-color: var(--panel-primario);
+    box-shadow: var(--panel-anillo);
+}
+
+.panel-contenido .ui-pagina .form-password input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid {
+    border-color: var(--panel-error);
+    background: #FFF8F7;
+}
+
+.ui-pagina .form-password small {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--panel-texto-suave);
+}
+
+/* Su botón ".boton" toma el aspecto de .ui-boton */
+.panel-contenido .ui-pagina .form-password button.boton {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    min-height: 42px;
+    padding: 0.6rem 1.15rem;
+    font-size: 0.95rem;
+    color: #FFFFFF;
+    background: var(--panel-primario);
+    border: 1px solid var(--panel-primario);
+    border-radius: 8px;
+    transition: background-color var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.panel-contenido .ui-pagina .form-password button.boton:hover {
+    background: var(--panel-primario-hover);
+}
+
+.panel-contenido .ui-pagina .form-password button.boton:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+@media (max-width: 1000px) {
+    .ui-columnas-anchas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .ui-filtros {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ui-comparacion {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .ui-pie,
+    .ui-pie .ui-acciones-fila {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ui-filtros .ui-grupo {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .panel-contenido .ui-pagina .form-password button.boton {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-animada .ui-cuenta {
+        animation: none;
+    }
+}
+
+/* En la columna estrecha del formulario, un campo debajo de otro */
+.ui-columnas-anchas > .ui-tarjeta:last-child .ui-rejilla {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+/* Tabla compacta (listas largas como la auditoría): filas más bajas */
+@media (min-width: 1001px) {
+    .panel-contenido .ui-tabla-compacta td {
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+    }
+}

@@ -46,82 +46,109 @@ $acciones_clinicas = ['ver_historia', 'ver_atencion', 'registrar_atencion'];
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<header class="panel-titulo">
-    <div>
-        <h1>Auditoría</h1>
-        <p>Quién hizo qué y cuándo. Sirve para saber quién consultó la historia clínica de cada paciente.</p>
-    </div>
-</header>
+<div class="ui-pagina ui-animada">
 
-<form class="agenda-filtro filtro-auditoria" method="get" action="<?= e(url('/panel/auditoria.php')) ?>">
-    <label for="accion">Acción</label>
-    <select id="accion" name="accion">
-        <option value="">Todas</option>
-        <?php foreach ($acciones as $clave => $texto): ?>
-            <option value="<?= e($clave) ?>" <?= $clave === $filtro_accion ? 'selected' : '' ?>>
-                <?= e($texto) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+    <header class="ui-cabecera">
+        <div>
+            <h1>Auditoría</h1>
+            <p>Quién hizo qué y cuándo. Sirve para saber quién consultó la historia clínica de cada paciente.</p>
+        </div>
+    </header>
 
-    <label for="paciente">Paciente</label>
-    <select id="paciente" name="paciente">
-        <option value="">Todos</option>
-        <?php foreach ($pacientes as $paciente): ?>
-            <option value="<?= (int) $paciente['id'] ?>"
-                <?= $filtro_paciente === (int) $paciente['id'] ? 'selected' : '' ?>>
-                <?= e($paciente['nombre']) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+    <!-- Filtros (GET: solo cambian lo que se ve) -->
+    <section class="ui-tarjeta" aria-label="Filtros de la auditoría">
+        <form class="ui-filtros" method="get" action="<?= e(url('/panel/auditoria.php')) ?>">
+            <div class="ui-campo">
+                <label for="accion">Acción</label>
+                <select class="ui-entrada" id="accion" name="accion">
+                    <option value="">Todas</option>
+                    <?php foreach ($acciones as $clave => $texto): ?>
+                        <option value="<?= e($clave) ?>" <?= $clave === $filtro_accion ? 'selected' : '' ?>>
+                            <?= e($texto) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
-    <button class="boton-tabla" type="submit">Filtrar</button>
-    <?php if ($filtro_accion !== '' || $filtro_paciente !== null): ?>
-        <a href="<?= e(url('/panel/auditoria.php')) ?>">Quitar filtros</a>
-    <?php endif; ?>
-</form>
+            <div class="ui-campo">
+                <label for="paciente">Paciente</label>
+                <select class="ui-entrada" id="paciente" name="paciente">
+                    <option value="">Todos</option>
+                    <?php foreach ($pacientes as $paciente): ?>
+                        <option value="<?= (int) $paciente['id'] ?>"
+                            <?= $filtro_paciente === (int) $paciente['id'] ? 'selected' : '' ?>>
+                            <?= e($paciente['nombre']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
-<p class="vacio">Se muestran los <?= count($registros) ?> registros más recientes (máximo 200).</p>
-
-<?php if ($registros === []): ?>
-    <section class="caja">
-        <p class="vacio">No hay registros con estos filtros.</p>
+            <div class="ui-grupo">
+                <button class="ui-boton ui-boton-chico" type="submit">Filtrar</button>
+                <?php if ($filtro_accion !== '' || $filtro_paciente !== null): ?>
+                    <a class="ui-boton ui-boton-secundario ui-boton-chico" href="<?= e(url('/panel/auditoria.php')) ?>">Quitar filtros</a>
+                <?php endif; ?>
+            </div>
+        </form>
     </section>
-<?php else: ?>
-    <div class="caja tabla-scroll">
-        <table class="tabla">
-            <thead>
-                <tr>
-                    <th>Fecha y hora</th>
-                    <th>Quién</th>
-                    <th>Acción</th>
-                    <th>Paciente</th>
-                    <th>Detalle</th>
-                    <th>IP</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($registros as $registro): ?>
-                    <tr>
-                        <td><?= e(date('d/m/Y H:i:s', strtotime($registro['creado_en']))) ?></td>
-                        <td>
-                            <?= e($registro['usuario'] ?? 'Cuenta eliminada') ?><br>
-                            <small><?= e($nombres_rol[$registro['rol']] ?? '') ?></small>
-                        </td>
-                        <td>
-                            <?php if (in_array($registro['accion'], $acciones_clinicas, true)): ?>
-                                <span class="estado estado-nueva">dato clínico</span><br>
-                            <?php endif; ?>
-                            <?= e($acciones[$registro['accion']] ?? $registro['accion']) ?>
-                        </td>
-                        <td><?= e($registro['paciente'] ?? '—') ?></td>
-                        <td><small><?= e($registro['detalle'] ?? '') ?></small></td>
-                        <td><small><?= e($registro['ip']) ?></small></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-<?php endif; ?>
+
+    <section class="ui-tarjeta">
+        <?php if ($registros === []): ?>
+            <div class="ui-vacio">
+                <span class="ui-vacio-icono"><?= $icono_panel('i-documento') ?></span>
+                <strong>No hay registros con estos filtros.</strong>
+                <p>Prueba con otra acción u otro paciente.</p>
+            </div>
+        <?php else: ?>
+            <div class="ui-tarjeta-cabecera">
+                <h2>Registros</h2>
+                <span class="ui-insignia"><?= count($registros) ?> más recientes</span>
+            </div>
+
+            <div class="ui-tabla-contenedor">
+                <table class="ui-tabla ui-tabla-apilable ui-tabla-apilable-ancha ui-tabla-compacta" role="table">
+                    <caption class="solo-lectores">Registros de auditoría</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col" role="columnheader">Fecha y hora</th>
+                            <th scope="col" role="columnheader">Quién</th>
+                            <th scope="col" role="columnheader">Acción</th>
+                            <th scope="col" role="columnheader">Paciente</th>
+                            <th scope="col" role="columnheader">Detalle</th>
+                            <th scope="col" role="columnheader">IP</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <?php foreach ($registros as $registro): ?>
+                            <tr role="row">
+                                <td class="ui-celda-suave" role="cell" data-etiqueta="Fecha y hora">
+                                    <?= e(date('d/m/Y H:i:s', strtotime($registro['creado_en']))) ?>
+                                </td>
+                                <td class="ui-celda-fuerte" role="cell" data-etiqueta="Quién">
+                                    <span class="ui-celda-valor">
+                                        <?= e($registro['usuario'] ?? 'Cuenta eliminada') ?>
+                                        <small><?= e($nombres_rol[$registro['rol']] ?? '') ?></small>
+                                    </span>
+                                </td>
+                                <td role="cell" data-etiqueta="Acción">
+                                    <span class="ui-celda-valor">
+                                        <?php if (in_array($registro['accion'], $acciones_clinicas, true)): ?>
+                                            <span class="estado estado-nueva ui-dato-clinico">dato clínico</span>
+                                        <?php endif; ?>
+                                        <?= e($acciones[$registro['accion']] ?? $registro['accion']) ?>
+                                    </span>
+                                </td>
+                                <td role="cell" data-etiqueta="Paciente"><?= e($registro['paciente'] ?? '—') ?></td>
+                                <td class="ui-celda-suave" role="cell" data-etiqueta="Detalle"><?= e($registro['detalle'] ?? '') ?></td>
+                                <td class="ui-celda-suave" role="cell" data-etiqueta="IP"><?= e($registro['ip']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <p class="ui-nota">Se muestran los <?= count($registros) ?> registros más recientes (máximo 200).</p>
+        <?php endif; ?>
+    </section>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>

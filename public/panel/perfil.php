@@ -56,43 +56,63 @@ $nombres_rol = [
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<header class="panel-titulo">
-    <div>
-        <h1>Mi perfil</h1>
-        <p>Tus datos de acceso y tu contraseña.</p>
+<div class="ui-pagina ui-animada">
+
+    <header class="ui-cabecera">
+        <div>
+            <h1>Mi perfil</h1>
+            <p>Tus datos de acceso y tu contraseña.</p>
+        </div>
+    </header>
+
+    <?php if ($mensaje): ?>
+        <div class="ui-aviso ui-aviso-exito" role="status">
+            <?= $icono_panel('i-visto') ?>
+            <p><?= e($mensaje['texto']) ?></p>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($error !== ''): ?>
+        <div class="ui-aviso ui-aviso-error" role="alert">
+            <?= $icono_panel('i-alerta') ?>
+            <p><?= e($error) ?></p>
+        </div>
+    <?php endif; ?>
+
+    <div class="ui-columnas">
+        <section class="ui-tarjeta">
+            <h2>Mis datos</h2>
+            <dl class="datos datos-rejilla">
+                <div class="datos-ancho">
+                    <dt>Nombre</dt>
+                    <dd><?= e($cuenta['nombre']) ?></dd>
+                </div>
+                <div>
+                    <dt>Usuario (para entrar)</dt>
+                    <dd><?= e($cuenta['usuario']) ?></dd>
+                </div>
+                <div>
+                    <dt>Rol</dt>
+                    <dd><?= e($nombres_rol[$cuenta['rol']] ?? $cuenta['rol']) ?></dd>
+                </div>
+                <div>
+                    <dt>Área</dt>
+                    <dd><?= e($cuenta['area'] ?? 'Sin área') ?></dd>
+                </div>
+                <div>
+                    <dt>Cuenta creada el</dt>
+                    <dd><?= e(date('d/m/Y', strtotime($cuenta['creado_en']))) ?></dd>
+                </div>
+            </dl>
+            <p class="ui-nota ui-nota-separada">Para cambiar tu nombre, usuario o área, pídeselo al administrador.</p>
+        </section>
+
+        <section class="ui-tarjeta">
+            <h2>Cambiar contraseña</h2>
+            <?php // Formulario compartido con el portal del paciente (no se cambia su HTML). ?>
+            <?php require __DIR__ . '/../../app/layout/form_password.php'; ?>
+        </section>
     </div>
-</header>
-
-<?php if ($mensaje): ?>
-    <p role="status"><?= e($mensaje['texto']) ?></p>
-<?php endif; ?>
-
-<?php if ($error !== ''): ?>
-    <p role="alert"><?= e($error) ?></p>
-<?php endif; ?>
-
-<div class="panel-columnas">
-    <section class="caja">
-        <h2>Mis datos</h2>
-        <dl class="datos">
-            <dt>Nombre</dt>
-            <dd><?= e($cuenta['nombre']) ?></dd>
-            <dt>Usuario (para entrar)</dt>
-            <dd><?= e($cuenta['usuario']) ?></dd>
-            <dt>Rol</dt>
-            <dd><?= e($nombres_rol[$cuenta['rol']] ?? $cuenta['rol']) ?></dd>
-            <dt>Área</dt>
-            <dd><?= e($cuenta['area'] ?? 'Sin área') ?></dd>
-            <dt>Cuenta creada el</dt>
-            <dd><?= e(date('d/m/Y', strtotime($cuenta['creado_en']))) ?></dd>
-        </dl>
-        <p class="vacio">Para cambiar tu nombre, usuario o área, pídeselo al administrador.</p>
-    </section>
-
-    <section class="caja">
-        <h2>Cambiar contraseña</h2>
-        <?php require __DIR__ . '/../../app/layout/form_password.php'; ?>
-    </section>
 </div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>
