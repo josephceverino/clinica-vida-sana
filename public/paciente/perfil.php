@@ -48,41 +48,69 @@ $accion_formulario = url('/paciente/perfil.php');
 require __DIR__ . '/../../app/layout/paciente_header.php';
 ?>
 
-<section class="seccion">
-    <p class="etiqueta">Portal del paciente</p>
-    <h1>Mi perfil</h1>
+<div class="ui-pagina ui-animada">
+
+    <header class="ui-cabecera">
+        <div>
+            <h1>Mi perfil</h1>
+            <p>Tus datos y tu contraseña.</p>
+        </div>
+    </header>
 
     <?php if ($mensaje): ?>
-        <p class="aviso aviso-<?= e($mensaje['tipo']) ?>" role="status"><?= e($mensaje['texto']) ?></p>
+        <div class="ui-aviso <?= $mensaje['tipo'] === 'error' ? 'ui-aviso-error' : 'ui-aviso-exito' ?>" role="status">
+            <?= $icono_panel($mensaje['tipo'] === 'error' ? 'i-alerta' : 'i-visto') ?>
+            <p><?= e($mensaje['texto']) ?></p>
+        </div>
     <?php endif; ?>
 
     <?php if ($error !== ''): ?>
-        <p class="aviso aviso-error" role="alert"><?= e($error) ?></p>
+        <div class="ui-aviso ui-aviso-error" role="alert">
+            <?= $icono_panel('i-alerta') ?>
+            <p><?= e($error) ?></p>
+        </div>
     <?php endif; ?>
-</section>
 
-<div class="rejilla-2">
-    <section class="tarjeta-paciente">
-        <h2>Mis datos</h2>
-        <dl class="atencion-datos">
-            <dt>Nombre</dt>
-            <dd><?= e($cuenta['nombre']) ?></dd>
-            <dt>Documento</dt>
-            <dd><?= e($cuenta['tipo_documento'] . ' ' . $cuenta['numero_documento']) ?></dd>
-            <dt>Correo (para entrar)</dt>
-            <dd><?= e($cuenta['correo']) ?></dd>
-            <dt>Teléfono</dt>
-            <dd><?= e($cuenta['telefono'] ?? 'No registrado') ?></dd>
-            <dt>Estado de la cuenta</dt>
-            <dd><?= (int) $cuenta['verificado'] === 1 ? 'Verificada' : 'Pendiente de verificación' ?></dd>
-        </dl>
-        <p class="vacio">Si algún dato está mal, acércate a admisión para corregirlo.</p>
-    </section>
+    <div class="ui-columnas">
+        <section class="ui-tarjeta">
+            <h2>Mis datos</h2>
+            <dl class="datos datos-rejilla">
+                <div class="datos-ancho">
+                    <dt>Nombre</dt>
+                    <dd><?= e($cuenta['nombre']) ?></dd>
+                </div>
+                <div>
+                    <dt>Documento</dt>
+                    <dd><?= e($cuenta['tipo_documento'] . ' ' . $cuenta['numero_documento']) ?></dd>
+                </div>
+                <div>
+                    <dt>Teléfono</dt>
+                    <dd><?= e($cuenta['telefono'] ?? 'No registrado') ?></dd>
+                </div>
+                <div class="datos-ancho">
+                    <dt>Correo (para entrar)</dt>
+                    <dd><?= e($cuenta['correo']) ?></dd>
+                </div>
+                <div class="datos-ancho">
+                    <dt>Estado de la cuenta</dt>
+                    <dd>
+                        <?php if ((int) $cuenta['verificado'] === 1): ?>
+                            <span class="estado estado-confirmada">Verificada</span>
+                        <?php else: ?>
+                            <span class="estado estado-pendiente">Pendiente de verificación</span>
+                        <?php endif; ?>
+                    </dd>
+                </div>
+            </dl>
+            <p class="ui-nota ui-nota-separada">Si algún dato está mal, acércate a admisión para corregirlo.</p>
+        </section>
 
-    <section>
-        <h2>Cambiar contraseña</h2>
-        <?php require __DIR__ . '/../../app/layout/form_password.php'; ?>
-    </section>
+        <section class="ui-tarjeta">
+            <h2>Cambiar contraseña</h2>
+            <?php // Formulario compartido con el panel del personal (no se cambia su HTML). ?>
+            <?php require __DIR__ . '/../../app/layout/form_password.php'; ?>
+        </section>
+    </div>
 </div>
 
 <?php require __DIR__ . '/../../app/layout/paciente_footer.php'; ?>

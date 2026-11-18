@@ -146,141 +146,172 @@ $dia_siguiente = date('Y-m-d', strtotime($fecha . ' +1 day'));
 require __DIR__ . '/../../app/layout/paciente_header.php';
 ?>
 
-<section class="seccion">
-    <p class="etiqueta">Portal del paciente</p>
-    <h1>Pedir una cita</h1>
-    <p>Elige el área y el día, y reserva un horario libre. Tu cita queda confirmada al momento.</p>
+<div class="ui-pagina ui-animada">
+
+    <header class="ui-cabecera">
+        <div>
+            <h1>Pedir una cita</h1>
+            <p>Elige el área y el día, y reserva un horario libre. Tu cita queda confirmada al momento.</p>
+        </div>
+    </header>
 
     <?php if ($error !== ''): ?>
-        <p class="aviso aviso-error" role="alert"><?= e($error) ?></p>
-    <?php endif; ?>
-</section>
-
-<!-- Paso 1: área y día (GET: solo muestra horarios, no guarda nada) -->
-<form class="tarjeta-paciente buscador-horarios" method="get"
-      action="<?= e(url('/paciente/pedir-cita.php')) ?>">
-    <div class="campo">
-        <label for="area_id">1. Área</label>
-        <select id="area_id" name="area_id" required>
-            <option value="">Selecciona un área</option>
-            <?php foreach ($areas as $area): ?>
-                <option value="<?= (int) $area['id'] ?>" <?= $area_id === (string) $area['id'] ? 'selected' : '' ?>>
-                    <?= e($area['nombre']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    <div class="campo">
-        <label for="fecha">2. Día</label>
-        <input type="date" id="fecha" name="fecha" required
-               min="<?= e($hoy) ?>" max="<?= e($ultimo_dia) ?>" value="<?= e($fecha) ?>">
-    </div>
-    <button class="boton" type="submit">Ver horarios</button>
-</form>
-
-<?php if ($area_id !== ''): ?>
-    <!-- Paso 2: horarios libres -->
-    <section class="seccion">
-        <div class="horarios-cabecera">
-            <h2><?= e($nombre_area) ?> &middot; <?= e(fecha_relativa($fecha)) ?></h2>
-            <nav class="horarios-dias" aria-label="Cambiar de día">
-                <?php if ($fecha > $hoy): ?>
-                    <a href="<?= e(enlace_dia($area_id, $dia_anterior)) ?>">&larr; Día anterior</a>
-                <?php endif; ?>
-                <?php if ($dia_siguiente <= $ultimo_dia): ?>
-                    <a href="<?= e(enlace_dia($area_id, $dia_siguiente)) ?>">Día siguiente &rarr;</a>
-                <?php endif; ?>
-            </nav>
+        <div class="ui-aviso ui-aviso-error" role="alert">
+            <?= $icono_panel('i-alerta') ?>
+            <p><?= e($error) ?></p>
         </div>
+    <?php endif; ?>
 
-        <?php if ($opciones === []): ?>
-            <div class="tarjeta-paciente">
-                <p>No hay horarios libres este día.</p>
-                <?php if ($dias_con_huecos !== []): ?>
-                    <p><strong>Próximos días con horarios:</strong></p>
-                    <div class="dias-sugeridos">
-                        <?php foreach ($dias_con_huecos as $dia => $total): ?>
-                            <a class="dia-sugerido" href="<?= e(enlace_dia($area_id, $dia)) ?>">
-                                <strong><?= e(fecha_relativa($dia)) ?></strong>
-                                <span><?= $total ?> horario<?= $total === 1 ? '' : 's' ?></span>
-                            </a>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
+    <!-- Paso 1: área y día (GET: solo muestra horarios, no guarda nada) -->
+    <section class="ui-tarjeta" aria-labelledby="paso-1">
+        <h2 id="paso-1"><span class="portal-paso">1</span> Elige el área y el día</h2>
+        <form class="ui-buscador portal-buscador" method="get"
+              action="<?= e(url('/paciente/pedir-cita.php')) ?>">
+            <div class="ui-campo">
+                <label for="area_id">Área</label>
+                <select class="ui-entrada" id="area_id" name="area_id" required>
+                    <option value="">Selecciona un área</option>
+                    <?php foreach ($areas as $area): ?>
+                        <option value="<?= (int) $area['id'] ?>" <?= $area_id === (string) $area['id'] ? 'selected' : '' ?>>
+                            <?= e($area['nombre']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
-        <?php else: ?>
-            <form method="post" action="<?= e(url('/paciente/pedir-cita.php')) ?>">
-                <?= csrf_campo() ?>
-                <input type="hidden" name="accion" value="reservar">
-                <input type="hidden" name="area_id" value="<?= e($area_id) ?>">
-                <input type="hidden" name="fecha" value="<?= e($fecha) ?>">
+            <div class="ui-campo">
+                <label for="fecha">Día</label>
+                <input class="ui-entrada" type="date" id="fecha" name="fecha" required
+                       min="<?= e($hoy) ?>" max="<?= e($ultimo_dia) ?>" value="<?= e($fecha) ?>">
+            </div>
+            <button class="ui-boton" type="submit">
+                <?= $icono_panel('i-buscar') ?>
+                Ver horarios
+            </button>
+        </form>
+    </section>
 
-                <?php foreach ($opciones as $opcion): ?>
-                    <fieldset class="tarjeta-paciente horarios-medico">
-                        <legend><?= e($opcion['medico']) ?></legend>
-                        <!-- Cada hora es un botón de opción con forma de "pastilla" -->
-                        <div class="horas">
-                            <?php foreach ($opcion['huecos'] as $hora): ?>
-                                <?php $valor = $opcion['medico_id'] . '|' . $hora; ?>
-                                <label class="hora">
-                                    <input type="radio" name="hueco" value="<?= e($valor) ?>" required
-                                        <?= $hueco_elegido === $valor ? 'checked' : '' ?>>
-                                    <span><?= e($hora) ?></span>
-                                </label>
+    <?php if ($area_id !== ''): ?>
+        <!-- Paso 2: horarios libres -->
+        <section class="ui-tarjeta" aria-labelledby="paso-2">
+            <div class="ui-tarjeta-cabecera">
+                <h2 id="paso-2"><span class="portal-paso">2</span> <?= e($nombre_area) ?> &middot; <?= e(fecha_relativa($fecha)) ?></h2>
+                <nav class="ui-grupo" aria-label="Cambiar de día">
+                    <?php if ($fecha > $hoy): ?>
+                        <a class="ui-boton ui-boton-secundario ui-boton-chico" href="<?= e(enlace_dia($area_id, $dia_anterior)) ?>">
+                            <span aria-hidden="true">&larr;</span> Día anterior
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($dia_siguiente <= $ultimo_dia): ?>
+                        <a class="ui-boton ui-boton-secundario ui-boton-chico" href="<?= e(enlace_dia($area_id, $dia_siguiente)) ?>">
+                            Día siguiente <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    <?php endif; ?>
+                </nav>
+            </div>
+
+            <?php if ($opciones === []): ?>
+                <div class="ui-vacio">
+                    <span class="ui-vacio-icono"><?= $icono_panel('i-reloj') ?></span>
+                    <strong>No hay horarios libres este día.</strong>
+                    <?php if ($dias_con_huecos !== []): ?>
+                        <p>Próximos días con horarios:</p>
+                        <div class="portal-dias">
+                            <?php foreach ($dias_con_huecos as $dia => $total): ?>
+                                <a class="portal-dia" href="<?= e(enlace_dia($area_id, $dia)) ?>">
+                                    <strong><?= e(fecha_relativa($dia)) ?></strong>
+                                    <span><?= $total ?> horario<?= $total === 1 ? '' : 's' ?></span>
+                                </a>
                             <?php endforeach; ?>
                         </div>
-                    </fieldset>
-                <?php endforeach; ?>
-
-                <div class="tarjeta-paciente">
-                    <div class="campo">
-                        <label for="motivo">3. Motivo de la consulta</label>
-                        <textarea id="motivo" name="motivo" rows="3" minlength="5" maxlength="255"
-                                  required><?= e($motivo) ?></textarea>
-                    </div>
-                    <button class="boton" type="submit">Reservar y confirmar cita</button>
+                    <?php else: ?>
+                        <p>Prueba con otro día o envía una solicitud a admisión (abajo).</p>
+                    <?php endif; ?>
                 </div>
-            </form>
-        <?php endif; ?>
-    </section>
-<?php endif; ?>
+            <?php else: ?>
+                <!-- data-cargando: al reservar, el botón muestra "Reservando…" y evita el doble envío -->
+                <form method="post" action="<?= e(url('/paciente/pedir-cita.php')) ?>" data-cargando>
+                    <?= csrf_campo() ?>
+                    <input type="hidden" name="accion" value="reservar">
+                    <input type="hidden" name="area_id" value="<?= e($area_id) ?>">
+                    <input type="hidden" name="fecha" value="<?= e($fecha) ?>">
 
-<!-- Plan B: enviar una solicitud a admisión -->
-<details class="seccion tarjeta-paciente otra-opcion" <?= ($_POST['accion'] ?? '') === 'solicitud' ? 'open' : '' ?>>
-    <summary>¿No encuentras un horario que te sirva? Envía una solicitud a admisión</summary>
+                    <?php foreach ($opciones as $opcion): ?>
+                        <fieldset class="portal-medico">
+                            <legend><?= e($opcion['medico']) ?></legend>
+                            <!-- Cada hora es un botón de opción con forma de "pastilla" -->
+                            <div class="portal-horas">
+                                <?php foreach ($opcion['huecos'] as $hora): ?>
+                                    <?php $valor = $opcion['medico_id'] . '|' . $hora; ?>
+                                    <label class="portal-hora">
+                                        <input type="radio" name="hueco" value="<?= e($valor) ?>" required
+                                            <?= $hueco_elegido === $valor ? 'checked' : '' ?>>
+                                        <span><?= e($hora) ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </fieldset>
+                    <?php endforeach; ?>
 
-    <form class="formulario" method="post" action="<?= e(url('/paciente/pedir-cita.php')) ?>">
-        <?= csrf_campo() ?>
-        <input type="hidden" name="accion" value="solicitud">
+                    <div class="ui-campo portal-motivo">
+                        <label for="motivo"><span class="portal-paso">3</span> Motivo de la consulta</label>
+                        <textarea class="ui-entrada" id="motivo" name="motivo" rows="3" minlength="5" maxlength="255"
+                                  aria-describedby="ayuda-motivo" required><?= e($motivo) ?></textarea>
+                        <span class="ui-ayuda" id="ayuda-motivo">Entre 5 y 255 caracteres.</span>
+                    </div>
 
-        <div class="campo">
-            <label for="solicitud_area">Área</label>
-            <select id="solicitud_area" name="area_id" required>
-                <option value="">Selecciona un área</option>
-                <?php foreach ($areas as $area): ?>
-                    <option value="<?= (int) $area['id'] ?>"
-                        <?= $solicitud['area_id'] === (string) $area['id'] ? 'selected' : '' ?>>
-                        <?= e($area['nombre']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+                    <div class="ui-acciones">
+                        <button class="ui-boton" type="submit" data-texto-cargando="Reservando…">
+                            <?= $icono_panel('i-visto') ?>
+                            Reservar y confirmar cita
+                        </button>
+                    </div>
+                </form>
+            <?php endif; ?>
+        </section>
+    <?php endif; ?>
 
-        <div class="campo">
-            <label for="fecha_preferida">Fecha preferida (opcional)</label>
-            <input type="date" id="fecha_preferida" name="fecha_preferida"
-                   min="<?= e($hoy) ?>" value="<?= e($solicitud['fecha_preferida']) ?>">
-        </div>
+    <!-- Plan B: enviar una solicitud a admisión -->
+    <details class="ui-tarjeta portal-otra-opcion" <?= ($_POST['accion'] ?? '') === 'solicitud' ? 'open' : '' ?>>
+        <summary>¿No encuentras un horario que te sirva? Envía una solicitud a admisión</summary>
 
-        <div class="campo">
-            <label for="mensaje">Motivo y disponibilidad</label>
-            <textarea id="mensaje" name="mensaje" rows="3" minlength="5" maxlength="500"
-                      placeholder="Ej.: dolor de cabeza; puedo cualquier tarde después de las 4."
-                      required><?= e($solicitud['mensaje']) ?></textarea>
-        </div>
+        <form method="post" action="<?= e(url('/paciente/pedir-cita.php')) ?>" data-cargando>
+            <?= csrf_campo() ?>
+            <input type="hidden" name="accion" value="solicitud">
 
-        <button class="boton boton-claro" type="submit">Enviar solicitud</button>
-    </form>
-</details>
+            <div class="ui-rejilla">
+                <div class="ui-campo">
+                    <label for="solicitud_area">Área</label>
+                    <select class="ui-entrada" id="solicitud_area" name="area_id" required>
+                        <option value="">Selecciona un área</option>
+                        <?php foreach ($areas as $area): ?>
+                            <option value="<?= (int) $area['id'] ?>"
+                                <?= $solicitud['area_id'] === (string) $area['id'] ? 'selected' : '' ?>>
+                                <?= e($area['nombre']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="ui-campo">
+                    <label for="fecha_preferida">Fecha preferida (opcional)</label>
+                    <input class="ui-entrada" type="date" id="fecha_preferida" name="fecha_preferida"
+                           min="<?= e($hoy) ?>" value="<?= e($solicitud['fecha_preferida']) ?>">
+                </div>
+
+                <div class="ui-campo ui-campo-ancho">
+                    <label for="mensaje">Motivo y disponibilidad</label>
+                    <textarea class="ui-entrada" id="mensaje" name="mensaje" rows="3" minlength="5" maxlength="500"
+                              placeholder="Ej.: dolor de cabeza; puedo cualquier tarde después de las 4."
+                              aria-describedby="ayuda-mensaje" required><?= e($solicitud['mensaje']) ?></textarea>
+                    <span class="ui-ayuda" id="ayuda-mensaje">Entre 5 y 500 caracteres.</span>
+                </div>
+            </div>
+
+            <div class="ui-acciones">
+                <button class="ui-boton ui-boton-secundario" type="submit" data-texto-cargando="Enviando…">Enviar solicitud</button>
+            </div>
+        </form>
+    </details>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/paciente_footer.php'; ?>
