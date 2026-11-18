@@ -13,3 +13,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Referencias de diseño (capturas de Figma): solo para el equipo, no se suben
+docs/referencias-figma/

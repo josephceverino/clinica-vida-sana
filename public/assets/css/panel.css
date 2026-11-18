@@ -1,77 +1,147 @@
 /* Estilos del panel (zona privada). Usa las variables de base.css. */
 
+/* ---------- Rediseño 2.0: variables del panel ----------
+   Colores y medidas del diseño aprobado (Figma, "Panel administrativo").
+   Solo se cargan en las páginas del panel, así que no cambian el sitio
+   público ni el portal del paciente. */
 .panel-body {
-    background: var(--color-fondo);
+    --panel-primario:     #087C94;
+    --panel-lateral:      #075267;
+    --panel-fondo:        #F2F7F9;
+    --panel-superficie:   #FFFFFF;
+    --panel-texto:        #193847;
+    --panel-texto-suave:  #5B6B79;  /* 5.4:1 sobre el fondo */
+    --panel-acento:       #22B77A;  /* solo rellenos, bordes e iconos */
+    --panel-acento-texto: #1F7A4D;  /* verde para texto (contraste 5.3:1) */
+    --panel-borde:        #E1EAEE;
+    --panel-tinte:        #E6F2F5;  /* fondo claro de botones "pastilla" */
+    --panel-lateral-texto:  #D5E6EC;
+    --panel-lateral-titulo: #9FC3CF;
+    --panel-lateral-activo: #12697D;  /* enlace de la página actual */
+    --panel-ancho-lateral: 254px;
+    --panel-radio:        12px;
+    --panel-sombra:       0 1px 2px rgba(25, 56, 71, 0.04), 0 4px 16px rgba(25, 56, 71, 0.04);
+    --panel-transicion:   180ms ease;
+
+    background: var(--panel-fondo);
 }
 
 /* Estructura: barra lateral + contenido */
 .panel {
     display: grid;
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: var(--panel-ancho-lateral) 1fr;
     min-height: 100vh;
+}
+
+/* Sin esto, la columna de contenido no se encoge por debajo de su parte más
+   ancha (por ejemplo, una tabla): empujaba toda la página hacia la derecha en
+   el celular. Con min-width: 0 se ajusta a la pantalla y la tabla se desplaza
+   dentro de su propia caja (.tabla-scroll). */
+.panel-principal {
+    min-width: 0;
+}
+
+/* Iconos (public/assets/img/iconos.svg): toman el color del texto */
+.icono {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
 }
 
 /* ---------- Barra lateral ---------- */
 .panel-lateral {
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 1rem;
-    background: var(--color-titulos);
-    color: #C9D6DF;
+    padding: 1.75rem 1.25rem 1.5rem;
+    background: var(--panel-lateral);
+    color: var(--panel-lateral-texto);
     position: sticky;
     top: 0;
     height: 100vh;
+    overflow-y: auto;
 }
 
+/* Marca: cruz + "VIDA SANA" y debajo "GESTIÓN CLÍNICA" */
 .panel-marca {
-    padding: 0 0.75rem 1.5rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--color-blanco);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    color: #FFFFFF;
     text-decoration: none;
 }
 
-.panel-marca span {
-    margin-left: 0.25rem;
-    padding: 0.1rem 0.45rem;
+.panel-marca .icono {
+    width: 22px;
+    height: 22px;
+}
+
+.panel-marca-nombre {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+}
+
+.panel-marca-lema {
+    grid-column: 1 / -1;
+    margin-top: 0.6rem;
     font-size: 0.7rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--color-titulos);
-    background: var(--color-acento);
-    border-radius: 4px;
-    vertical-align: middle;
+    color: var(--panel-lateral-titulo);
 }
 
 .panel-menu {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.8rem;
 }
 
+/* Cada enlace: icono + texto (+ globito) */
 .panel-menu a,
-.panel-menu .deshabilitado {
+.panel-menu .deshabilitado,
+.panel-perfil,
+.panel-salir {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0.65rem 0.75rem;
+    gap: 0.85rem;
+    min-height: 40px;
+    padding: 0.55rem 0.75rem;
     border-radius: 8px;
-    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+    color: var(--panel-lateral-texto);
     text-decoration: none;
-    color: #C9D6DF;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion);
 }
 
-.panel-menu a:hover {
-    background: rgba(255, 255, 255, 0.07);
-    color: var(--color-blanco);
+.panel-menu-texto {
+    flex: 1;
+    min-width: 0;
 }
 
-.panel-menu a.activo {
-    background: rgba(43, 182, 115, 0.15);
-    border-left-color: var(--color-acento);
-    color: var(--color-blanco);
+.panel-menu a:hover,
+.panel-perfil:hover,
+.panel-salir:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+}
+
+/* Página actual: fondo un poco más claro y texto en negrita */
+.panel-menu a.activo,
+.panel-perfil.activo {
+    background: var(--panel-lateral-activo);
+    color: #FFFFFF;
     font-weight: 600;
+}
+
+/* Foco con teclado: anillo bien visible sobre el fondo oscuro */
+.panel-lateral a:focus-visible,
+.panel-salir:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
 }
 
 .panel-menu .deshabilitado {
@@ -85,58 +155,36 @@
     letter-spacing: 0.05em;
 }
 
-/* Usuario abajo de la barra lateral */
+/* Usuario y cerrar sesión: debajo del menú, separados por una línea */
 .panel-usuario {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.75rem;
-    align-items: center;
-    margin-top: auto;
-    padding: 1rem 0.75rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-.panel-usuario strong {
+/* "Mi perfil" debajo del nombre, en pequeño */
+.panel-perfil small {
     display: block;
-    color: var(--color-blanco);
-    font-size: 0.9rem;
-}
-
-.panel-usuario small {
-    text-transform: capitalize;
-}
-
-.panel-avatar {
-    display: grid;
-    place-items: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--color-principal);
-    color: var(--color-blanco);
-    font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
+    color: var(--panel-lateral-titulo);
 }
 
 .panel-usuario form {
-    grid-column: 1 / -1;
+    margin: 0;
 }
 
+/* El botón "Cerrar sesión" se ve igual que un enlace del menú */
 .panel-salir {
     width: 100%;
-    padding: 0.5rem;
     font: inherit;
-    font-size: 0.9rem;
-    color: #C9D6DF;
+    font-size: 0.95rem;
+    text-align: left;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 8px;
+    border: none;
     cursor: pointer;
-}
-
-.panel-salir:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--color-blanco);
 }
 
 /* ---------- Contenido ---------- */
@@ -426,6 +474,15 @@
     overflow: hidden;
 }
 
+/* Tabla solo para lectores de pantalla ("Mi día" del médico). Una tabla no
+   se encoge a 1 px como otros elementos, y desbordaba la página (de lado y
+   hacia abajo). La caja que la contiene la recorta: no se ve ni ocupa
+   espacio, pero sigue siendo una tabla y los lectores la leen igual. */
+.caja:has(> table.solo-lectores) {
+    position: relative;
+    overflow: hidden;
+}
+
 .panel-contenido caption {
     padding: 0.5rem 0;
     text-align: left;
@@ -545,15 +602,15 @@
 
 /* ---------- Menú lateral agrupado y globito de pendientes ---------- */
 .panel-menu-titulo {
-    margin: 1.1rem 0 0.25rem;
-    padding: 0 0.75rem;
+    margin: 0.4rem 0 0;
     font-size: 0.7rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #7F95A5;
+    color: var(--panel-lateral-titulo);
 }
 
+/* Número verde junto a "Solicitudes" y "Cuentas" (texto oscuro: 6:1) */
 .panel-menu .globito {
     margin-left: auto;
     min-width: 1.4rem;
@@ -561,8 +618,8 @@
     font-size: 0.75rem;
     font-weight: 700;
     text-align: center;
-    color: var(--color-titulos);
-    background: var(--color-acento);
+    color: var(--panel-texto);
+    background: var(--panel-acento);
     border-radius: 999px;
 }
 
@@ -906,23 +963,6 @@ a.calendario-cita:hover {
     border-left-style: solid;
 }
 
-/* ---------- Enlace "Mi perfil" en el recuadro del usuario ---------- */
-.panel-perfil {
-    grid-column: 1 / -1;
-    padding: 0.45rem;
-    font-size: 0.9rem;
-    text-align: center;
-    color: #C9D6DF;
-    text-decoration: none;
-    border-radius: 8px;
-}
-
-.panel-perfil:hover,
-.panel-perfil.activo {
-    color: var(--color-blanco);
-    background: rgba(255, 255, 255, 0.1);
-}
-
 /* Formulario de contraseña dentro de una caja del panel: sin doble borde */
 .caja .form-password {
     padding: 0;
@@ -943,3 +983,640 @@ a.calendario-cita:hover {
 /* Estado "no asistió" (etiqueta y franja del calendario) */
 .estado-no_asistio { background: #EDE7F6; color: #4A2F7A; }
 .cita-no_asistio   { border-left-color: #7E57C2; }
+
+
+/* =====================================================================
+   Rediseño 2.0 — Resumen administrativo (panel/index.php)
+   Todo va dentro de .resumen-admin: no cambia ninguna otra página.
+   ===================================================================== */
+.resumen-admin {
+    max-width: 1440px;
+    color: var(--panel-texto);
+}
+
+/* En esta página el contenido usa todo el ancho, con 36 px de margen
+   (las demás páginas del panel siguen con su ancho de 1100 px). */
+.panel-contenido:has(.resumen-admin) {
+    max-width: none;
+    padding: 2.25rem;
+}
+
+.resumen-admin h1,
+.resumen-admin h2 {
+    color: var(--panel-texto);
+}
+
+/* Cabecera: título, fecha y el rol a la derecha */
+.resumen-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.resumen-cabecera h1 {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.resumen-cabecera p {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+    color: var(--panel-texto-suave);
+}
+
+/* "Pastilla": etiqueta del rol, "Ver todas" y accesos rápidos */
+.resumen-pastilla {
+    display: inline-block;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--panel-primario);
+    background: var(--panel-tinte);
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion);
+}
+
+a.resumen-pastilla:hover {
+    color: #FFFFFF;
+    background: var(--panel-primario);
+}
+
+/* Indicadores: cinco tarjetas en fila */
+.resumen-indicadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.resumen-indicador {
+    display: flex;
+    flex-direction: column;
+    padding: 1.35rem 1.35rem 1.25rem;
+    background: var(--panel-superficie);
+    border-radius: var(--panel-radio);
+    box-shadow: var(--panel-sombra);
+    color: inherit;
+    text-decoration: none;
+    transition: transform var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.resumen-indicador h2 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--panel-texto-suave);
+}
+
+.resumen-numero {
+    margin: 0.6rem 0 0.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--panel-texto);
+    font-variant-numeric: tabular-nums;
+}
+
+.resumen-nota {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--panel-acento-texto);
+}
+
+/* Las tarjetas que llevan a otra página se elevan un poco */
+.resumen-indicador-enlace:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(25, 56, 71, 0.06), 0 8px 24px rgba(25, 56, 71, 0.08);
+}
+
+/* Cajas blancas: próximas citas, solicitudes, accesos rápidos */
+.resumen-caja {
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    background: var(--panel-superficie);
+    border-radius: var(--panel-radio);
+    box-shadow: var(--panel-sombra);
+}
+
+.resumen-caja h2 {
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.resumen-caja-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.resumen-caja-cabecera h2 {
+    margin: 0;
+}
+
+.resumen-vacio {
+    margin: 0;
+    color: var(--panel-texto-suave);
+}
+
+/* Tabla de próximas citas: sin rayas, filas con aire.
+   ".resumen-admin" delante para ganarle a ".panel-contenido table". */
+.resumen-admin .resumen-tabla {
+    width: auto;  /* columnas al ancho de su contenido, como en Figma */
+    border-collapse: collapse;
+    background: none;
+    border: none;
+    border-radius: 0;
+}
+
+.resumen-tabla th {
+    padding: 0 2.25rem 0.5rem 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--panel-texto-suave);
+    background: none;
+    border: none;
+}
+
+.resumen-tabla td {
+    padding: 1.1rem 2.25rem 1.1rem 0;
+    vertical-align: middle;
+    border: none;
+}
+
+.resumen-tabla tbody tr {
+    transition: background-color var(--panel-transicion);
+}
+
+.resumen-tabla tbody tr:hover {
+    background: #F7FAFB;
+}
+
+.resumen-paciente {
+    font-weight: 600;
+}
+
+/* Motivo de la cita, debajo de la especialidad */
+.resumen-tabla td small {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--panel-texto-suave);
+}
+
+.resumen-fecha {
+    white-space: nowrap;
+    color: var(--panel-texto-suave);
+}
+
+/* Etiquetas de estado de la tabla */
+.resumen-estado {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.resumen-estado-confirmada { background: #E3F5EC; color: var(--panel-acento-texto); }
+.resumen-estado-pendiente  { background: #FDF0D9; color: #8A5A00; }
+
+/* Abajo: solicitudes y accesos rápidos, en dos columnas */
+.resumen-columnas {
+    display: grid;
+    /* minmax(0, 1fr): cada columna puede encogerse (no la empuja su contenido) */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+/* Dentro de la rejilla, el espacio entre cajas lo pone "gap" (sin doble margen) */
+.resumen-columnas .resumen-caja {
+    margin-bottom: 0;
+}
+
+/* Lista de solicitudes: punto + nombre, y debajo área y teléfono */
+.resumen-lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.resumen-lista li {
+    position: relative;
+    padding: 0.45rem 0 0.45rem 1.4rem;
+}
+
+.resumen-lista li::before {
+    content: "";
+    position: absolute;
+    left: 0.15rem;
+    top: 0.85rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    background: var(--panel-texto);
+    border-radius: 50%;
+}
+
+.resumen-lista strong {
+    font-weight: 500;
+}
+
+.resumen-lista small {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--panel-texto-suave);
+}
+
+/* Accesos rápidos: pastillas una debajo de otra */
+.resumen-accesos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Foco con teclado en todo el resumen */
+.resumen-admin a:focus-visible {
+    outline: 2px solid var(--panel-primario);
+    outline-offset: 2px;
+}
+
+/* Pantallas medianas: las dos cajas de abajo, una debajo de otra */
+@media (max-width: 1000px) {
+    .resumen-columnas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Celular: menos margen, título más chico y todo se acomoda a lo angosto */
+@media (max-width: 600px) {
+    .panel-contenido:has(.resumen-admin) {
+        padding: 1.25rem 1rem;
+    }
+
+    /* El rol baja debajo del título si no cabe al lado */
+    .resumen-cabecera {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 0;
+    }
+
+    .resumen-cabecera h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Tarjetas: dos por fila, y una sola en pantallas muy angostas */
+    .resumen-indicadores {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .resumen-indicador {
+        padding: 1rem;
+    }
+
+    .resumen-numero {
+        font-size: 1.7rem;
+    }
+
+    .resumen-caja {
+        padding: 1.1rem 1rem;
+    }
+
+    .resumen-caja-cabecera {
+        flex-wrap: wrap;
+    }
+
+    .resumen-caja h2 {
+        font-size: 1.1rem;
+    }
+
+    /* Tabla: columnas más juntas; si aun así no cabe, se desplaza
+       de lado solo dentro de su caja (.tabla-scroll), no toda la página */
+    .resumen-tabla th,
+    .resumen-tabla td {
+        padding-right: 1.25rem;
+    }
+}
+
+/* Menos movimiento: sin transiciones ni elevación */
+@media (prefers-reduced-motion: reduce) {
+    .panel-body *,
+    .panel-body *::before {
+        transition: none !important;
+    }
+
+    .resumen-indicador-enlace:hover {
+        transform: none;
+    }
+}
+
+
+/* =====================================================================
+   Rediseño 2.0 — Etapa 2: menú contraíble (escritorio) y menú del celular
+   Lo maneja public/assets/js/panel.js, que pone estas clases en <html>:
+     .js                -> hay JavaScript (sin él, todo queda como antes)
+     .lateral-contraida -> escritorio: menú angosto, solo iconos
+     .lateral-animada   -> ya se puede animar (no se anima al cargar)
+     .menu-abierto      -> celular: menú desplegado
+   ===================================================================== */
+
+/* "hidden" siempre gana, aunque otra regla diga display: flex */
+.panel-body [hidden] {
+    display: none !important;
+}
+
+/* Fila de arriba del menú: marca + botón */
+.panel-cabecera-lateral {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+/* Botones redondos de la barra lateral (contraer, cerrar) */
+.panel-boton-lateral {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    color: var(--panel-lateral-texto);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion);
+}
+
+.panel-boton-lateral:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.panel-boton-lateral:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+.panel-boton-lateral .icono {
+    width: 18px;
+    height: 18px;
+}
+
+/* El de cerrar solo existe en el celular */
+.panel-cerrar-menu {
+    display: none;
+}
+
+/* La barra superior solo existe en el celular */
+.panel-barra-movil,
+.panel-velo {
+    display: none;
+}
+
+/* Textos largos del menú: una sola línea, con "…" si no caben */
+.panel-menu-texto {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Escritorio: menú contraído ---------- */
+@media (min-width: 901px) {
+    /* La animación de ancho (unos 300 ms), solo después de cargar */
+    .lateral-animada .panel {
+        transition: grid-template-columns 300ms ease;
+    }
+
+    .lateral-contraida .panel {
+        grid-template-columns: 76px 1fr;
+    }
+
+    .lateral-contraida .panel-lateral {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        /* Las etiquetas flotantes salen hacia la derecha: que no se recorten */
+        overflow: visible;
+    }
+
+    /* Arriba: la cruz y debajo el botón, centrados */
+    .lateral-contraida .panel-cabecera-lateral {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .lateral-contraida .panel-marca {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0;
+    }
+
+    /* Nombre y lema de la marca: ocultos a la vista, no para los lectores */
+    .lateral-contraida .panel-marca-nombre,
+    .lateral-contraida .panel-marca-lema {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    /* La flecha mira hacia el otro lado: "expandir" */
+    .lateral-contraida .panel-contraer .icono {
+        transform: rotate(180deg);
+    }
+
+    /* Títulos de grupo: se vuelven una línea fina (el texto sigue ahí) */
+    .lateral-contraida .panel-menu-titulo {
+        height: 1px;
+        margin: 0.4rem 0.4rem 0;
+        overflow: hidden;
+        color: transparent;
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Enlaces: solo el icono, centrado */
+    .lateral-contraida .panel-menu a,
+    .lateral-contraida .panel-menu .deshabilitado,
+    .lateral-contraida .panel-perfil,
+    .lateral-contraida .panel-salir {
+        position: relative;
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* El texto pasa a ser una etiqueta que aparece al lado, al pasar el
+       ratón o al llegar con el teclado. Los lectores de pantalla lo leen
+       siempre (opacity no lo oculta para ellos). */
+    .lateral-contraida .panel-menu-texto {
+        position: absolute;
+        left: calc(100% + 12px);
+        top: 50%;
+        z-index: 10;
+        padding: 0.35rem 0.65rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        background: var(--panel-texto);
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(25, 56, 71, 0.2);
+        overflow: visible;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-4px, -50%);
+        transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .lateral-contraida .panel-menu-texto small {
+        display: none;
+    }
+
+    .lateral-contraida .panel-menu a:hover .panel-menu-texto,
+    .lateral-contraida .panel-menu a:focus-visible .panel-menu-texto,
+    .lateral-contraida .panel-perfil:hover .panel-menu-texto,
+    .lateral-contraida .panel-perfil:focus-visible .panel-menu-texto,
+    .lateral-contraida .panel-salir:hover .panel-menu-texto,
+    .lateral-contraida .panel-salir:focus-visible .panel-menu-texto {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+
+    /* El globito se monta sobre la esquina del icono */
+    .lateral-contraida .panel-menu .globito {
+        position: absolute;
+        top: 2px;
+        right: 6px;
+        min-width: 1.1rem;
+        padding: 0 0.25rem;
+        font-size: 0.65rem;
+        line-height: 1.1rem;
+    }
+
+    .lateral-contraida .panel-menu small {
+        display: none;
+    }
+}
+
+/* ---------- Celular: barra arriba y menú que se desliza ---------- */
+@media (max-width: 900px) {
+    /* Barra superior fija: marca + botón "Menú" */
+    .js .panel-barra-movil {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        padding: 0.7rem 1rem;
+        background: var(--panel-lateral);
+    }
+
+    .js .panel-barra-movil .panel-marca {
+        margin: 0;
+    }
+
+    .js .panel-barra-movil .panel-marca-nombre {
+        font-size: 1.1rem;
+    }
+
+    .panel-boton-menu {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 40px;
+        padding: 0.45rem 0.85rem;
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .panel-boton-menu:hover {
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    .panel-boton-menu:focus-visible {
+        outline: 2px solid #FFFFFF;
+        outline-offset: 2px;
+    }
+
+    /* El menú: un panel fijo a la izquierda, escondido fuera de la pantalla.
+       "visibility: hidden" hace que, cerrado, no reciba el foco. */
+    .js .panel-lateral {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 40;
+        width: min(300px, 85vw);
+        height: auto;
+        padding: 1.25rem 1rem 1.5rem;
+        overflow-y: auto;
+        visibility: hidden;
+        transform: translateX(-100%);
+        transition: transform 220ms ease, visibility 0s linear 220ms;
+    }
+
+    .js.menu-abierto .panel-lateral {
+        visibility: visible;
+        transform: none;
+        transition: transform 220ms ease;
+        box-shadow: 8px 0 24px rgba(7, 30, 40, 0.25);
+    }
+
+    /* Dentro del panel, el menú vuelve a ir en columna */
+    .js .panel-menu {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+
+    .js .panel-cerrar-menu {
+        display: grid;
+    }
+
+    .js .panel-contraer {
+        display: none;
+    }
+
+    /* Fondo oscuro detrás del menú abierto */
+    .js .panel-velo {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        background: rgba(7, 30, 40, 0.5);
+    }
+
+    /* Con el menú abierto, la página de atrás no se desplaza */
+    .menu-abierto body {
+        overflow: hidden;
+    }
+}

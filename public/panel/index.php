@@ -87,99 +87,156 @@ if ($ve_gestion) {
     )->fetchAll();
 }
 
-// Saludo según la hora.
+// --- Textos para mostrar (solo presentación) ------------------------------
 require __DIR__ . '/../../app/layout/panel_header.php';
-$hora = (int) date('G');
-$saludo = $hora < 12 ? 'Buenos días' : ($hora < 19 ? 'Buenas tardes' : 'Buenas noches');
-$primer_nombre = explode(' ', trim($usuario['nombre']))[0];
+
+// Fecha de hoy en español, ej. "Martes, 17 de noviembre de 2026".
+$dias  = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+$meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
+          'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+$meses_cortos = ['ene', 'feb', 'mar', 'abr', 'may', 'jun',
+                 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+$fecha_hoy = $dias[(int) date('w')] . ', ' . date('j') . ' de '
+    . $meses[(int) date('n') - 1] . ' de ' . date('Y');
+
+// Nombre del rol para la etiqueta de arriba a la derecha.
+$nombres_rol = ['admin' => 'Administrador', 'admision' => 'Admisión'];
+$nombre_rol = $nombres_rol[$yo['rol']] ?? $yo['rol'];
+
+// Fecha corta de una cita, ej. "18 nov".
+$fecha_corta = function (string $fecha) use ($meses_cortos): string {
+    $momento = strtotime($fecha);
+    return date('j', $momento) . ' ' . $meses_cortos[(int) date('n', $momento) - 1];
+};
 ?>
 
-<header class="panel-titulo">
-    <div>
-        <h1><?= e($saludo) ?>, <?= e($primer_nombre) ?></h1>
-        <p><?= $es_medico ? 'Esto es lo que tienes hoy.' : 'Esto es lo que pasa hoy en la clínica.' ?></p>
-    </div>
-    <time datetime="<?= e(date('Y-m-d')) ?>"><?= e(date('d/m/Y')) ?></time>
-</header>
+<!-- Estilos propios de esta página: todo va dentro de .resumen-admin
+     (ver panel.css) para no cambiar las demás pantallas del panel. -->
+<div class="resumen-admin">
 
-<!-- Tarjetas de números -->
-<section class="tarjetas">
-    <article class="dato">
-        <span class="dato-numero"><?= $citas_hoy ?></span>
-        <span class="dato-texto"><?= $es_medico ? 'Mis citas hoy' : 'Citas hoy' ?></span>
-    </article>
-    <article class="dato">
-        <span class="dato-numero"><?= $citas_pendientes ?></span>
-        <span class="dato-texto"><?= $es_medico ? 'Mis citas por confirmar' : 'Citas por confirmar' ?></span>
-    </article>
-    <?php if ($ve_gestion): ?>
-        <article class="dato dato-alerta">
-            <span class="dato-numero"><?= $solicitudes_nuevas ?></span>
-            <span class="dato-texto">Solicitudes nuevas</span>
+    <header class="resumen-cabecera">
+        <div>
+            <h1>Panel general</h1>
+            <p>
+                Resumen operativo de la clínica &middot;
+                <time datetime="<?= e(date('Y-m-d')) ?>"><?= e($fecha_hoy) ?></time>
+            </p>
+        </div>
+        <span class="resumen-pastilla"><?= e($nombre_rol) ?></span>
+    </header>
+
+    <!-- Indicadores: los cinco números reales de la base de datos -->
+    <section class="resumen-indicadores" aria-label="Indicadores del día">
+        <article class="resumen-indicador">
+            <h2>Citas de hoy</h2>
+            <p class="resumen-numero"><?= e(number_format($citas_hoy)) ?></p>
+            <p class="resumen-nota">Agenda del día</p>
         </article>
-        <a class="dato dato-alerta dato-enlace" href="<?= e(url('/panel/cuentas.php')) ?>">
-            <span class="dato-numero"><?= $cuentas_pendientes ?></span>
-            <span class="dato-texto">Cuentas por verificar</span>
-        </a>
-        <article class="dato">
-            <span class="dato-numero"><?= $total_pacientes ?></span>
-            <span class="dato-texto">Pacientes registrados</span>
+        <article class="resumen-indicador">
+            <h2>Citas pendientes</h2>
+            <p class="resumen-numero"><?= e(number_format($citas_pendientes)) ?></p>
+            <p class="resumen-nota">Por confirmar</p>
         </article>
-    <?php endif; ?>
-</section>
-
-<div class="panel-columnas">
-
-    <!-- Próximas citas -->
-    <section class="caja">
-        <h2><?= $es_medico ? 'Mis próximas citas' : 'Próximas citas' ?></h2>
-        <?php if (count($proximas) === 0): ?>
-            <p class="vacio">No hay citas próximas.</p>
-        <?php else: ?>
-            <ul class="agenda">
-                <?php foreach ($proximas as $cita): ?>
-                    <li>
-                        <div class="agenda-hora">
-                            <strong><?= e(substr($cita['hora'], 0, 5)) ?></strong>
-                            <small><?= e(date('d/m', strtotime($cita['fecha']))) ?></small>
-                        </div>
-                        <div class="agenda-detalle">
-                            <strong><?= e($cita['nombres'] . ' ' . $cita['apellidos']) ?></strong>
-                            <small><?= e($cita['area']) ?> &middot; <?= e($cita['motivo']) ?></small>
-                        </div>
-                        <span class="estado estado-<?= e($cita['estado']) ?>">
-                            <?= e(texto_estado($cita['estado'])) ?>
-                        </span>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+        <?php if ($ve_gestion): ?>
+            <article class="resumen-indicador">
+                <h2>Pacientes registrados</h2>
+                <p class="resumen-numero"><?= e(number_format($total_pacientes)) ?></p>
+                <p class="resumen-nota">Total acumulado</p>
+            </article>
+            <a class="resumen-indicador resumen-indicador-enlace" href="<?= e(url('/panel/solicitudes.php')) ?>">
+                <h2>Solicitudes nuevas</h2>
+                <p class="resumen-numero"><?= e(number_format($solicitudes_nuevas)) ?></p>
+                <p class="resumen-nota">Requieren revisión</p>
+            </a>
+            <a class="resumen-indicador resumen-indicador-enlace" href="<?= e(url('/panel/cuentas.php')) ?>">
+                <h2>Cuentas por verificar</h2>
+                <p class="resumen-numero"><?= e(number_format($cuentas_pendientes)) ?></p>
+                <p class="resumen-nota">Esperan a admisión</p>
+            </a>
         <?php endif; ?>
     </section>
 
-    <!-- Solicitudes nuevas -->
-    <?php if ($ve_gestion): ?>
-        <section class="caja">
-            <h2>Solicitudes de cita</h2>
-            <?php if (count($solicitudes) === 0): ?>
-                <p class="vacio">No hay solicitudes nuevas.</p>
-            <?php else: ?>
-                <ul class="agenda">
-                    <?php foreach ($solicitudes as $sol): ?>
-                        <li>
-                            <div class="agenda-detalle">
-                                <strong><?= e($sol['nombre']) ?></strong>
-                                <small>
-                                    <?= e($sol['area']) ?> &middot; Tel. <?= e($sol['telefono']) ?>
-                                </small>
-                            </div>
-                            <span class="estado estado-nueva">nueva</span>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
-        </section>
-    <?php endif; ?>
+    <!-- Próximas citas (las mismas 6 de siempre, ahora en tabla) -->
+    <section class="resumen-caja">
+        <div class="resumen-caja-cabecera">
+            <h2>Próximas citas</h2>
+            <a class="resumen-pastilla" href="<?= e(url('/panel/citas.php')) ?>">Ver todas</a>
+        </div>
 
+        <?php if (count($proximas) === 0): ?>
+            <p class="resumen-vacio">No hay citas próximas.</p>
+        <?php else: ?>
+            <div class="tabla-scroll">
+                <table class="resumen-tabla">
+                    <thead>
+                        <tr>
+                            <th scope="col">Paciente</th>
+                            <th scope="col">Especialidad</th>
+                            <th scope="col">Fecha / hora</th>
+                            <th scope="col">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($proximas as $cita): ?>
+                            <tr>
+                                <td class="resumen-paciente">
+                                    <?= e($cita['nombres'] . ' ' . $cita['apellidos']) ?>
+                                </td>
+                                <td>
+                                    <?= e($cita['area']) ?>
+                                    <small><?= e($cita['motivo']) ?></small>
+                                </td>
+                                <td class="resumen-fecha">
+                                    <?= e($fecha_corta($cita['fecha'])) ?> &middot; <?= e(substr($cita['hora'], 0, 5)) ?>
+                                </td>
+                                <td>
+                                    <span class="resumen-estado resumen-estado-<?= e($cita['estado']) ?>">
+                                        <?= e(ucfirst(texto_estado($cita['estado']))) ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </section>
+
+    <div class="resumen-columnas">
+
+        <!-- Solicitudes nuevas (las mismas 5 de siempre) -->
+        <?php if ($ve_gestion): ?>
+            <section class="resumen-caja">
+                <div class="resumen-caja-cabecera">
+                    <h2>Solicitudes de cita</h2>
+                    <a class="resumen-pastilla" href="<?= e(url('/panel/solicitudes.php')) ?>">Ver todas</a>
+                </div>
+                <?php if (count($solicitudes) === 0): ?>
+                    <p class="resumen-vacio">No hay solicitudes nuevas.</p>
+                <?php else: ?>
+                    <ul class="resumen-lista">
+                        <?php foreach ($solicitudes as $sol): ?>
+                            <li>
+                                <strong><?= e($sol['nombre']) ?></strong>
+                                <small><?= e($sol['area']) ?> &middot; Tel. <?= e($sol['telefono']) ?></small>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </section>
+
+            <!-- Accesos rápidos: enlaces a páginas que admin y admisión ya pueden abrir -->
+            <section class="resumen-caja">
+                <h2>Accesos rápidos</h2>
+                <ul class="resumen-accesos">
+                    <li><a class="resumen-pastilla" href="<?= e(url('/panel/registrar-paciente.php')) ?>">+ Registrar paciente</a></li>
+                    <li><a class="resumen-pastilla" href="<?= e(url('/panel/registrar-cita.php')) ?>">+ Registrar cita</a></li>
+                    <li><a class="resumen-pastilla" href="<?= e(url('/panel/agenda.php')) ?>">Consultar agenda</a></li>
+                </ul>
+            </section>
+        <?php endif; ?>
+
+    </div>
 </div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>
