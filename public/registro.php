@@ -59,51 +59,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
-<section class="registro">
-    <h1>Regístrate</h1>
-    <p>Crea tu cuenta del Portal del paciente. Es gratis y solo toma un minuto.</p>
+<section class="pub-registro aparecer">
+    <header class="pub-registro-cabecera">
+        <p class="pub-etiqueta">Portal del paciente</p>
+        <h1>Regístrate</h1>
+        <p class="pub-bajada">Crea tu cuenta del Portal del paciente. Es gratis y solo toma un minuto.</p>
+    </header>
 
     <?php if (count($errores) > 0): ?>
-        <div class="aviso aviso-error" role="alert">
-            <?php foreach ($errores as $error): ?>
-                <div><?= e($error) ?></div>
-            <?php endforeach; ?>
+        <div class="pub-aviso pub-aviso-error" role="alert">
+            <?= $icono_publico('i-alerta') ?>
+            <div>
+                <?php foreach ($errores as $error): ?>
+                    <p><?= e($error) ?></p>
+                <?php endforeach; ?>
+            </div>
         </div>
     <?php endif; ?>
 
-    <form class="formulario formulario-grid" method="post"
-          action="<?= e(url('/registro.php')) ?>" novalidate>
+    <!-- data-cargando: al enviar, el botón muestra "Creando cuenta…" y evita el doble envío -->
+    <form class="pub-formulario pub-formulario-rejilla" method="post"
+          action="<?= e(url('/registro.php')) ?>" novalidate data-cargando>
         <?= csrf_campo() ?>
 
-        <div class="campo">
+        <!-- Por filas: así el orden del Tab es el mismo que se ve, en escritorio y en el celular -->
+        <div class="pub-campo">
             <label for="nombres">Nombres</label>
             <input type="text" id="nombres" name="nombres" maxlength="100"
                    placeholder="Nombres" value="<?= e($valores['nombres']) ?>"
                    autocomplete="given-name" required>
         </div>
 
-        <div class="campo">
-            <label for="correo">Correo</label>
-            <input type="email" id="correo" name="correo" maxlength="120"
-                   placeholder="tu.correo@example.com" value="<?= e($valores['correo']) ?>"
-                   autocomplete="email" required>
-        </div>
-
-        <div class="campo">
+        <div class="pub-campo">
             <label for="apellidos">Apellidos</label>
             <input type="text" id="apellidos" name="apellidos" maxlength="100"
                    placeholder="Apellidos" value="<?= e($valores['apellidos']) ?>"
                    autocomplete="family-name" required>
         </div>
 
-        <div class="campo">
-            <label for="celular">Número de celular</label>
-            <input type="tel" id="celular" name="celular" maxlength="20"
-                   placeholder="Celular" value="<?= e($valores['celular']) ?>"
-                   autocomplete="tel" required>
-        </div>
-
-        <div class="campo">
+        <div class="pub-campo">
             <label for="tipo_documento">Tipo de documento</label>
             <select id="tipo_documento" name="tipo_documento" required>
                 <option value="">Selecciona</option>
@@ -116,32 +110,49 @@ require __DIR__ . '/../app/layout/publico_header.php';
             </select>
         </div>
 
-        <div class="campo">
-            <label for="password">Establece una contraseña</label>
-            <input type="password" id="password" name="password"
-                   placeholder="Contraseña" autocomplete="new-password" required>
-        </div>
-
-        <div class="campo">
+        <div class="pub-campo">
             <label for="numero_documento">N.º de documento</label>
             <input type="text" id="numero_documento" name="numero_documento" maxlength="12"
                    placeholder="Número de documento" value="<?= e($valores['numero_documento']) ?>"
                    autocomplete="off" required>
         </div>
 
-        <div class="campo">
+        <div class="pub-campo">
+            <label for="correo">Correo</label>
+            <input type="email" id="correo" name="correo" maxlength="120"
+                   placeholder="tu.correo@example.com" value="<?= e($valores['correo']) ?>"
+                   autocomplete="email" required>
+        </div>
+
+        <div class="pub-campo">
+            <label for="celular">Número de celular</label>
+            <input type="tel" id="celular" name="celular" maxlength="20"
+                   placeholder="Celular" value="<?= e($valores['celular']) ?>"
+                   autocomplete="tel" required>
+        </div>
+
+        <div class="pub-campo">
+            <label for="password">Establece una contraseña</label>
+            <input type="password" id="password" name="password"
+                   placeholder="Contraseña" autocomplete="new-password" required>
+        </div>
+
+        <div class="pub-campo">
             <label for="confirmar_password">Confirma tu contraseña</label>
             <input type="password" id="confirmar_password" name="confirmar_password"
                    placeholder="Repite la contraseña" autocomplete="new-password" required>
         </div>
 
-        <p class="formulario-nota">
-            La contraseña debe tener de 8 a 72 caracteres, con al menos una letra y un número.
-            Tu cuenta quedará <strong>pendiente</strong> hasta que admisión compruebe tu identidad.
-        </p>
+        <div class="pub-aviso pub-aviso-info pub-campo-ancho">
+            <?= $icono_publico('i-info') ?>
+            <p>
+                La contraseña debe tener de 8 a 72 caracteres, con al menos una letra y un número.
+                Tu cuenta quedará <strong>pendiente</strong> hasta que admisión compruebe tu identidad.
+            </p>
+        </div>
 
         <!-- Consentimiento (Ley 29733). Obligatorio: también se valida en PHP. -->
-        <label class="casilla-privacidad">
+        <label class="pub-casilla pub-campo-ancho">
             <input type="checkbox" name="acepto_privacidad" value="1" required
                 <?= isset($_POST['acepto_privacidad']) ? 'checked' : '' ?>>
             <span>
@@ -152,10 +163,12 @@ require __DIR__ . '/../app/layout/publico_header.php';
             </span>
         </label>
 
-        <button class="boton" type="submit">Crear cuenta</button>
+        <div class="pub-campo-ancho">
+            <button class="pub-boton pub-boton-ancho" type="submit" data-texto-cargando="Creando cuenta…">Crear cuenta</button>
+        </div>
     </form>
 
-    <p class="login-alterno">
+    <p class="pub-alterno">
         ¿Ya tienes cuenta? <a href="<?= e(url('/login.php')) ?>">Inicia sesión</a>
     </p>
 </section>

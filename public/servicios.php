@@ -17,34 +17,41 @@ $areas = $consulta->fetchAll();
 require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
-<section class="seccion">
-    <p class="etiqueta">Servicios</p>
+<!-- Encabezado de la página -->
+<section class="pub-encabezado aparecer">
+    <p class="pub-etiqueta">Servicios</p>
     <h1>Cuidamos cada etapa de tu salud</h1>
-    <p class="portada-bajada">
+    <p class="pub-bajada">
         Estas son las áreas donde te atendemos. Si no sabes a cuál ir,
         pide tu cita y te orientamos.
     </p>
 </section>
 
-<section class="seccion">
+<!-- Áreas (salen de la base de datos): lista numerada en dos columnas -->
+<section class="pub-seccion aparecer">
     <?php if (count($areas) === 0): ?>
-        <p>Pronto publicaremos nuestros servicios.</p>
+        <p class="pub-bajada">Pronto publicaremos nuestros servicios.</p>
     <?php else: ?>
-        <div class="rejilla-3">
+        <ol class="pub-servicios">
             <?php foreach ($areas as $area): ?>
-                <article class="servicio">
-                    <h3><?= e($area['nombre']) ?></h3>
-                    <p><?= e($area['descripcion']) ?></p>
-                </article>
+                <li class="pub-servicio">
+                    <span class="pub-servicio-icono"><?= $icono_publico('i-cruz') ?></span>
+                    <div>
+                        <h2><?= e($area['nombre']) ?></h2>
+                        <p><?= e($area['descripcion']) ?></p>
+                    </div>
+                </li>
             <?php endforeach; ?>
-        </div>
+        </ol>
     <?php endif; ?>
 </section>
 
-<section class="llamado">
-    <h2>¿Listo para tu consulta?</h2>
-    <p>Ingresa al Portal del paciente y reserva tu cita en el horario que prefieras.</p>
-    <a class="boton boton-claro" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
+<section class="pub-llamado aparecer">
+    <div>
+        <h2>¿Listo para tu consulta?</h2>
+        <p>Ingresa al Portal del paciente y reserva tu cita en el horario que prefieras.</p>
+    </div>
+    <a class="pub-boton pub-boton-blanco" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
 </section>
 
 <?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

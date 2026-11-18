@@ -1,0 +1,1822 @@
+/* =====================================================================
+   Clínica Vida Sana 2.0 — Web pública
+   Solo se carga en las páginas públicas (app/layout/publico_header.php).
+   Usa los mismos colores del panel y del portal, pero con sus propias
+   variables: así la web pública se puede cambiar sin tocar el panel.
+   Todo va dentro de body.publico.
+   ===================================================================== */
+
+body.publico {
+    --pub-primario:      #087C94;
+    --pub-primario-hover:#066A7F;
+    --pub-oscuro:        #075267;
+    --pub-noche:         #0D2F3B;   /* fondo de llamados y pie */
+    --pub-fondo:         #F2F7F9;
+    --pub-superficie:    #FFFFFF;
+    --pub-texto:         #193847;
+    --pub-suave:         #5B6B79;   /* 5.4:1 sobre el fondo */
+    --pub-acento:        #22B77A;   /* solo rellenos y detalles */
+    --pub-acento-texto:  #1F7A4D;
+    --pub-borde:         #E1EAEE;
+    --pub-borde-fuerte:  #C5D3DA;
+    --pub-tinte:         #E6F2F5;
+    --pub-error:         #B42318;
+    --pub-radio:         14px;
+    --pub-sombra:        0 1px 2px rgba(25, 56, 71, 0.05), 0 8px 24px rgba(25, 56, 71, 0.06);
+    --pub-sombra-alta:   0 4px 10px rgba(25, 56, 71, 0.08), 0 18px 40px rgba(25, 56, 71, 0.12);
+    --pub-anillo:        0 0 0 3px rgba(8, 124, 148, 0.25);
+    --pub-transicion:    200ms ease;
+    --pub-ancho:         1180px;
+
+    color: var(--pub-texto);
+    background: var(--pub-fondo);
+}
+
+.publico h1,
+.publico h2,
+.publico h3 {
+    color: var(--pub-texto);
+    letter-spacing: -0.01em;
+}
+
+/* :where() deja esta regla con poca prioridad: las clases (.pub-boton...) ganan solas */
+:where(.publico) a {
+    color: var(--pub-primario);
+}
+
+/* Iconos de iconos.svg */
+.pub-icono {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+/* ---------- Contenido ---------- */
+.pub-contenido {
+    max-width: var(--pub-ancho);
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+/* =====================================================================
+   Cabecera y menú
+   ===================================================================== */
+.pub-cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--pub-borde);
+    backdrop-filter: saturate(160%) blur(8px);
+}
+
+.pub-cabecera-interior {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: var(--pub-ancho);
+    margin: 0 auto;
+    padding: 0.8rem 1.5rem;
+}
+
+.pub-marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-right: auto;
+    font-size: 1.08rem;
+    color: var(--pub-texto);
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.pub-marca .pub-icono {
+    width: 34px;
+    height: 34px;
+    padding: 7px;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, var(--pub-primario), var(--pub-oscuro));
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(8, 124, 148, 0.3);
+}
+
+.pub-marca strong {
+    color: var(--pub-primario);
+}
+
+.pub-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Enlaces con una línea que crece por debajo al pasar el ratón */
+.pub-menu a:not(.pub-boton) {
+    position: relative;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    color: var(--pub-suave);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: color var(--pub-transicion);
+}
+
+.pub-menu a:not(.pub-boton)::after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.25rem;
+    height: 2px;
+    background: var(--pub-acento);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 240ms ease;
+}
+
+.pub-menu a:not(.pub-boton):hover,
+.pub-menu a[aria-current="page"] {
+    color: var(--pub-texto);
+}
+
+.pub-menu a:not(.pub-boton):hover::after,
+.pub-menu a[aria-current="page"]::after {
+    transform: scaleX(1);
+}
+
+.pub-menu .pub-boton {
+    margin-left: 0.5rem;
+}
+
+/* Botón "Menú" (solo en el celular y con JavaScript) */
+.pub-boton-menu {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 42px;
+    padding: 0.45rem 0.85rem;
+    font: inherit;
+    font-weight: 600;
+    color: var(--pub-texto);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde-fuerte);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.pub-boton-menu[hidden] {
+    display: none !important;
+}
+
+/* Tres rayas que se convierten en una X al abrir */
+.pub-hamburguesa,
+.pub-hamburguesa span,
+.pub-hamburguesa::before,
+.pub-hamburguesa::after {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.pub-hamburguesa {
+    position: relative;
+    background: none;
+}
+
+.pub-hamburguesa span {
+    position: absolute;
+    top: 0;
+}
+
+.pub-hamburguesa::before,
+.pub-hamburguesa::after {
+    content: "";
+    position: absolute;
+}
+
+.pub-hamburguesa::before { top: -6px; }
+.pub-hamburguesa::after  { top: 6px; }
+
+.pub-menu-abierto .pub-hamburguesa span   { opacity: 0; }
+.pub-menu-abierto .pub-hamburguesa::before { transform: translateY(6px) rotate(45deg); }
+.pub-menu-abierto .pub-hamburguesa::after  { transform: translateY(-6px) rotate(-45deg); }
+
+/* Foco con teclado en la cabecera */
+.pub-cabecera a:focus-visible,
+.pub-cabecera button:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* =====================================================================
+   Botones
+   ===================================================================== */
+.pub-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 46px;
+    padding: 0.7rem 1.35rem;
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #FFFFFF;
+    text-decoration: none;
+    background: var(--pub-primario);
+    border: 1px solid var(--pub-primario);
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(8, 124, 148, 0.22);
+    cursor: pointer;
+    transition: background-color var(--pub-transicion), box-shadow var(--pub-transicion),
+                transform var(--pub-transicion), border-color var(--pub-transicion);
+}
+
+.pub-boton:hover {
+    background: var(--pub-primario-hover);
+    box-shadow: 0 10px 22px rgba(8, 124, 148, 0.3);
+    transform: translateY(-1px);
+}
+
+.pub-boton:active {
+    transform: translateY(0);
+}
+
+.pub-boton:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+.pub-boton-chico {
+    min-height: 40px;
+    padding: 0.5rem 1rem;
+    font-size: 0.92rem;
+    box-shadow: none;
+}
+
+.pub-boton-ancho {
+    width: 100%;
+}
+
+/* Blanco sobre fondo de color (carrusel y llamados) */
+.pub-boton-blanco {
+    color: var(--pub-oscuro);
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.pub-boton-blanco:hover {
+    background: #EAF6F8;
+    border-color: #EAF6F8;
+}
+
+.pub-boton-blanco:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+}
+
+/* Secundario: blanco con borde */
+.pub-boton-secundario {
+    color: var(--pub-primario);
+    background: var(--pub-superficie);
+    border-color: var(--pub-borde-fuerte);
+    box-shadow: none;
+}
+
+.pub-boton-secundario:hover {
+    background: var(--pub-tinte);
+    border-color: var(--pub-primario);
+    box-shadow: none;
+}
+
+/* Deshabilitado y cargando (lo pone publico.js al enviar) */
+.pub-boton:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.pub-boton[aria-busy="true"]::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: pub-girar 700ms linear infinite;
+}
+
+@keyframes pub-girar {
+    to { transform: rotate(360deg); }
+}
+
+/* Enlace con flecha que avanza */
+.pub-enlace-flecha {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.pub-enlace-flecha span {
+    transition: transform var(--pub-transicion);
+}
+
+.pub-enlace-flecha:hover span {
+    transform: translateX(4px);
+}
+
+.pub-enlace-flecha:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* =====================================================================
+   Textos comunes
+   ===================================================================== */
+.pub-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pub-primario);
+}
+
+/* Rayita verde antes de la etiqueta */
+.pub-etiqueta::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    background: var(--pub-acento);
+    border-radius: 2px;
+}
+
+.pub-bajada {
+    max-width: 44rem;
+    margin: 0;
+    font-size: 1.12rem;
+    color: var(--pub-suave);
+}
+
+.pub-seccion {
+    margin: 0 0 4rem;
+}
+
+.pub-seccion h2 {
+    margin: 0;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+
+.pub-seccion-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+/* Encabezado de las páginas interiores: fondo claro con un círculo decorativo */
+.pub-encabezado {
+    position: relative;
+    overflow: hidden;
+    margin: 0 0 3rem;
+    padding: 3rem 2.5rem;
+    background: linear-gradient(120deg, #FFFFFF 0%, #EAF4F7 100%);
+    border: 1px solid var(--pub-borde);
+    border-radius: 22px;
+}
+
+.pub-encabezado::after {
+    content: "";
+    position: absolute;
+    right: -80px;
+    top: -80px;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(34, 183, 122, 0.18), rgba(8, 124, 148, 0.08) 60%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.pub-encabezado h1 {
+    position: relative;
+    max-width: 40rem;
+    margin: 0 0 0.75rem;
+    font-size: clamp(2rem, 4.4vw, 3rem);
+    line-height: 1.1;
+}
+
+.pub-encabezado .pub-bajada {
+    position: relative;
+}
+
+/* =====================================================================
+   Inicio: carrusel (la lógica es de portada.js; aquí solo el aspecto)
+   ===================================================================== */
+.pub-hero {
+    position: relative;
+    margin-bottom: 4.5rem;
+}
+
+.publico .carrusel {
+    margin-bottom: 0;
+    border-radius: 26px;
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.publico .diapositiva {
+    position: relative;
+    overflow: hidden;
+    min-height: 440px;
+    padding: 3.5rem 5.5rem 6.5rem;   /* 5.5rem a los lados: espacio para las flechas */
+    border-radius: 26px;
+}
+
+.publico .carrusel-activo .diapositiva {
+    border-radius: 0;
+}
+
+/* Círculos de luz detrás del texto */
+.publico .diapositiva::before {
+    content: "";
+    position: absolute;
+    left: -120px;
+    bottom: -160px;
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.14), transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.publico .diapositiva-texto {
+    position: relative;
+}
+
+/* Colores 2.0 de cada diapositiva */
+.publico .tono-azul   { background: linear-gradient(135deg, #087C94 0%, #075267 100%); }
+.publico .tono-verde  { background: linear-gradient(135deg, #1C9C6A 0%, #087C94 100%); }
+.publico .tono-oscuro { background: linear-gradient(135deg, #0D2F3B 0%, #087C94 100%); }
+
+.publico .diapositiva h1,
+.publico .diapositiva h2 {
+    margin: 0 0 1rem;
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    line-height: 1.08;
+    color: #FFFFFF;
+}
+
+.publico .diapositiva p {
+    max-width: 30rem;
+    font-size: 1.15rem;
+}
+
+.publico .diapositiva-etiqueta {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+}
+
+.publico .diapositiva-imagen {
+    position: relative;
+    max-width: 430px;
+    filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.18));
+}
+
+.publico .carrusel-flecha {
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: background-color var(--pub-transicion), transform var(--pub-transicion);
+    backdrop-filter: blur(4px);
+}
+
+.publico .carrusel-flecha:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.06);
+}
+
+.publico .carrusel-flecha:focus-visible,
+.publico .carrusel-puntos button:focus-visible {
+    outline: 3px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+.publico .carrusel-puntos {
+    bottom: 4.75rem;
+}
+
+/* Franja de horarios: tarjeta blanca que se monta sobre el borde del carrusel */
+.pub-franja {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: -3.25rem 2.5rem 0;
+    padding: 0.5rem;
+    background: var(--pub-superficie);
+    border-radius: 18px;
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-franja div {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.75rem;
+    align-items: center;
+    padding: 1rem 1.25rem;
+}
+
+.pub-franja div + div {
+    border-left: 1px solid var(--pub-borde);
+}
+
+.pub-franja .pub-icono {
+    grid-row: span 2;
+    width: 38px;
+    height: 38px;
+    padding: 9px;
+    color: var(--pub-primario);
+    background: var(--pub-tinte);
+    border-radius: 50%;
+}
+
+.pub-franja span {
+    font-size: 0.82rem;
+    color: var(--pub-suave);
+}
+
+.pub-franja strong {
+    font-size: 1.08rem;
+}
+
+/* =====================================================================
+   Sección dividida: título a la izquierda, lista numerada a la derecha
+   ===================================================================== */
+.pub-dividida {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: 3rem;
+    align-items: start;
+}
+
+.pub-dividida-titulo {
+    position: sticky;
+    top: 6rem;
+}
+
+.pub-razones {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: razon;
+}
+
+.pub-razones li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    column-gap: 1rem;
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--pub-borde);
+    counter-increment: razon;
+    transition: padding-left var(--pub-transicion);
+}
+
+.pub-razones li:last-child {
+    border-bottom: 1px solid var(--pub-borde);
+}
+
+/* Número grande y con degradado */
+.pub-razones li::before {
+    content: "0" counter(razon);
+    grid-row: span 2;
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--pub-primario), var(--pub-acento));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.pub-razones li:hover {
+    padding-left: 0.5rem;
+}
+
+.pub-razones h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.25rem;
+}
+
+.pub-razones p {
+    margin: 0;
+    color: var(--pub-suave);
+}
+
+/* =====================================================================
+   Mosaico de servicios (Inicio): uno grande y destacado, dos al lado
+   ===================================================================== */
+.pub-mosaico {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    grid-template-rows: repeat(2, auto);
+    gap: 1.25rem;
+}
+
+.pub-mosaico-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.75rem;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 20px;
+    transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+}
+
+.pub-mosaico-item:hover {
+    transform: translateY(-4px);
+    border-color: var(--pub-borde-fuerte);
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-mosaico-item h3 {
+    margin: 0.5rem 0 0;
+    font-size: 1.35rem;
+}
+
+.pub-mosaico-item p {
+    margin: 0;
+    color: var(--pub-suave);
+}
+
+.pub-mosaico-icono {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    color: var(--pub-primario);
+    background: var(--pub-tinte);
+    border-radius: 14px;
+    transition: transform 240ms ease;
+}
+
+.pub-mosaico-icono .pub-icono {
+    width: 26px;
+    height: 26px;
+}
+
+.pub-mosaico-item:hover .pub-mosaico-icono {
+    transform: rotate(-6deg) scale(1.05);
+}
+
+.pub-mosaico-destacado {
+    grid-row: span 2;
+    justify-content: flex-end;
+    min-height: 300px;
+    color: #FFFFFF;
+    background: linear-gradient(150deg, var(--pub-primario) 0%, var(--pub-oscuro) 100%);
+    border-color: transparent;
+}
+
+.pub-mosaico-destacado h3 {
+    font-size: 1.8rem;
+    color: #FFFFFF;
+}
+
+.pub-mosaico-destacado p {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.pub-mosaico-destacado .pub-mosaico-icono {
+    margin-bottom: auto;
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.16);
+}
+
+/* =====================================================================
+   Llamado final: franja oscura con círculos de luz
+   ===================================================================== */
+.pub-llamado {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 0 0 1rem;
+    padding: 3rem 3.25rem;
+    color: #FFFFFF;
+    background: linear-gradient(120deg, var(--pub-noche) 0%, var(--pub-oscuro) 100%);
+    border-radius: 24px;
+}
+
+.pub-llamado::before,
+.pub-llamado::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.pub-llamado::before {
+    right: -60px;
+    top: -90px;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(34, 183, 122, 0.35), transparent 70%);
+}
+
+.pub-llamado::after {
+    left: 30%;
+    bottom: -140px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(8, 124, 148, 0.45), transparent 70%);
+}
+
+.pub-llamado > * {
+    position: relative;
+    z-index: 1;
+}
+
+.pub-llamado h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: #FFFFFF;
+}
+
+.pub-llamado p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* =====================================================================
+   Aviso emergente (<dialog>) de la portada
+   ===================================================================== */
+.publico .aviso-emergente {
+    border-top: none;
+    border-radius: 22px;
+    box-shadow: 0 30px 70px rgba(13, 47, 59, 0.4);
+}
+
+.publico .aviso-emergente[open] {
+    animation: pub-subir 260ms ease-out;
+}
+
+.publico .aviso-emergente::backdrop {
+    background: rgba(13, 47, 59, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.publico .aviso-etiqueta {
+    color: var(--pub-acento-texto);
+}
+
+/* =====================================================================
+   Servicios: lista numerada en dos columnas
+   ===================================================================== */
+.pub-servicios {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: servicio;
+}
+
+.pub-servicio {
+    position: relative;
+    display: flex;
+    gap: 1.1rem;
+    padding: 1.6rem 1.6rem 1.6rem 1.4rem;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 18px;
+    counter-increment: servicio;
+    transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+}
+
+/* Número de fondo, grande y muy suave */
+.pub-servicio::after {
+    content: "0" counter(servicio);
+    position: absolute;
+    right: 1.25rem;
+    top: 0.75rem;
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--pub-tinte);
+}
+
+.pub-servicio:hover {
+    transform: translateY(-3px);
+    border-color: var(--pub-borde-fuerte);
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-servicio-icono {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, var(--pub-primario), var(--pub-oscuro));
+    border-radius: 14px;
+}
+
+.pub-servicio > div {
+    position: relative;
+    z-index: 1;
+}
+
+.pub-servicio h2 {
+    margin: 0.2rem 0 0.4rem;
+    font-size: 1.25rem;
+}
+
+.pub-servicio p {
+    margin: 0;
+    color: var(--pub-suave);
+}
+
+/* =====================================================================
+   Nosotros: misión y visión en un bloque de dos tonos
+   ===================================================================== */
+.pub-mision {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: hidden;
+    border-radius: 24px;
+    box-shadow: var(--pub-sombra);
+}
+
+.pub-mision article {
+    padding: 2.75rem;
+}
+
+.pub-mision h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.6rem;
+}
+
+.pub-mision p {
+    margin: 0;
+    font-size: 1.08rem;
+}
+
+.pub-mision-mision {
+    color: #FFFFFF;
+    background: linear-gradient(150deg, var(--pub-primario), var(--pub-oscuro));
+}
+
+.pub-mision-mision h2 {
+    color: #FFFFFF;
+}
+
+.pub-mision-mision p {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.pub-mision-vision {
+    background: var(--pub-superficie);
+}
+
+.pub-mision-vision p {
+    color: var(--pub-suave);
+}
+
+/* =====================================================================
+   Contacto
+   ===================================================================== */
+.pub-contacto {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.pub-contacto h2 {
+    margin: 0 0 1.25rem;
+    font-size: 1.45rem;
+}
+
+.pub-contacto-datos {
+    padding: 2rem;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 20px;
+}
+
+.pub-lista-datos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-lista-datos li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.8rem;
+    align-items: center;
+    padding: 1rem;
+    background: var(--pub-fondo);
+    border-radius: 14px;
+    transition: background-color var(--pub-transicion);
+}
+
+.pub-lista-datos li:hover {
+    background: var(--pub-tinte);
+}
+
+.pub-lista-icono {
+    display: grid;
+    grid-row: span 2;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    color: var(--pub-primario);
+    background: var(--pub-superficie);
+    border-radius: 12px;
+}
+
+.pub-lista-datos span:not(.pub-lista-icono) {
+    font-size: 0.82rem;
+    color: var(--pub-suave);
+}
+
+.pub-lista-datos strong {
+    overflow-wrap: anywhere;
+}
+
+/* Horarios: tarjeta oscura */
+.pub-horario {
+    padding: 2rem;
+    color: #FFFFFF;
+    background: linear-gradient(160deg, var(--pub-noche), var(--pub-oscuro));
+    border-radius: 20px;
+}
+
+.pub-horario h2 {
+    color: #FFFFFF;
+}
+
+.pub-horario ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-horario li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.pub-horario li span {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.pub-horario p {
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* =====================================================================
+   Formularios (Login y Registro)
+   ===================================================================== */
+.pub-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.pub-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.pub-campo label {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--pub-texto);
+}
+
+.pub-campo input,
+.pub-campo select {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 0.9rem;
+    font: inherit;
+    color: var(--pub-texto);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde-fuerte);
+    border-radius: 10px;
+    transition: border-color var(--pub-transicion), box-shadow var(--pub-transicion),
+                background-color var(--pub-transicion);
+}
+
+.pub-campo input:hover,
+.pub-campo select:hover {
+    border-color: #9FB4BE;
+}
+
+.pub-campo input:focus,
+.pub-campo select:focus {
+    outline: none;
+    border-color: var(--pub-primario);
+    box-shadow: var(--pub-anillo);
+}
+
+/* Error: solo después de que la persona tocó el campo */
+.pub-campo input:user-invalid,
+.pub-campo select:user-invalid {
+    border-color: var(--pub-error);
+    background: #FFF8F7;
+}
+
+.pub-campo input::placeholder {
+    color: #8A9AA6;
+}
+
+/* Avisos */
+.pub-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin: 0 0 1.25rem;
+    padding: 0.9rem 1rem;
+    color: var(--pub-texto);
+    background: var(--pub-tinte);
+    border: 1px solid #BFE0E8;
+    border-radius: 12px;
+    animation: pub-subir 220ms ease-out;
+}
+
+.pub-aviso p {
+    margin: 0;
+}
+
+.pub-aviso .pub-icono {
+    margin-top: 2px;
+    color: var(--pub-primario);
+}
+
+.pub-aviso-exito {
+    color: #14532D;
+    background: #E3F5EC;
+    border-color: #A8DDC1;
+}
+
+.pub-aviso-exito .pub-icono {
+    color: var(--pub-acento-texto);
+}
+
+.pub-aviso-error {
+    color: #7A1A12;
+    background: #FDECEA;
+    border-color: #F5B5AE;
+}
+
+.pub-aviso-error .pub-icono {
+    color: var(--pub-error);
+}
+
+.pub-aviso-advertencia {
+    color: #5C3D00;
+    background: #FFF6E5;
+    border-color: #F2D49A;
+}
+
+.pub-aviso-advertencia .pub-icono {
+    color: #A86B00;
+}
+
+.pub-alterno {
+    margin: 1.25rem 0 0;
+    text-align: center;
+    color: var(--pub-suave);
+}
+
+.pub-alterno a {
+    font-weight: 700;
+}
+
+/* ---------- Login: pantalla partida ---------- */
+.pub-acceso {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    max-width: 980px;
+    margin: 1rem auto 2rem;
+    overflow: hidden;
+    background: var(--pub-superficie);
+    border-radius: 26px;
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-acceso-marca {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 2.5rem;
+    color: #FFFFFF;
+    background: linear-gradient(160deg, var(--pub-primario) 0%, var(--pub-oscuro) 70%, var(--pub-noche) 100%);
+    overflow: hidden;
+}
+
+.pub-acceso-marca::after {
+    content: "";
+    position: absolute;
+    right: -90px;
+    bottom: -90px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(34, 183, 122, 0.35), transparent 70%);
+    border-radius: 50%;
+}
+
+.pub-acceso-cruz .pub-icono {
+    width: 46px;
+    height: 46px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 14px;
+}
+
+.pub-acceso-lema {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.pub-acceso-marca img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    align-self: center;
+}
+
+.pub-acceso-formulario {
+    padding: 2.75rem 2.5rem;
+}
+
+.pub-acceso-formulario h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+}
+
+.pub-acceso-formulario .pub-bajada {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+/* ---------- Registro ---------- */
+.pub-registro {
+    max-width: 860px;
+    margin: 0.5rem auto 2rem;
+    padding: 2.5rem;
+    background: var(--pub-superficie);
+    border-radius: 24px;
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-registro-cabecera {
+    margin-bottom: 1.75rem;
+}
+
+.pub-registro-cabecera h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2.2rem;
+}
+
+.pub-formulario-rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem 1.25rem;
+}
+
+.pub-campo-ancho {
+    grid-column: 1 / -1;
+}
+
+.pub-formulario-rejilla .pub-aviso {
+    margin: 0.25rem 0 0;
+    font-size: 0.92rem;
+    animation: none;
+}
+
+/* Casilla de privacidad: la casilla es grande y fácil de tocar */
+.pub-casilla {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    font-size: 0.93rem;
+    line-height: 1.5;
+    color: var(--pub-texto);
+    background: var(--pub-fondo);
+    border: 1px solid var(--pub-borde);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color var(--pub-transicion), background-color var(--pub-transicion);
+}
+
+.pub-casilla:hover {
+    border-color: var(--pub-borde-fuerte);
+}
+
+.pub-casilla:has(input:checked) {
+    background: #EEF8F3;
+    border-color: #A8DDC1;
+}
+
+.pub-casilla input {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0.1rem 0 0;
+    accent-color: var(--pub-primario);
+}
+
+.pub-casilla input:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* =====================================================================
+   Privacidad: índice fijo + texto cómodo de leer
+   ===================================================================== */
+.pub-legal {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+}
+
+.pub-legal-indice {
+    position: sticky;
+    top: 6rem;
+    padding: 1.25rem;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 16px;
+}
+
+.pub-legal-indice p {
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pub-suave);
+}
+
+.pub-legal-indice ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: indice;
+}
+
+.pub-legal-indice li {
+    counter-increment: indice;
+}
+
+.pub-legal-indice a {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.92rem;
+    color: var(--pub-suave);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color var(--pub-transicion), color var(--pub-transicion);
+}
+
+.pub-legal-indice a::before {
+    content: counter(indice) ".";
+    font-weight: 700;
+    color: var(--pub-primario);
+}
+
+.pub-legal-indice a:hover {
+    color: var(--pub-texto);
+    background: var(--pub-tinte);
+}
+
+.pub-legal-indice a:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+.pub-legal-texto {
+    max-width: 46rem;
+    padding: 2.5rem;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 20px;
+}
+
+.pub-legal-texto h2 {
+    margin: 2rem 0 0.75rem;
+    padding-top: 1.5rem;
+    font-size: 1.3rem;
+    border-top: 1px solid var(--pub-borde);
+    scroll-margin-top: 6rem;   /* al saltar desde el índice, que no lo tape la cabecera */
+}
+
+.pub-legal-texto h2:first-of-type {
+    margin-top: 1.5rem;
+}
+
+.pub-legal-texto p,
+.pub-legal-texto li {
+    line-height: 1.75;
+}
+
+.pub-legal-texto ul {
+    padding-left: 1.25rem;
+}
+
+.pub-legal-texto li::marker {
+    color: var(--pub-acento);
+}
+
+/* =====================================================================
+   Páginas de error 403 y 404 (el HTML lo arma app/core/errores.php)
+   ===================================================================== */
+.publico .error-pagina {
+    position: relative;
+    max-width: 640px;
+    margin: 1rem auto 2rem;
+    padding: 3.5rem 2rem;
+    overflow: hidden;
+    background: var(--pub-superficie);
+    border-radius: 26px;
+    box-shadow: var(--pub-sombra-alta);
+    animation: pub-subir 320ms ease-out;
+}
+
+.publico .error-pagina::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -120px;
+    width: 360px;
+    height: 360px;
+    margin-left: -180px;
+    background: radial-gradient(circle, rgba(8, 124, 148, 0.12), transparent 70%);
+    border-radius: 50%;
+}
+
+.publico .error-codigo {
+    position: relative;
+    font-size: clamp(5rem, 18vw, 9rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--pub-primario), var(--pub-acento));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.publico .error-pagina h1 {
+    position: relative;
+    font-size: 1.8rem;
+}
+
+.publico .error-pagina p {
+    position: relative;
+    color: var(--pub-suave);
+}
+
+/* Su botón ".boton" toma el aspecto de .pub-boton */
+.publico .error-pagina .boton {
+    position: relative;
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    padding: 0.7rem 1.35rem;
+    color: #FFFFFF;
+    background: var(--pub-primario);
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(8, 124, 148, 0.22);
+    transition: background-color var(--pub-transicion), transform var(--pub-transicion);
+}
+
+.publico .error-pagina .boton:hover {
+    background: var(--pub-primario-hover);
+    transform: translateY(-1px);
+}
+
+.publico .error-pagina .boton:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* =====================================================================
+   Pie de página
+   ===================================================================== */
+.pub-pie {
+    margin-top: 2rem;
+    color: rgba(255, 255, 255, 0.78);
+    background: var(--pub-noche);
+}
+
+.pub-pie-interior {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: var(--pub-ancho);
+    margin: 0 auto;
+    padding: 2.25rem 1.5rem;
+}
+
+.pub-pie-marca p {
+    margin: 0.6rem 0 0;
+    font-size: 0.9rem;
+}
+
+.pub-marca.pub-marca-clara,
+.pub-marca-clara strong {
+    color: #FFFFFF;
+}
+
+.pub-pie-enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+}
+
+.pub-pie-enlaces a {
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: color var(--pub-transicion);
+}
+
+.pub-pie-enlaces a:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.pub-pie a:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 3px;
+}
+
+/* =====================================================================
+   Aparecer al bajar (lo activa portada.js o publico.js)
+   ===================================================================== */
+@keyframes pub-subir {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.publico.animar .aparecer {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 560ms ease, transform 560ms ease;
+}
+
+.publico.animar .aparecer.visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* =====================================================================
+   Tableta
+   ===================================================================== */
+@media (max-width: 1000px) {
+    .pub-franja {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin: -3rem 1.25rem 0;
+    }
+
+    .pub-franja div:nth-child(3) {
+        border-left: none;
+    }
+
+    .pub-franja div:nth-child(n + 3) {
+        border-top: 1px solid var(--pub-borde);
+    }
+
+    .pub-dividida {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+
+    .pub-dividida-titulo {
+        position: static;
+    }
+
+    .pub-legal {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pub-legal-indice {
+        position: static;
+    }
+
+    .pub-legal-indice ol {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pub-contacto {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* =====================================================================
+   Celular: menú desplegable
+   ===================================================================== */
+@media (max-width: 860px) {
+    .pub-js .pub-boton-menu {
+        display: inline-flex;
+    }
+
+    .pub-cabecera-interior {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.7rem 1rem;
+    }
+
+    /* El menú se despliega debajo de la cabecera (se abre suave) */
+    .pub-js .pub-menu {
+        flex-direction: column;
+        align-items: stretch;
+        flex-basis: 100%;
+        gap: 0.25rem;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        visibility: hidden;
+        transition: max-height 300ms ease, opacity 220ms ease, visibility 0s linear 300ms;
+    }
+
+    .pub-js .pub-menu-abierto .pub-menu {
+        max-height: 26rem;
+        padding: 0.25rem 0 0.5rem;
+        opacity: 1;
+        visibility: visible;
+        transition: max-height 300ms ease, opacity 220ms ease;
+    }
+
+    .pub-menu a:not(.pub-boton) {
+        padding: 0.75rem 0.85rem;
+        border-radius: 10px;
+    }
+
+    .pub-menu a:not(.pub-boton)::after {
+        display: none;
+    }
+
+    .pub-menu a[aria-current="page"] {
+        color: var(--pub-primario);
+        background: var(--pub-tinte);
+    }
+
+    .pub-menu .pub-boton {
+        margin: 0.35rem 0 0;
+    }
+
+    /* Sin JavaScript: el menú se ve completo, en filas */
+    .pub-menu {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 640px) {
+    .pub-contenido {
+        padding: 1.25rem 1rem 2.5rem;
+    }
+
+    .pub-seccion {
+        margin-bottom: 3rem;
+    }
+
+    .publico .diapositiva {
+        grid-template-columns: minmax(0, 1fr);
+        min-height: 0;
+        /* abajo: fila de los puntos + lo que tapa la franja de horarios */
+        padding: 2.25rem 1.5rem 7.5rem;
+        text-align: left;
+    }
+
+    .publico .diapositiva-imagen {
+        display: none;
+    }
+
+    .publico .carrusel,
+    .publico .diapositiva {
+        border-radius: 20px;
+    }
+
+    /* En el celular las flechas no se muestran (base.css: se desliza con el dedo);
+       quedan los puntos, en su propia fila encima de la franja de horarios */
+    .publico .carrusel-puntos {
+        bottom: 5.05rem;
+    }
+
+    .pub-franja {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        margin: -3rem 0.5rem 0;
+        padding: 0.25rem;
+    }
+
+    .pub-franja div {
+        padding: 0.8rem 0.7rem;
+        column-gap: 0.55rem;
+    }
+
+    .pub-franja .pub-icono {
+        width: 32px;
+        height: 32px;
+        padding: 7px;
+    }
+
+    .pub-franja strong {
+        font-size: 0.95rem;
+    }
+
+    .pub-encabezado {
+        padding: 2rem 1.35rem;
+        border-radius: 18px;
+    }
+
+    .pub-mosaico,
+    .pub-servicios,
+    .pub-mision,
+    .pub-lista-datos,
+    .pub-formulario-rejilla,
+    .pub-acceso {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pub-mosaico-destacado {
+        grid-row: auto;
+        min-height: 0;
+    }
+
+    .pub-mosaico-destacado .pub-mosaico-icono {
+        margin-bottom: 0.5rem;
+    }
+
+    .pub-razones li {
+        grid-template-columns: 3.25rem 1fr;
+    }
+
+    .pub-razones li::before {
+        font-size: 2rem;
+    }
+
+    .pub-mision article,
+    .pub-contacto-datos,
+    .pub-horario,
+    .pub-registro,
+    .pub-legal-texto {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .pub-llamado {
+        padding: 2rem 1.5rem;
+    }
+
+    .pub-llamado .pub-boton {
+        width: 100%;
+    }
+
+    /* Login: el panel de marca queda como una franja arriba */
+    .pub-acceso-marca {
+        flex-direction: row;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .pub-acceso-lema {
+        font-size: 1.3rem;
+    }
+
+    .pub-acceso-marca img {
+        display: none;
+    }
+
+    .pub-acceso-formulario {
+        padding: 1.75rem 1.4rem;
+    }
+
+    .pub-legal-indice ol {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .publico .error-pagina {
+        padding: 2.5rem 1.25rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .pub-franja {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pub-franja div + div {
+        border-left: none;
+        border-top: 1px solid var(--pub-borde);
+    }
+}
+
+/* =====================================================================
+   Menos movimiento: sin animaciones ni desplazamientos
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .publico *,
+    .publico *::before,
+    .publico *::after {
+        transition-duration: 0s !important;
+        animation-duration: 0s !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    .publico.animar .aparecer {
+        opacity: 1;
+        transform: none;
+    }
+
+    .pub-boton:hover,
+    .pub-mosaico-item:hover,
+    .pub-servicio:hover,
+    .pub-razones li:hover {
+        transform: none;
+        padding-left: 0;
+    }
+}
+
+/* Servicios: si quedan en número impar, el último ocupa todo el ancho (sin hueco) */
+.pub-servicio:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+}
+
+/* Contacto: el dato queda centrado aunque la casilla vecina sea más alta */
+.pub-lista-datos li {
+    align-content: center;
+}
+
+/* El pie queda siempre abajo, aunque la página sea corta (ej. Login) */
+body.publico {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.pub-contenido {
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+/* Número del error por encima del círculo decorativo, con el degradado visible */
+.publico .error-codigo {
+    z-index: 1;
+    -webkit-text-fill-color: transparent;
+}
+
+.publico .error-pagina::before {
+    z-index: 0;
+}

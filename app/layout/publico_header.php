@@ -9,6 +9,24 @@ $titulo_pagina = $titulo_pagina ?? 'Clínica Vida Sana';
 // ¿Hay alguien con sesión abierta? Solo miramos la sesión si el navegador
 // trae su cookie; así los visitantes anónimos no reciben una sesión de balde.
 $sesion_publica = isset($_COOKIE[session_name()]) ? usuario_actual() : null;
+
+// Enlaces del menú: dirección => texto. El que coincide con la página
+// actual se marca (aria-current) para que se vea dónde está la persona.
+$menu_publico = [
+    '/'              => 'Inicio',
+    '/servicios.php' => 'Servicios',
+    '/nosotros.php'  => 'Nosotros',
+    '/contacto.php'  => 'Contacto',
+];
+$pagina_actual = '/' . basename($_SERVER['SCRIPT_NAME'] ?? '');
+if ($pagina_actual === '/index.php') {
+    $pagina_actual = '/';
+}
+
+// Dibuja un icono de public/assets/img/iconos.svg (decorativo).
+$icono_publico = fn (string $id): string =>
+    '<svg class="pub-icono" aria-hidden="true" focusable="false"><use href="'
+    . e(url('/assets/img/iconos.svg#' . $id)) . '"></use></svg>';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -17,29 +35,46 @@ $sesion_publica = isset($_COOKIE[session_name()]) ? usuario_actual() : null;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($titulo_pagina) ?> | Clínica Vida Sana</title>
     <link rel="stylesheet" href="<?= e(url('/assets/css/base.css')) ?>">
+    <!-- Diseño 2.0 de la web pública (independiente del panel y del portal) -->
+    <link rel="stylesheet" href="<?= e(url('/assets/css/publico.css')) ?>">
     <?php if (!empty($script_pagina)): ?>
         <!-- JavaScript propio de esta página. "defer": se ejecuta cuando el
              HTML ya cargó. Va en un archivo aparte (no dentro del HTML)
              porque la política de seguridad (CSP) bloquea el JS incrustado. -->
         <script src="<?= e(url('/assets/js/' . $script_pagina)) ?>" defer></script>
     <?php endif; ?>
+    <!-- Menú del celular, aparición al bajar y "cargando" de los formularios -->
+    <script src="<?= e(url('/assets/js/publico.js')) ?>" defer></script>
 </head>
-<body>
+<body class="publico">
 <!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->
 <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
-<header class="cabecera">
-    <a class="marca" href="<?= e(url('/')) ?>">Clínica Vida Sana</a>
-    <nav class="menu">
-        <a href="<?= e(url('/')) ?>">Inicio</a>
-        <a href="<?= e(url('/servicios.php')) ?>">Servicios</a>
-        <a href="<?= e(url('/nosotros.php')) ?>">Nosotros</a>
-        <a href="<?= e(url('/contacto.php')) ?>">Contacto</a>
-        <?php if ($sesion_publica !== null): ?>
-            <a class="boton boton-chico"
-               href="<?= e(url(ruta_inicio_por_rol($sesion_publica['rol']))) ?>">Mi cuenta</a>
-        <?php else: ?>
-            <a class="boton boton-chico" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
-        <?php endif; ?>
-    </nav>
+<header class="pub-cabecera" data-cabecera>
+    <div class="pub-cabecera-interior">
+        <a class="pub-marca" href="<?= e(url('/')) ?>">
+            <?= $icono_publico('i-cruz') ?>
+            <span>Clínica <strong>Vida Sana</strong></span>
+        </a>
+
+        <!-- Celular: este botón abre y cierra el menú (lo activa publico.js) -->
+        <button class="pub-boton-menu" type="button" data-boton-menu
+                aria-controls="pub-menu" aria-expanded="false" hidden>
+            <span class="pub-hamburguesa" aria-hidden="true"><span></span></span>
+            <span>Menú</span>
+        </button>
+
+        <nav class="pub-menu" id="pub-menu" aria-label="Menú principal">
+            <?php foreach ($menu_publico as $ruta => $texto): ?>
+                <a href="<?= e(url($ruta)) ?>"
+                   <?= $ruta === $pagina_actual ? 'aria-current="page"' : '' ?>><?= e($texto) ?></a>
+            <?php endforeach; ?>
+            <?php if ($sesion_publica !== null): ?>
+                <a class="pub-boton pub-boton-chico"
+                   href="<?= e(url(ruta_inicio_por_rol($sesion_publica['rol']))) ?>">Mi cuenta</a>
+            <?php else: ?>
+                <a class="pub-boton pub-boton-chico" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
+            <?php endif; ?>
+        </nav>
+    </div>
 </header>
-<main class="contenido" id="contenido" tabindex="-1">
+<main class="pub-contenido" id="contenido" tabindex="-1">

@@ -45,107 +45,123 @@ $diapositivas = [
 
 <!-- 1. Carrusel de bienvenida -->
 <!-- Sin JavaScript se ve la primera diapositiva y las demás debajo: nada se pierde. -->
-<section class="carrusel" aria-roledescription="carrusel" aria-label="Novedades de la clínica"
-         data-carrusel>
-    <div class="carrusel-pista" data-pista>
-        <?php foreach ($diapositivas as $i => $d): ?>
-            <article class="diapositiva <?= e($d['tono']) ?>"
-                     aria-roledescription="diapositiva"
-                     aria-label="<?= ($i + 1) . ' de ' . count($diapositivas) ?>">
-                <div class="diapositiva-texto">
-                    <p class="diapositiva-etiqueta"><?= e($d['etiqueta']) ?></p>
-                    <?php // La primera es el título principal de la página (h1). ?>
-                    <?php $etiqueta_titulo = $i === 0 ? 'h1' : 'h2'; ?>
-                    <<?= $etiqueta_titulo ?>><?= e($d['titulo']) ?></<?= $etiqueta_titulo ?>>
-                    <p><?= e($d['texto']) ?></p>
-                    <a class="boton boton-blanco" href="<?= e(url($d['boton'][1])) ?>"><?= e($d['boton'][0]) ?></a>
-                </div>
-                <img class="diapositiva-imagen" src="<?= e(url('/assets/img/' . $d['imagen'])) ?>"
-                     alt="" width="480" height="360" <?= $i > 0 ? 'loading="lazy"' : '' ?>>
-            </article>
-        <?php endforeach; ?>
-    </div>
+<div class="pub-hero">
+    <section class="carrusel" aria-roledescription="carrusel" aria-label="Novedades de la clínica"
+             data-carrusel>
+        <div class="carrusel-pista" data-pista>
+            <?php foreach ($diapositivas as $i => $d): ?>
+                <article class="diapositiva <?= e($d['tono']) ?>"
+                         aria-roledescription="diapositiva"
+                         aria-label="<?= ($i + 1) . ' de ' . count($diapositivas) ?>">
+                    <div class="diapositiva-texto">
+                        <p class="diapositiva-etiqueta"><?= e($d['etiqueta']) ?></p>
+                        <?php // La primera es el título principal de la página (h1). ?>
+                        <?php $etiqueta_titulo = $i === 0 ? 'h1' : 'h2'; ?>
+                        <<?= $etiqueta_titulo ?>><?= e($d['titulo']) ?></<?= $etiqueta_titulo ?>>
+                        <p><?= e($d['texto']) ?></p>
+                        <a class="pub-boton pub-boton-blanco" href="<?= e(url($d['boton'][1])) ?>"><?= e($d['boton'][0]) ?></a>
+                    </div>
+                    <img class="diapositiva-imagen" src="<?= e(url('/assets/img/' . $d['imagen'])) ?>"
+                         alt="" width="480" height="360" <?= $i > 0 ? 'loading="lazy"' : '' ?>>
+                </article>
+            <?php endforeach; ?>
+        </div>
 
-    <!-- Controles (los activa portada.js) -->
-    <button class="carrusel-flecha carrusel-anterior" type="button" data-anterior
-            aria-label="Diapositiva anterior" hidden>&#8249;</button>
-    <button class="carrusel-flecha carrusel-siguiente" type="button" data-siguiente
-            aria-label="Diapositiva siguiente" hidden>&#8250;</button>
-    <div class="carrusel-puntos" data-puntos hidden>
-        <?php foreach ($diapositivas as $i => $d): ?>
-            <button type="button" data-ir="<?= $i ?>"
-                    aria-label="Ir a la diapositiva <?= $i + 1 ?>"></button>
-        <?php endforeach; ?>
-    </div>
-</section>
+        <!-- Controles (los activa portada.js) -->
+        <button class="carrusel-flecha carrusel-anterior" type="button" data-anterior
+                aria-label="Diapositiva anterior" hidden>&#8249;</button>
+        <button class="carrusel-flecha carrusel-siguiente" type="button" data-siguiente
+                aria-label="Diapositiva siguiente" hidden>&#8250;</button>
+        <div class="carrusel-puntos" data-puntos hidden>
+            <?php foreach ($diapositivas as $i => $d): ?>
+                <button type="button" data-ir="<?= $i ?>"
+                        aria-label="Ir a la diapositiva <?= $i + 1 ?>"></button>
+            <?php endforeach; ?>
+        </div>
+    </section>
 
-<!-- Horarios en una franja (datos ficticios) -->
-<section class="franja-horario aparecer" aria-label="Horarios de atención">
-    <div>
-        <span>Lunes a viernes</span>
-        <strong>7:00 – 20:00</strong>
-    </div>
-    <div>
-        <span>Sábados</span>
-        <strong>8:00 – 14:00</strong>
-    </div>
-    <div>
-        <span>Emergencias</span>
-        <strong>24 horas</strong>
-    </div>
-    <div>
-        <span>Teléfono</span>
-        <strong>(01) 555-0100</strong>
-    </div>
-</section>
+    <!-- Horarios en una franja que se monta sobre el carrusel (datos ficticios) -->
+    <section class="pub-franja aparecer" aria-label="Horarios de atención">
+        <div>
+            <?= $icono_publico('i-calendario') ?>
+            <span>Lunes a viernes</span>
+            <strong>7:00 – 20:00</strong>
+        </div>
+        <div>
+            <?= $icono_publico('i-calendario') ?>
+            <span>Sábados</span>
+            <strong>8:00 – 14:00</strong>
+        </div>
+        <div>
+            <?= $icono_publico('i-alerta') ?>
+            <span>Emergencias</span>
+            <strong>24 horas</strong>
+        </div>
+        <div>
+            <?= $icono_publico('i-reloj') ?>
+            <span>Teléfono</span>
+            <strong>(01) 555-0100</strong>
+        </div>
+    </section>
+</div>
 
-<!-- 2. Por qué elegirnos -->
-<section class="seccion aparecer">
-    <h2>Por qué elegirnos</h2>
-    <div class="rejilla-3">
-        <article class="punto">
-            <span class="punto-numero">01</span>
+<!-- 2. Por qué elegirnos: título a la izquierda, razones numeradas a la derecha -->
+<section class="pub-seccion pub-dividida aparecer">
+    <div class="pub-dividida-titulo">
+        <p class="pub-etiqueta">Clínica Vida Sana</p>
+        <h2>Por qué elegirnos</h2>
+    </div>
+    <ol class="pub-razones">
+        <li>
             <h3>Atención cercana</h3>
             <p>Te llamamos por tu nombre. Dedicamos el tiempo que haga falta a escucharte.</p>
-        </article>
-        <article class="punto">
-            <span class="punto-numero">02</span>
+        </li>
+        <li>
             <h3>Todo en un solo lugar</h3>
             <p>Consulta, laboratorio y seguimiento bajo el mismo techo, sin vueltas.</p>
-        </article>
-        <article class="punto">
-            <span class="punto-numero">03</span>
+        </li>
+        <li>
             <h3>Citas fáciles</h3>
             <p>Elige el día y la hora que te quedan mejor desde la web, y tu cita queda confirmada al instante.</p>
-        </article>
-    </div>
+        </li>
+    </ol>
 </section>
 
-<!-- 3. Servicios -->
-<section class="seccion aparecer">
-    <h2>Nuestros servicios</h2>
-    <div class="rejilla-3">
-        <article class="servicio">
+<!-- 3. Servicios: mosaico con uno destacado -->
+<section class="pub-seccion aparecer">
+    <div class="pub-seccion-cabecera">
+        <div>
+            <p class="pub-etiqueta">Servicios</p>
+            <h2>Nuestros servicios</h2>
+        </div>
+        <a class="pub-enlace-flecha" href="<?= e(url('/servicios.php')) ?>">Ver todos los servicios <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <div class="pub-mosaico">
+        <article class="pub-mosaico-item pub-mosaico-destacado">
+            <span class="pub-mosaico-icono"><?= $icono_publico('i-cruz') ?></span>
             <h3>Medicina General</h3>
             <p>Controles, chequeos y atención de molestias del día a día.</p>
         </article>
-        <article class="servicio">
+        <article class="pub-mosaico-item">
+            <span class="pub-mosaico-icono"><?= $icono_publico('i-personas') ?></span>
             <h3>Pediatría</h3>
             <p>Cuidado y seguimiento del crecimiento de los más pequeños.</p>
         </article>
-        <article class="servicio">
+        <article class="pub-mosaico-item">
+            <span class="pub-mosaico-icono"><?= $icono_publico('i-documento') ?></span>
             <h3>Laboratorio</h3>
             <p>Análisis clínicos con resultados claros y a tiempo.</p>
         </article>
     </div>
-    <p><a href="<?= e(url('/servicios.php')) ?>">Ver todos los servicios &rarr;</a></p>
 </section>
 
 <!-- 4. Llamado final -->
-<section class="llamado aparecer">
-    <h2>¿Necesitas una consulta?</h2>
-    <p>Crea tu cuenta o ingresa al Portal del paciente y pide tu cita en línea.</p>
-    <a class="boton boton-claro" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
+<section class="pub-llamado aparecer">
+    <div>
+        <h2>¿Necesitas una consulta?</h2>
+        <p>Crea tu cuenta o ingresa al Portal del paciente y pide tu cita en línea.</p>
+    </div>
+    <a class="pub-boton pub-boton-blanco" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
 </section>
 
 <!-- Aviso emergente. <dialog> es la ventana modal propia del navegador:
@@ -161,8 +177,8 @@ $diapositivas = [
         <strong>Pediatría</strong> desde el Portal del paciente y evita las colas.
     </p>
     <div class="aviso-botones">
-        <a class="boton" href="<?= e(url('/registro.php')) ?>">Crear mi cuenta</a>
-        <button class="boton boton-claro" type="button" data-cerrar>Ahora no</button>
+        <a class="pub-boton" href="<?= e(url('/registro.php')) ?>">Crear mi cuenta</a>
+        <button class="pub-boton pub-boton-secundario" type="button" data-cerrar>Ahora no</button>
     </div>
     <p class="aviso-nota">Campaña ficticia: clínica simulada con fines académicos.</p>
 </dialog>
