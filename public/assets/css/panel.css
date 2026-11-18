@@ -2364,3 +2364,431 @@ a.resumen-pastilla:hover {
     font-size: 1.15rem;
     font-weight: 700;
 }
+
+
+/* =====================================================================
+   Rediseño 2.0 — Módulo Agenda y Solicitudes
+   ===================================================================== */
+
+/* ---------- Animación de entrada ----------
+   Solo en páginas con .ui-animada (Agenda, Solicitudes, Programar):
+   las tarjetas suben 6 px y aparecen, una tras otra (unos 220 ms cada una).
+   No cambia las pantallas que ya estaban rediseñadas. */
+@keyframes ui-subir {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.ui-animada .ui-cabecera,
+.ui-animada .ui-tarjeta,
+.ui-animada .ui-dia {
+    animation: ui-subir 220ms ease-out both;
+}
+
+/* Un pequeño retraso escalonado (máximo ~200 ms en total) */
+.ui-animada > :nth-child(2) { animation-delay: 30ms; }
+.ui-animada > :nth-child(3) { animation-delay: 60ms; }
+.ui-animada > :nth-child(4) { animation-delay: 90ms; }
+.ui-animada > :nth-child(5) { animation-delay: 120ms; }
+.ui-animada .ui-dia:nth-child(2) { animation-delay: 25ms; }
+.ui-animada .ui-dia:nth-child(3) { animation-delay: 50ms; }
+.ui-animada .ui-dia:nth-child(4) { animation-delay: 75ms; }
+.ui-animada .ui-dia:nth-child(5) { animation-delay: 100ms; }
+.ui-animada .ui-dia:nth-child(6) { animation-delay: 125ms; }
+.ui-animada .ui-dia:nth-child(7) { animation-delay: 150ms; }
+
+/* ---------- Botón pequeño (dentro de tablas y barras) ---------- */
+.ui-boton-chico {
+    min-height: 36px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+}
+
+.ui-boton-chico .icono {
+    width: 16px;
+    height: 16px;
+}
+
+/* ---------- Barra de herramientas (navegación + filtro) ---------- */
+.ui-barra {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+/* Botones pegados en grupo: Anterior | Esta semana | Siguiente */
+.ui-grupo {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ui-barra .ui-buscador {
+    flex: 0 1 26rem;
+}
+
+/* ---------- Pestañas (filtros de una lista) ---------- */
+.ui-pestanas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.3rem;
+    margin-bottom: 1.25rem;
+    background: #E8EFF2;
+    border-radius: 10px;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.ui-pestanas a {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--panel-texto-suave);
+    text-decoration: none;
+    border-radius: 7px;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion),
+                box-shadow var(--panel-transicion);
+}
+
+.ui-pestanas a:hover {
+    color: var(--panel-texto);
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* La pestaña elegida: blanca y con sombra suave */
+.ui-pestanas a[aria-current="page"] {
+    color: var(--panel-primario);
+    background: var(--panel-superficie);
+    box-shadow: 0 1px 3px rgba(25, 56, 71, 0.12);
+}
+
+.ui-pestanas a:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+/* Varios botones juntos en una celda (Programar / Descartar) */
+.ui-acciones-fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ui-acciones-fila form {
+    margin: 0;
+}
+
+/* Enlace de texto dentro de una tabla (ej. "Ver cita del 18/11") */
+.ui-enlace {
+    font-weight: 600;
+    color: var(--panel-primario);
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.ui-enlace:hover {
+    text-decoration: underline;
+}
+
+.ui-enlace:focus-visible {
+    outline: 2px solid var(--panel-primario);
+    outline-offset: 2px;
+}
+
+/* ---------- Calendario semanal ---------- */
+.ui-calendario {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.ui-dia {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+    min-height: 11rem;
+    padding: 0.75rem;
+    background: var(--panel-superficie);
+    border: 1px solid transparent;
+    border-radius: var(--panel-radio);
+    box-shadow: var(--panel-sombra);
+}
+
+/* Cabecera del día: "Lun" y el número */
+.ui-dia-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--panel-borde);
+}
+
+.ui-dia-cabecera span {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--panel-texto-suave);
+}
+
+.ui-dia-cabecera strong {
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--panel-texto);
+}
+
+/* Hoy: borde y número con el color principal, y la etiqueta "Hoy" */
+.ui-dia-hoy {
+    border-color: var(--panel-primario);
+}
+
+.ui-dia-hoy .ui-dia-cabecera strong {
+    color: var(--panel-primario);
+}
+
+/* ".ui-dia-cabecera" delante: así gana a la regla de los span de la cabecera */
+.ui-dia-cabecera .ui-hoy {
+    margin-left: auto;
+    letter-spacing: 0.02em;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: var(--panel-primario);
+    border-radius: 999px;
+}
+
+/* Días que ya pasaron: más apagados */
+.ui-dia-pasado {
+    background: #F8FBFC;
+    box-shadow: none;
+    border-color: var(--panel-borde);
+}
+
+.ui-dia-vacio {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+/* Cada cita: tarjeta con una franja de color según el estado
+   (los colores son los de .cita-pendiente, .cita-confirmada, etc.) */
+.ui-cita {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.85rem;
+    color: var(--panel-texto);
+    text-decoration: none;
+    background: #F7FAFB;
+    border-top: 1px solid var(--panel-borde);
+    border-right: 1px solid var(--panel-borde);
+    border-bottom: 1px solid var(--panel-borde);
+    /* Solo ancho y estilo: el color lo pone .cita-pendiente, .cita-confirmada, etc. */
+    border-left-width: 4px;
+    border-left-style: solid;
+    border-radius: 8px;
+    transition: background-color var(--panel-transicion), box-shadow var(--panel-transicion),
+                transform var(--panel-transicion);
+}
+
+.ui-cita strong {
+    font-size: 0.95rem;
+}
+
+.ui-cita span {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.ui-cita small {
+    color: var(--panel-texto-suave);
+    overflow-wrap: anywhere;
+}
+
+/* Las citas que son enlace: se elevan un poco al pasar el ratón */
+a.ui-cita:hover {
+    background: var(--panel-superficie);
+    box-shadow: 0 4px 12px rgba(25, 56, 71, 0.1);
+    transform: translateY(-1px);
+}
+
+a.ui-cita:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+.ui-cita.cita-cancelada { border-left-color: #C2453A; }
+
+/* Leyenda de colores */
+.ui-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+.ui-leyenda span {
+    padding-left: 0.5rem;
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+/* ---------- Pantallas medianas y chicas: un día debajo de otro ---------- */
+@media (max-width: 1100px) {
+    .ui-calendario {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ui-dia {
+        min-height: 0;
+    }
+
+    /* Las citas del día, en rejilla cuando hay espacio */
+    .ui-dia-citas {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+        gap: 0.5rem;
+    }
+}
+
+@media (min-width: 1101px) {
+    .ui-dia-citas {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .ui-barra,
+    .ui-barra .ui-buscador {
+        flex: 1 1 100%;
+    }
+
+    .ui-grupo {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .ui-grupo .ui-boton {
+        padding-left: 0.4rem;
+        padding-right: 0.4rem;
+        white-space: normal;
+    }
+
+    .ui-pestanas {
+        width: 100%;
+    }
+
+    .ui-pestanas a {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    .ui-acciones-fila,
+    .ui-acciones-fila form,
+    .ui-acciones-fila .ui-boton {
+        flex: 1 1 auto;
+    }
+
+    .ui-acciones-fila .ui-boton {
+        width: 100%;
+    }
+}
+
+/* ---------- Menos movimiento: sin entradas animadas ni elevación ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .ui-animada .ui-cabecera,
+    .ui-animada .ui-tarjeta,
+    .ui-animada .ui-dia {
+        animation: none;
+    }
+
+    a.ui-cita:hover {
+        transform: none;
+    }
+}
+
+/* Estado "descartada" de las solicitudes: gris neutro (no tenía color) */
+.estado-descartada { background: #EEF1F3; color: #4A5A66; }
+
+/* ---------- Tabla apilable "ancha" ----------
+   Para tablas con muchas columnas o textos largos (Solicitudes): pasa a
+   tarjetas desde 1000 px, no desde 640 px. Las demás tablas no cambian. */
+@media (max-width: 1000px) {
+    .ui-tabla-contenedor:has(.ui-tabla-apilable-ancha) {
+        overflow: visible;
+        border: none;
+        border-radius: 0;
+    }
+
+    .ui-tabla-apilable-ancha thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .panel-contenido .ui-tabla-apilable-ancha,
+    .ui-tabla-apilable-ancha tbody,
+    .ui-tabla-apilable-ancha tr,
+    .ui-tabla-apilable-ancha td {
+        display: block;
+    }
+
+    .ui-tabla-apilable-ancha tbody tr {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--panel-borde);
+        border-radius: 10px;
+    }
+
+    .ui-tabla-apilable-ancha tbody tr:hover {
+        background: none;
+    }
+
+    .panel-contenido .ui-tabla-apilable-ancha td,
+    .panel-contenido .ui-tabla-apilable-ancha tbody tr:last-child td {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.35rem 0;
+        text-align: right;
+        border: none;
+    }
+
+    .ui-tabla-apilable-ancha td::before {
+        content: attr(data-etiqueta) / "";
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-align: left;
+        text-transform: uppercase;
+        color: var(--panel-texto-suave);
+    }
+
+    .ui-tabla-apilable-ancha .ui-celda-valor {
+        display: block;
+        text-align: right;
+    }
+
+    /* Botones de la fila: a la derecha, juntos */
+    .ui-tabla-apilable-ancha .ui-acciones-fila {
+        justify-content: flex-end;
+    }
+}

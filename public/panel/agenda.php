@@ -93,85 +93,100 @@ $hoy = date('Y-m-d');
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<header class="panel-titulo">
-    <div>
-        <h1><?= $es_medico ? 'Mi agenda' : 'Agenda semanal' ?></h1>
-        <p>
-            Del <?= e(fecha_larga($lunes)) ?> al <?= e(fecha_larga($domingo)) ?>
-            &middot; <?= $total_semana ?> cita<?= $total_semana === 1 ? '' : 's' ?>
-        </p>
-    </div>
-</header>
+<div class="ui-pagina ui-animada">
 
-<!-- Controles: semana anterior / esta semana / siguiente, y filtro de médico -->
-<div class="agenda-controles">
-    <nav class="agenda-navegacion" aria-label="Cambiar de semana">
-        <a class="boton-tabla" href="<?= e(enlace_semana($anterior, $filtro_medico)) ?>">&larr; Anterior</a>
-        <a class="boton-tabla" href="<?= e(enlace_semana(date('Y-m-d'), $filtro_medico)) ?>">Esta semana</a>
-        <a class="boton-tabla" href="<?= e(enlace_semana($siguiente, $filtro_medico)) ?>">Siguiente &rarr;</a>
-    </nav>
+    <header class="ui-cabecera">
+        <div>
+            <h1><?= $es_medico ? 'Mi agenda' : 'Agenda semanal' ?></h1>
+            <p>
+                Del <?= e(fecha_larga($lunes)) ?> al <?= e(fecha_larga($domingo)) ?>
+                &middot; <?= $total_semana ?> cita<?= $total_semana === 1 ? '' : 's' ?>
+            </p>
+        </div>
+    </header>
 
-    <?php if (!$es_medico): ?>
-        <!-- GET: solo filtra lo que se ve, no cambia datos (no necesita CSRF) -->
-        <form class="agenda-filtro" method="get" action="<?= e(url('/panel/agenda.php')) ?>">
-            <input type="hidden" name="semana" value="<?= e($lunes) ?>">
-            <label for="medico">Médico</label>
-            <select id="medico" name="medico">
-                <option value="">Todos</option>
-                <?php foreach ($medicos as $medico): ?>
-                    <option value="<?= (int) $medico['id'] ?>"
-                        <?= $filtro_medico === (string) $medico['id'] ? 'selected' : '' ?>>
-                        <?= e($medico['nombre'] . ' (' . ($medico['area'] ?? 'sin área') . ')') ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <button class="boton-tabla" type="submit">Ver</button>
-        </form>
-    <?php endif; ?>
-</div>
+    <!-- Controles: semana anterior / esta semana / siguiente, y filtro de médico -->
+    <section class="ui-tarjeta ui-barra" aria-label="Controles de la agenda">
+        <nav class="ui-grupo" aria-label="Cambiar de semana">
+            <a class="ui-boton ui-boton-secundario ui-boton-chico" href="<?= e(enlace_semana($anterior, $filtro_medico)) ?>">
+                <span aria-hidden="true">&larr;</span> Anterior
+            </a>
+            <a class="ui-boton ui-boton-secundario ui-boton-chico" href="<?= e(enlace_semana(date('Y-m-d'), $filtro_medico)) ?>">Esta semana</a>
+            <a class="ui-boton ui-boton-secundario ui-boton-chico" href="<?= e(enlace_semana($siguiente, $filtro_medico)) ?>">
+                Siguiente <span aria-hidden="true">&rarr;</span>
+            </a>
+        </nav>
 
-<!-- Calendario: una columna por día -->
-<div class="calendario">
-    <?php $i = 0; ?>
-    <?php foreach ($dias as $fecha => $citas): ?>
-        <section class="calendario-dia <?= $fecha === $hoy ? 'es-hoy' : '' ?> <?= $fecha < $hoy ? 'es-pasado' : '' ?>">
-            <header class="calendario-cabecera">
-                <span><?= e($nombres_dias[$i++]) ?></span>
-                <strong><?= e(date('j', strtotime($fecha))) ?></strong>
-            </header>
+        <?php if (!$es_medico): ?>
+            <!-- GET: solo filtra lo que se ve, no cambia datos (no necesita CSRF) -->
+            <form class="ui-buscador" method="get" action="<?= e(url('/panel/agenda.php')) ?>">
+                <input type="hidden" name="semana" value="<?= e($lunes) ?>">
+                <div class="ui-campo">
+                    <label for="medico">Médico</label>
+                    <select class="ui-entrada" id="medico" name="medico">
+                        <option value="">Todos</option>
+                        <?php foreach ($medicos as $medico): ?>
+                            <option value="<?= (int) $medico['id'] ?>"
+                                <?= $filtro_medico === (string) $medico['id'] ? 'selected' : '' ?>>
+                                <?= e($medico['nombre'] . ' (' . ($medico['area'] ?? 'sin área') . ')') ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <button class="ui-boton ui-boton-chico" type="submit">Ver</button>
+            </form>
+        <?php endif; ?>
+    </section>
 
-            <?php if ($citas === []): ?>
-                <p class="calendario-vacio">Libre</p>
-            <?php endif; ?>
+    <!-- Calendario: una columna por día (en pantallas chicas, un día debajo de otro) -->
+    <div class="ui-calendario">
+        <?php $i = 0; ?>
+        <?php foreach ($dias as $fecha => $citas): ?>
+            <section class="ui-dia <?= $fecha === $hoy ? 'ui-dia-hoy' : '' ?> <?= $fecha < $hoy ? 'ui-dia-pasado' : '' ?>"
+                     aria-label="<?= e(fecha_larga($fecha)) ?>">
+                <header class="ui-dia-cabecera">
+                    <span><?= e($nombres_dias[$i++]) ?></span>
+                    <?php if ($fecha === $hoy): ?>
+                        <span class="ui-hoy">Hoy</span>
+                    <?php endif; ?>
+                    <strong><?= e(date('j', strtotime($fecha))) ?></strong>
+                </header>
 
-            <?php foreach ($citas as $cita): ?>
-                <?php $enlace = enlace_cita($cita, $es_medico); ?>
-                <?php if ($enlace): ?>
-                    <a class="calendario-cita cita-<?= e($cita['estado']) ?>" href="<?= e($enlace) ?>">
+                <?php if ($citas === []): ?>
+                    <p class="ui-dia-vacio">Libre</p>
                 <?php else: ?>
-                    <div class="calendario-cita cita-<?= e($cita['estado']) ?>">
-                <?php endif; ?>
-                    <strong><?= e(substr($cita['hora'], 0, 5)) ?></strong>
-                    <span><?= e($cita['paciente']) ?></span>
-                    <small>
-                        <?= $es_medico ? e($cita['area']) : e($cita['medico'] ?? 'Sin médico') ?>
-                        &middot; <?= e(texto_estado($cita['estado'])) ?>
-                    </small>
-                <?php if ($enlace): ?>
-                    </a>
-                <?php else: ?>
+                    <div class="ui-dia-citas">
+                        <?php foreach ($citas as $cita): ?>
+                            <?php $enlace = enlace_cita($cita, $es_medico); ?>
+                            <?php if ($enlace): ?>
+                                <a class="ui-cita cita-<?= e($cita['estado']) ?>" href="<?= e($enlace) ?>">
+                            <?php else: ?>
+                                <div class="ui-cita cita-<?= e($cita['estado']) ?>">
+                            <?php endif; ?>
+                                <strong><?= e(substr($cita['hora'], 0, 5)) ?></strong>
+                                <span><?= e($cita['paciente']) ?></span>
+                                <small>
+                                    <?= $es_medico ? e($cita['area']) : e($cita['medico'] ?? 'Sin médico') ?>
+                                    &middot; <?= e(texto_estado($cita['estado'])) ?>
+                                </small>
+                            <?php if ($enlace): ?>
+                                </a>
+                            <?php else: ?>
+                                </div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-            <?php endforeach; ?>
-        </section>
-    <?php endforeach; ?>
-</div>
+            </section>
+        <?php endforeach; ?>
+    </div>
 
-<!-- Qué significa cada color (el estado también va escrito en cada cita) -->
-<p class="calendario-leyenda">
-    <span class="leyenda cita-pendiente">Pendiente</span>
-    <span class="leyenda cita-confirmada">Confirmada</span>
-    <span class="leyenda cita-atendida">Atendida</span>
-</p>
+    <!-- Qué significa cada color (el estado también va escrito en cada cita) -->
+    <p class="ui-leyenda">
+        <span class="cita-pendiente">Pendiente</span>
+        <span class="cita-confirmada">Confirmada</span>
+        <span class="cita-atendida">Atendida</span>
+    </p>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>
