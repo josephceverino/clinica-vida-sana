@@ -25,7 +25,7 @@ body.publico {
     --pub-sombra:        0 1px 2px rgba(25, 56, 71, 0.05), 0 8px 24px rgba(25, 56, 71, 0.06);
     --pub-sombra-alta:   0 4px 10px rgba(25, 56, 71, 0.08), 0 18px 40px rgba(25, 56, 71, 0.12);
     --pub-anillo:        0 0 0 3px rgba(8, 124, 148, 0.25);
-    --pub-transicion:    200ms ease;
+    --pub-transicion:    var(--mov-rapido) var(--mov-curva);
     --pub-ancho:         1180px;
     /* Colores que antes estaban escritos a mano (mismo valor en modo claro;
        el modo oscuro los cambia al final de este archivo). */
@@ -34,7 +34,9 @@ body.publico {
     --pub-info-borde:    #BFE0E8;
     /* Turquesa como TEXTO (enlaces). Como fondo se sigue usando
        --pub-primario; en oscuro el texto necesita un tono más claro. */
-    --pub-enlace:        var(--pub-primario);
+    /* Un poco más oscuro que el de los botones: 5.1:1 sobre los fondos
+       celestes (--pub-tinte) y 5.8:1 sobre blanco. */
+    --pub-enlace:        #076F85;
 
     color: var(--pub-texto);
     background: var(--pub-fondo);
@@ -140,7 +142,7 @@ body.publico {
     border-radius: 2px;
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 240ms ease;
+    transition: transform var(--mov-medio) var(--mov-curva);
 }
 
 .pub-menu a:not(.pub-boton):hover,
@@ -187,7 +189,7 @@ body.publico {
     height: 2px;
     background: currentColor;
     border-radius: 2px;
-    transition: transform 220ms ease, opacity 220ms ease;
+    transition: transform var(--mov-medio) var(--mov-curva), opacity var(--mov-medio) var(--mov-curva);
 }
 
 .pub-hamburguesa {
@@ -603,7 +605,6 @@ body.publico {
     padding: 1.6rem 0;
     border-top: 1px solid var(--pub-borde);
     counter-increment: razon;
-    transition: padding-left var(--pub-transicion);
 }
 
 .pub-razones li:last-child {
@@ -621,10 +622,6 @@ body.publico {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-}
-
-.pub-razones li:hover {
-    padding-left: 0.5rem;
 }
 
 .pub-razones h3 {
@@ -655,11 +652,11 @@ body.publico {
     background: var(--pub-superficie);
     border: 1px solid var(--pub-borde);
     border-radius: 20px;
-    transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+    transition: transform var(--mov-medio) var(--mov-curva), box-shadow var(--mov-medio) var(--mov-curva), border-color var(--mov-rapido) var(--mov-curva);
 }
 
 .pub-mosaico-item:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     border-color: var(--pub-borde-fuerte);
     box-shadow: var(--pub-sombra-alta);
 }
@@ -682,7 +679,7 @@ body.publico {
     color: var(--pub-enlace);
     background: var(--pub-tinte);
     border-radius: 14px;
-    transition: transform 240ms ease;
+    transition: transform var(--mov-medio) var(--mov-curva);
 }
 
 .pub-mosaico-icono .pub-icono {
@@ -691,7 +688,7 @@ body.publico {
 }
 
 .pub-mosaico-item:hover .pub-mosaico-icono {
-    transform: rotate(-6deg) scale(1.05);
+    transform: scale(1.05);
 }
 
 .pub-mosaico-destacado {
@@ -786,7 +783,7 @@ body.publico {
 }
 
 .publico .aviso-emergente[open] {
-    animation: pub-subir 260ms ease-out;
+    animation: pub-subir var(--mov-medio) var(--mov-curva);
 }
 
 .publico .aviso-emergente::backdrop {
@@ -820,7 +817,7 @@ body.publico {
     border: 1px solid var(--pub-borde);
     border-radius: 18px;
     counter-increment: servicio;
-    transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+    transition: transform var(--mov-medio) var(--mov-curva), box-shadow var(--mov-medio) var(--mov-curva), border-color var(--mov-rapido) var(--mov-curva);
 }
 
 /* Número de fondo, grande y muy suave */
@@ -836,7 +833,7 @@ body.publico {
 }
 
 .pub-servicio:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     border-color: var(--pub-borde-fuerte);
     box-shadow: var(--pub-sombra-alta);
 }
@@ -1085,7 +1082,7 @@ body.publico {
     background: var(--pub-tinte);
     border: 1px solid var(--pub-info-borde);
     border-radius: 12px;
-    animation: pub-subir 220ms ease-out;
+    animation: pub-subir var(--mov-medio) var(--mov-curva);
 }
 
 .pub-aviso p {
@@ -1396,7 +1393,7 @@ body.publico {
     background: var(--pub-superficie);
     border-radius: 26px;
     box-shadow: var(--pub-sombra-alta);
-    animation: pub-subir 320ms ease-out;
+    animation: pub-subir var(--mov-medio) var(--mov-curva);
 }
 
 .publico .error-pagina::before {
@@ -1514,14 +1511,14 @@ body.publico {
    Aparecer al bajar (lo activa portada.js o publico.js)
    ===================================================================== */
 @keyframes pub-subir {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: none; }
 }
 
 .publico.animar .aparecer {
     opacity: 0;
-    transform: translateY(22px);
-    transition: opacity 560ms ease, transform 560ms ease;
+    transform: translateY(16px);
+    transition: opacity var(--mov-lento) var(--mov-curva), transform var(--mov-lento) var(--mov-curva);
 }
 
 .publico.animar .aparecer.visible {
@@ -1597,7 +1594,7 @@ body.publico {
         overflow: hidden;
         opacity: 0;
         visibility: hidden;
-        transition: max-height 300ms ease, opacity 220ms ease, visibility 0s linear 300ms;
+        transition: max-height var(--mov-medio) var(--mov-curva), opacity var(--mov-medio) var(--mov-curva), visibility 0s linear var(--mov-medio);
     }
 
     .pub-js .pub-menu-abierto .pub-menu {
@@ -1605,7 +1602,7 @@ body.publico {
         padding: 0.25rem 0 0.5rem;
         opacity: 1;
         visibility: visible;
-        transition: max-height 300ms ease, opacity 220ms ease;
+        transition: max-height var(--mov-medio) var(--mov-curva), opacity var(--mov-medio) var(--mov-curva);
     }
 
     .pub-menu a:not(.pub-boton) {
@@ -1790,10 +1787,17 @@ body.publico {
 
     .pub-boton:hover,
     .pub-mosaico-item:hover,
+    .pub-mosaico-item:hover .pub-mosaico-icono,
     .pub-servicio:hover,
-    .pub-razones li:hover {
+    .publico .carrusel-flecha:hover {
         transform: none;
-        padding-left: 0;
+    }
+
+    /* El indicador de "cargando" sigue girando, pero lento (igual que en
+       el panel): avisa que el formulario se está enviando */
+    .pub-boton[aria-busy="true"]::before {
+        animation-duration: 2s !important;
+        animation-iteration-count: infinite !important;
     }
 }
 

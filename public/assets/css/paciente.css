@@ -191,7 +191,7 @@
     margin: 0;
     color: var(--panel-texto);
     text-decoration: none;
-    transition: transform var(--panel-transicion), box-shadow var(--panel-transicion);
+    transition: transform var(--mov-medio) var(--mov-curva), box-shadow var(--mov-medio) var(--mov-curva);
 }
 
 .portal-numero strong {
@@ -425,7 +425,7 @@
     border: 1px solid var(--panel-borde-fuerte);
     border-radius: 999px;
     transition: background-color var(--panel-transicion), color var(--panel-transicion),
-                border-color var(--panel-transicion), transform 120ms ease;
+                border-color var(--panel-transicion), transform var(--panel-transicion);
 }
 
 .portal-hora:hover span {
@@ -486,7 +486,7 @@
 
 .portal-otra-opcion[open] > form {
     margin-top: 1.25rem;
-    animation: ui-aparecer 200ms ease;
+    animation: ui-aparecer var(--mov-medio) var(--mov-curva);
 }
 
 /* ---------- Historia clínica: línea de tiempo ---------- */

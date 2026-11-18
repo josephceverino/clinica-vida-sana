@@ -83,7 +83,16 @@ function url(string $ruta = '/'): string
  */
 function recurso(string $ruta): string
 {
-    $archivo = __DIR__ . '/../../public/' . ltrim($ruta, '/');
+    $ruta = '/' . ltrim($ruta, '/');
+
+    // Solo se versionan archivos estáticos de public/assets (CSS, JS,
+    // imágenes). Cualquier otra ruta (páginas .php, rutas con "..") se
+    // devuelve tal cual, igual que url(), sin mirar el disco.
+    if (!str_starts_with($ruta, '/assets/') || str_contains($ruta, '..')) {
+        return url($ruta);
+    }
+
+    $archivo = __DIR__ . '/../../public' . $ruta;
     // Si el archivo no existe, se devuelve la ruta sin versión.
     $version = is_file($archivo) ? filemtime($archivo) : false;
 

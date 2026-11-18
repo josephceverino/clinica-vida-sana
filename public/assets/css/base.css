@@ -31,6 +31,18 @@
     --fuente-texto: system-ui, -apple-system, "Segoe UI", sans-serif;
     --ancho-maximo: 1100px;
 
+    /* Movimiento: los mismos tiempos y la misma curva en toda la web.
+       - rápido: colores, bordes y sombras (pasar el ratón, foco)
+       - medio:  desplazamientos (menús, switch, tarjetas, entradas)
+       - lento:  recorridos largos (carrusel, aparecer al bajar)
+       La curva arranca rápido y frena suave: se siente ágil sin brusquedad.
+       Con "reducir movimiento" cada zona los desactiva (ver sus bloques). */
+    --mov-rapido: 160ms;
+    --mov-medio:  240ms;
+    --mov-lento:  480ms;
+    --mov-curva:  cubic-bezier(0.2, 0, 0, 1);
+    --mov-paso:   30ms;    /* escalonado entre tarjetas que entran */
+
     /* Le dice al navegador que dibuje sus controles (barras de
        desplazamiento, calendario de las fechas...) en claro */
     color-scheme: light;
@@ -278,7 +290,7 @@ select {
 .carrusel-activo .carrusel-pista {
     flex-direction: row;
     gap: 0;
-    transition: transform 0.6s ease;
+    transition: transform var(--mov-lento) var(--mov-curva);
 }
 
 .diapositiva {
@@ -373,7 +385,7 @@ select {
     border: none;
     border-radius: 999px;
     cursor: pointer;
-    transition: width 0.3s ease, background 0.3s ease;
+    transition: width var(--mov-medio) var(--mov-curva), background-color var(--mov-rapido) var(--mov-curva);
 }
 
 .carrusel-puntos button.activo {
@@ -386,8 +398,8 @@ select {
    sin JavaScript, todo se ve normal. */
 .animar .aparecer {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    transform: translateY(16px);
+    transition: opacity var(--mov-lento) var(--mov-curva), transform var(--mov-lento) var(--mov-curva);
 }
 
 .animar .aparecer.visible {
@@ -415,11 +427,11 @@ select {
 }
 
 .aviso-emergente[open] {
-    animation: aviso-entrar 0.35s ease;
+    animation: aviso-entrar var(--mov-medio) var(--mov-curva);
 }
 
 @keyframes aviso-entrar {
-    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
     to   { opacity: 1; transform: none; }
 }
 
@@ -589,16 +601,18 @@ select {
     color: #0E1A20;
 }
 
-/* El cambio de tema con el switch: los colores pasan suavemente.
-   tema.js pone "tema-cambiando" solo 0,3 s (y nunca con "reducir
-   movimiento"), así no retrasa los efectos normales de la página. */
+/* El cambio de tema con el switch: solo los COLORES pasan suavemente
+   (nada se mueve ni cambia de tamaño). tema.js pone "tema-cambiando" solo
+   un momento (y nunca con "reducir movimiento"), así no retrasa los
+   efectos normales de la página. El switch queda fuera: tiene su propia
+   animación (la perilla que se desliza). */
 .tema-cambiando,
-.tema-cambiando *,
+.tema-cambiando *:not(.switch-tema-perilla):not(.switch-tema-icono),
 .tema-cambiando *::before,
 .tema-cambiando *::after {
-    transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease,
-                fill 250ms ease, stroke 250ms ease, box-shadow 250ms ease,
-                transform 250ms ease, opacity 250ms ease !important;
+    transition: background-color var(--mov-medio) var(--mov-curva), color var(--mov-medio) var(--mov-curva), border-color var(--mov-medio) var(--mov-curva),
+                outline-color var(--mov-medio) var(--mov-curva), fill var(--mov-medio) var(--mov-curva), stroke var(--mov-medio) var(--mov-curva),
+                box-shadow var(--mov-medio) var(--mov-curva) !important;
 }
 
 /* =====================================================================
@@ -638,7 +652,7 @@ select {
     background: var(--switch-pista);
     border: 1px solid var(--switch-pista-borde);
     border-radius: 999px;
-    transition: background-color 250ms ease, border-color 250ms ease;
+    transition: background-color var(--mov-medio) var(--mov-curva), border-color var(--mov-medio) var(--mov-curva);
 }
 
 .switch-tema-perilla {
@@ -653,8 +667,7 @@ select {
     background: #FFFFFF;
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(15, 42, 61, 0.3);
-    transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1), background-color 250ms ease,
-                color 250ms ease;
+    transition: transform var(--mov-medio) var(--mov-curva), background-color var(--mov-medio) var(--mov-curva), color var(--mov-medio) var(--mov-curva);
 }
 
 /* Sol y luna en el mismo sitio: uno aparece mientras el otro gira y se va */
@@ -662,7 +675,7 @@ select {
     grid-area: 1 / 1;
     width: 16px;
     height: 16px;
-    transition: opacity 200ms ease, transform 250ms ease;
+    transition: opacity var(--mov-medio) var(--mov-curva), transform var(--mov-medio) var(--mov-curva);
 }
 
 .switch-tema-icono:last-child {

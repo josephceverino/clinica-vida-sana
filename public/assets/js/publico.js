@@ -49,13 +49,22 @@
     }
 
     // -----------------------------------------------------------------
-    // 2. Aparecer al bajar (si portada.js no lo hizo ya)
+    // 2. Aparecer al bajar (en todas las páginas públicas, también inicio)
     // -----------------------------------------------------------------
     var elementos = document.querySelectorAll('.aparecer');
-    if (!document.body.classList.contains('animar') && elementos.length > 0) {
+    if (elementos.length > 0) {
         if (reducirMovimiento || !('IntersectionObserver' in window)) {
             elementos.forEach(function (el) { el.classList.add('visible'); });
         } else {
+            // Lo que ya se ve al abrir la página queda visible desde el
+            // principio: no se oculta para volver a aparecer (eso sería un
+            // parpadeo y retrasaría la lectura). Solo se anima lo de abajo.
+            elementos.forEach(function (el) {
+                if (el.getBoundingClientRect().top < window.innerHeight) {
+                    el.classList.add('visible');
+                }
+            });
+
             var observador = new IntersectionObserver(function (entradas) {
                 entradas.forEach(function (entrada) {
                     if (entrada.isIntersecting) {
@@ -66,7 +75,9 @@
             }, { threshold: 0.12 });
 
             document.body.classList.add('animar');
-            elementos.forEach(function (el) { observador.observe(el); });
+            elementos.forEach(function (el) {
+                if (!el.classList.contains('visible')) { observador.observe(el); }
+            });
         }
     }
 

@@ -3,7 +3,8 @@
 //   1. Carrusel: avanza solo, con flechas, puntos, teclado y deslizando
 //      el dedo en el celular.
 //   2. Aviso emergente: sale una vez cada 7 días por visitante.
-//   3. Aparecer al bajar: las secciones entran suavemente al verse.
+//   (Las secciones que aparecen al bajar las maneja publico.js, igual
+//   que en el resto de la web pública.)
 //
 // Si la persona activó "reducir movimiento" en su sistema, el carrusel
 // no avanza solo y no hay animaciones (accesibilidad).
@@ -157,33 +158,6 @@ function iniciarAviso(aviso) {
     setTimeout(() => aviso.showModal(), 1500);
 }
 
-// ---------------------------------------------------------------------
-// 3. Secciones que aparecen al bajar
-// ---------------------------------------------------------------------
-function iniciarAparecer() {
-    const elementos = document.querySelectorAll('.aparecer');
-
-    // Sin animaciones (o navegador antiguo): se muestran tal cual.
-    if (reducirMovimiento || !('IntersectionObserver' in window)) {
-        elementos.forEach((el) => el.classList.add('visible'));
-        return;
-    }
-
-    // Avisa cuando un elemento entra en pantalla; entonces se le pone
-    // la clase "visible" (el CSS hace la animación) y se deja de vigilar.
-    const observador = new IntersectionObserver((entradas) => {
-        entradas.forEach((entrada) => {
-            if (entrada.isIntersecting) {
-                entrada.target.classList.add('visible');
-                observador.unobserve(entrada.target);
-            }
-        });
-    }, { threshold: 0.15 });
-
-    document.body.classList.add('animar');
-    elementos.forEach((el) => observador.observe(el));
-}
-
 // --- Arranque -----------------------------------------------------------
 const carrusel = document.querySelector('[data-carrusel]');
 if (carrusel) iniciarCarrusel(carrusel);
@@ -191,4 +165,3 @@ if (carrusel) iniciarCarrusel(carrusel);
 const aviso = document.querySelector('[data-aviso]');
 if (aviso) iniciarAviso(aviso);
 
-iniciarAparecer();

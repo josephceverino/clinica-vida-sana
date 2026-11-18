@@ -52,16 +52,22 @@
         }
     }
 
-    // Al cambiar con el switch, los colores pasan suavemente (0,25 s).
-    // La clase "tema-cambiando" solo existe durante ese momento, para no
-    // retrasar los efectos normales de la página (hover, foco...).
+    // Al cambiar con el switch, los colores pasan suavemente (--mov-medio,
+    // 240 ms, en base.css). La clase "tema-cambiando" solo existe durante
+    // ese momento (un poco más, 320 ms), para no retrasar los efectos
+    // normales de la página (hover, foco...).
     // Con "reducir movimiento" el cambio es inmediato.
+    var temporizador = null;
+
     function aplicar_tema_suave(tema) {
         if (!menos_movimiento.matches) {
             html.classList.add('tema-cambiando');
-            window.setTimeout(function () {
+            // Si se pulsa dos veces seguidas, se reinicia la cuenta: así el
+            // segundo cambio también termina suave y no "salta".
+            window.clearTimeout(temporizador);
+            temporizador = window.setTimeout(function () {
                 html.classList.remove('tema-cambiando');
-            }, 300);
+            }, 320);
         }
         aplicar_tema(tema);
     }

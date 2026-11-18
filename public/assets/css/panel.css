@@ -21,7 +21,7 @@
     --panel-ancho-lateral: 254px;
     --panel-radio:        12px;
     --panel-sombra:       0 1px 2px rgba(25, 56, 71, 0.04), 0 4px 16px rgba(25, 56, 71, 0.04);
-    --panel-transicion:   180ms ease;
+    --panel-transicion:   var(--mov-rapido) var(--mov-curva);
 
     background: var(--panel-fondo);
 }
@@ -170,6 +170,12 @@
     display: block;
     font-size: 0.75rem;
     color: var(--panel-lateral-titulo);
+}
+
+/* En "Mi perfil" activo, el fondo es más claro: la letra pequeña usa el
+   color del menú para leerse bien (5:1) */
+.panel-perfil.activo small {
+    color: var(--panel-lateral-texto);
 }
 
 .panel-usuario form {
@@ -552,7 +558,7 @@ a.resumen-pastilla:hover {
     box-shadow: var(--panel-sombra);
     color: inherit;
     text-decoration: none;
-    transition: transform var(--panel-transicion), box-shadow var(--panel-transicion);
+    transition: transform var(--mov-medio) var(--mov-curva), box-shadow var(--mov-medio) var(--mov-curva);
 }
 
 .resumen-indicador h2 {
@@ -805,7 +811,8 @@ a.resumen-pastilla:hover {
 /* Menos movimiento: sin transiciones ni elevación */
 @media (prefers-reduced-motion: reduce) {
     .panel-body *,
-    .panel-body *::before {
+    .panel-body *::before,
+    .panel-body *::after {
         transition: none !important;
     }
 
@@ -889,7 +896,7 @@ a.resumen-pastilla:hover {
 @media (min-width: 901px) {
     /* La animación de ancho (unos 300 ms), solo después de cargar */
     .lateral-animada .panel {
-        transition: grid-template-columns 300ms ease;
+        transition: grid-template-columns var(--mov-medio) var(--mov-curva);
     }
 
     .lateral-contraida .panel {
@@ -972,7 +979,7 @@ a.resumen-pastilla:hover {
         opacity: 0;
         pointer-events: none;
         transform: translate(-4px, -50%);
-        transition: opacity 150ms ease, transform 150ms ease;
+        transition: opacity var(--mov-rapido) var(--mov-curva), transform var(--mov-rapido) var(--mov-curva);
     }
 
     .lateral-contraida .panel-menu-texto small {
@@ -1067,13 +1074,13 @@ a.resumen-pastilla:hover {
         overflow-y: auto;
         visibility: hidden;
         transform: translateX(-100%);
-        transition: transform 220ms ease, visibility 0s linear 220ms;
+        transition: transform var(--mov-medio) var(--mov-curva), visibility 0s linear var(--mov-medio);
     }
 
     .js.menu-abierto .panel-lateral {
         visibility: visible;
         transform: none;
-        transition: transform 220ms ease;
+        transition: transform var(--mov-medio) var(--mov-curva);
         box-shadow: 8px 0 24px rgba(7, 30, 40, 0.25);
     }
 
@@ -1129,7 +1136,9 @@ a.resumen-pastilla:hover {
     --panel-borde-hover:  #9FB4BE;   /* borde de un campo al pasar el ratón */
     /* Turquesa como TEXTO (enlaces, botones secundarios). Como fondo se sigue
        usando --panel-primario; en oscuro el texto necesita un tono más claro. */
-    --panel-enlace:       var(--panel-primario);
+    /* Un poco más oscuro que el de los botones: 5.1:1 sobre las pastillas
+       celestes (--panel-tinte) y 5.8:1 sobre blanco. */
+    --panel-enlace:       #076F85;
 }
 
 /* ---------- Página ---------- */
@@ -1217,7 +1226,7 @@ a.resumen-pastilla:hover {
     border-radius: 8px;
     cursor: pointer;
     transition: background-color var(--panel-transicion), border-color var(--panel-transicion),
-                box-shadow var(--panel-transicion), transform 120ms ease;
+                box-shadow var(--panel-transicion), transform var(--panel-transicion);
 }
 
 .ui-boton:hover {
@@ -1455,7 +1464,7 @@ a.resumen-pastilla:hover {
     background: var(--panel-tinte);
     border: 1px solid var(--panel-info-borde);
     border-radius: 10px;
-    animation: ui-aparecer 200ms ease;
+    animation: ui-aparecer var(--mov-medio) var(--mov-curva);
 }
 
 .ui-aviso .icono {
@@ -1864,30 +1873,33 @@ a.resumen-pastilla:hover {
 
 /* ---------- Animación de entrada ----------
    Solo en páginas con .ui-animada (Agenda, Solicitudes, Programar):
-   las tarjetas suben 6 px y aparecen, una tras otra (unos 220 ms cada una).
+   las tarjetas suben 8 px y aparecen, una tras otra (240 ms cada una).
+   "backwards": al terminar, la tarjeta vuelve a sus estilos normales (así
+   funciona su efecto al pasar el ratón).
    No cambia las pantallas que ya estaban rediseñadas. */
 @keyframes ui-subir {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: none; }
 }
 
 .ui-animada .ui-cabecera,
 .ui-animada .ui-tarjeta,
 .ui-animada .ui-dia {
-    animation: ui-subir 220ms ease-out both;
+    animation: ui-subir var(--mov-medio) var(--mov-curva) backwards;
 }
 
 /* Un pequeño retraso escalonado (máximo ~200 ms en total) */
-.ui-animada > :nth-child(2) { animation-delay: 30ms; }
-.ui-animada > :nth-child(3) { animation-delay: 60ms; }
-.ui-animada > :nth-child(4) { animation-delay: 90ms; }
-.ui-animada > :nth-child(5) { animation-delay: 120ms; }
-.ui-animada .ui-dia:nth-child(2) { animation-delay: 25ms; }
-.ui-animada .ui-dia:nth-child(3) { animation-delay: 50ms; }
-.ui-animada .ui-dia:nth-child(4) { animation-delay: 75ms; }
-.ui-animada .ui-dia:nth-child(5) { animation-delay: 100ms; }
-.ui-animada .ui-dia:nth-child(6) { animation-delay: 125ms; }
-.ui-animada .ui-dia:nth-child(7) { animation-delay: 150ms; }
+/* Escalonado: cada pieza entra un paso (--mov-paso) después de la
+   anterior, hasta un máximo de 5 pasos (150 ms): lo último no espera de más */
+.ui-animada > :nth-child(2) { animation-delay: calc(var(--mov-paso) * 1); }
+.ui-animada > :nth-child(3) { animation-delay: calc(var(--mov-paso) * 2); }
+.ui-animada > :nth-child(4) { animation-delay: calc(var(--mov-paso) * 3); }
+.ui-animada > :nth-child(5) { animation-delay: calc(var(--mov-paso) * 4); }
+.ui-animada .ui-dia:nth-child(2) { animation-delay: calc(var(--mov-paso) * 1); }
+.ui-animada .ui-dia:nth-child(3) { animation-delay: calc(var(--mov-paso) * 2); }
+.ui-animada .ui-dia:nth-child(4) { animation-delay: calc(var(--mov-paso) * 3); }
+.ui-animada .ui-dia:nth-child(5) { animation-delay: calc(var(--mov-paso) * 4); }
+.ui-animada .ui-dia:nth-child(n+6) { animation-delay: calc(var(--mov-paso) * 5); }
 
 /* ---------- Botón pequeño (dentro de tablas y barras) ---------- */
 .ui-boton-chico {
@@ -2088,7 +2100,7 @@ a.resumen-pastilla:hover {
     border-left-style: solid;
     border-radius: 8px;
     transition: background-color var(--panel-transicion), box-shadow var(--panel-transicion),
-                transform var(--panel-transicion);
+                transform var(--mov-medio) var(--mov-curva);
 }
 
 .ui-cita strong {
@@ -2306,8 +2318,8 @@ a.ui-cita:focus-visible {
 }
 
 /* Las tarjetas animadas también incluyen la comparación de cuentas */
-.ui-animada .ui-cuenta:nth-of-type(2) { animation-delay: 40ms; }
-.ui-animada .ui-cuenta:nth-of-type(3) { animation-delay: 80ms; }
+.ui-animada .ui-cuenta:nth-of-type(2) { animation-delay: calc(var(--mov-paso) * 1); }
+.ui-animada .ui-cuenta:nth-of-type(3) { animation-delay: calc(var(--mov-paso) * 2); }
 
 /* Lista ancha a la izquierda y formulario de ancho fijo (~340 px) a la derecha */
 .ui-columnas-anchas {
@@ -2584,7 +2596,7 @@ a.ui-cita:focus-visible {
 }
 
 .ui-animada .ui-destacado {
-    animation: ui-subir 220ms ease-out both;
+    animation: ui-subir var(--mov-medio) var(--mov-curva) backwards;
 }
 
 @media (max-width: 760px) {
@@ -2639,13 +2651,13 @@ a.ui-cita:focus-visible {
 .ui-animada .resumen-cabecera,
 .ui-animada .resumen-indicador,
 .ui-animada .resumen-caja {
-    animation: ui-subir 220ms ease-out both;
+    animation: ui-subir var(--mov-medio) var(--mov-curva) backwards;
 }
 
-.ui-animada .resumen-indicador:nth-child(2) { animation-delay: 30ms; }
-.ui-animada .resumen-indicador:nth-child(3) { animation-delay: 60ms; }
-.ui-animada .resumen-indicador:nth-child(4) { animation-delay: 90ms; }
-.ui-animada .resumen-indicador:nth-child(5) { animation-delay: 120ms; }
+.ui-animada .resumen-indicador:nth-child(2) { animation-delay: calc(var(--mov-paso) * 1); }
+.ui-animada .resumen-indicador:nth-child(3) { animation-delay: calc(var(--mov-paso) * 2); }
+.ui-animada .resumen-indicador:nth-child(4) { animation-delay: calc(var(--mov-paso) * 3); }
+.ui-animada .resumen-indicador:nth-child(5) { animation-delay: calc(var(--mov-paso) * 4); }
 
 /* Página de error dentro del panel (403 y 404 del personal; el HTML lo
    arma app/core/errores.php). Mismo aspecto que la de la web pública. */
@@ -2659,7 +2671,7 @@ a.ui-cita:focus-visible {
     background: var(--panel-superficie);
     border-radius: 20px;
     box-shadow: var(--panel-sombra);
-    animation: ui-subir 260ms ease-out both;
+    animation: ui-subir var(--mov-medio) var(--mov-curva) backwards;
 }
 
 .panel-contenido .error-codigo {
