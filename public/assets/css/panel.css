@@ -204,7 +204,7 @@
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 0;
-    border-bottom: 1px solid #EDF1F4;
+    border-bottom: 1px solid var(--color-separador);
 }
 
 .agenda li:last-child {
@@ -240,8 +240,8 @@
 .panel-contenido table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -261,12 +261,12 @@
     text-transform: uppercase;
     color: var(--color-texto-suave);
     background: #F8FAFB;
-    border-bottom: 2px solid #EDF1F4;
+    border-bottom: 2px solid var(--color-separador);
 }
 
 .panel-contenido td {
     padding: 0.7rem 0.8rem;
-    border-bottom: 1px solid #EDF1F4;
+    border-bottom: 1px solid var(--color-separador);
 }
 
 .panel-contenido tr:last-child td {
@@ -285,15 +285,15 @@
     max-width: 30rem;
     padding: 0.55rem 0.7rem;
     font: inherit;
-    background: var(--color-blanco);
-    border: 1px solid #C5D0D8;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde-fuerte);
     border-radius: 8px;
 }
 
 .panel-contenido input:focus,
 .panel-contenido select:focus,
 .panel-contenido textarea:focus {
-    outline: 2px solid var(--color-principal);
+    outline: 2px solid var(--color-enlace);
     outline-offset: 1px;
 }
 
@@ -422,7 +422,7 @@
 }
 
 .grafico-base {
-    stroke: #DDE5EA;
+    stroke: var(--color-borde);
     stroke-width: 1;
 }
 
@@ -443,7 +443,7 @@
 .barra-mes {
     font-size: 12px;
     text-anchor: middle;
-    fill: #5A6B7A;
+    fill: var(--color-icono-suave);
 }
 
 /* El número de cada barra solo aparece al pasar el ratón */
@@ -522,7 +522,7 @@
     font-size: 0.9rem;
     font-weight: 600;
     line-height: 1.2;
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
     background: var(--panel-tinte);
     border-radius: 999px;
     text-decoration: none;
@@ -648,7 +648,7 @@ a.resumen-pastilla:hover {
 }
 
 .resumen-tabla tbody tr:hover {
-    background: #F7FAFB;
+    background: var(--panel-sutil);
 }
 
 .resumen-paciente {
@@ -1122,6 +1122,14 @@ a.resumen-pastilla:hover {
     --panel-exito-borde:  #A8DDC1;
     --panel-info-borde:   #BFE0E8;
     --panel-anillo:       0 0 0 3px rgba(8, 124, 148, 0.22);  /* foco */
+    /* Colores que antes estaban escritos a mano (mismo valor en modo claro;
+       el modo oscuro los cambia al final de este archivo). */
+    --panel-sutil:        #F7FAFB;   /* filas al pasar el ratón, cabeceras de tabla */
+    --panel-error-campo:  #FFF8F7;   /* fondo de un campo mal llenado */
+    --panel-borde-hover:  #9FB4BE;   /* borde de un campo al pasar el ratón */
+    /* Turquesa como TEXTO (enlaces, botones secundarios). Como fondo se sigue
+       usando --panel-primario; en oscuro el texto necesita un tono más claro. */
+    --panel-enlace:       var(--panel-primario);
 }
 
 /* ---------- Página ---------- */
@@ -1148,7 +1156,7 @@ a.resumen-pastilla:hover {
     margin-bottom: 0.75rem;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
     text-decoration: none;
     border-radius: 6px;
 }
@@ -1234,7 +1242,7 @@ a.resumen-pastilla:hover {
 
 /* Secundario: blanco con borde (acciones menos importantes) */
 .ui-boton-secundario {
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
     background: var(--panel-superficie);
     border-color: var(--panel-borde-fuerte);
 }
@@ -1304,7 +1312,7 @@ a.resumen-pastilla:hover {
     padding: 0.25rem 0.65rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
     background: var(--panel-tinte);
     border-radius: 999px;
 }
@@ -1348,7 +1356,7 @@ a.resumen-pastilla:hover {
 
 .panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):hover,
 .panel-contenido select.ui-entrada:hover {
-    border-color: #9FB4BE;
+    border-color: var(--panel-borde-hover);
 }
 
 .panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):focus,
@@ -1362,7 +1370,7 @@ a.resumen-pastilla:hover {
    después de que el usuario lo tocó (:user-invalid), no al abrir la página. */
 .panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid {
     border-color: var(--panel-error);
-    background: #FFF8F7;
+    background: var(--panel-error-campo);
 }
 
 .panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid:focus {
@@ -1453,7 +1461,7 @@ a.resumen-pastilla:hover {
 .ui-aviso .icono {
     flex-shrink: 0;
     margin-top: 1px;
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
 }
 
 .ui-aviso p {
@@ -1510,7 +1518,7 @@ a.resumen-pastilla:hover {
     text-transform: uppercase;
     white-space: nowrap;
     color: var(--panel-texto-suave);
-    background: #F7FAFB;
+    background: var(--panel-sutil);
     border-bottom: 1px solid var(--panel-borde);
 }
 
@@ -1528,7 +1536,7 @@ a.resumen-pastilla:hover {
 }
 
 .ui-tabla tbody tr:hover {
-    background: #F7FAFB;
+    background: var(--panel-sutil);
 }
 
 .ui-celda-fuerte {
@@ -1556,7 +1564,7 @@ a.resumen-pastilla:hover {
     width: 52px;
     height: 52px;
     margin-bottom: 0.4rem;
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
     background: var(--panel-tinte);
     border-radius: 50%;
 }
@@ -1704,7 +1712,7 @@ a.resumen-pastilla:hover {
 }
 
 .panel-contenido textarea.ui-entrada:hover {
-    border-color: #9FB4BE;
+    border-color: var(--panel-borde-hover);
 }
 
 .panel-contenido textarea.ui-entrada:focus {
@@ -1716,7 +1724,7 @@ a.resumen-pastilla:hover {
 .panel-contenido textarea.ui-entrada:user-invalid,
 .panel-contenido select.ui-entrada:user-invalid {
     border-color: var(--panel-error);
-    background: #FFF8F7;
+    background: var(--panel-error-campo);
 }
 
 /* Botón destructivo (ej. "Cancelar cita"): rojo con borde, no relleno */
@@ -1944,7 +1952,7 @@ a.resumen-pastilla:hover {
 
 /* La pestaña elegida: blanca y con sombra suave */
 .ui-pestanas a[aria-current="page"] {
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
     background: var(--panel-superficie);
     box-shadow: 0 1px 3px rgba(25, 56, 71, 0.12);
 }
@@ -1968,7 +1976,7 @@ a.resumen-pastilla:hover {
 /* Enlace de texto dentro de una tabla (ej. "Ver cita del 18/11") */
 .ui-enlace {
     font-weight: 600;
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
     text-decoration: none;
     border-radius: 4px;
 }
@@ -2033,7 +2041,7 @@ a.resumen-pastilla:hover {
 }
 
 .ui-dia-hoy .ui-dia-cabecera strong {
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
 }
 
 /* ".ui-dia-cabecera" delante: así gana a la regla de los span de la cabecera */
@@ -2071,7 +2079,7 @@ a.resumen-pastilla:hover {
     font-size: 0.85rem;
     color: var(--panel-texto);
     text-decoration: none;
-    background: #F7FAFB;
+    background: var(--panel-sutil);
     border-top: 1px solid var(--panel-borde);
     border-right: 1px solid var(--panel-borde);
     border-bottom: 1px solid var(--panel-borde);
@@ -2321,7 +2329,7 @@ a.ui-cita:focus-visible {
 .ui-comparacion > div {
     min-width: 0;
     padding: 1rem;
-    background: #F7FAFB;
+    background: var(--panel-sutil);
     border: 1px solid var(--panel-borde);
     border-radius: 10px;
 }
@@ -2332,7 +2340,7 @@ a.ui-cita:focus-visible {
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--panel-primario);
+    color: var(--panel-enlace);
 }
 
 .ui-comparacion .datos {
@@ -2423,7 +2431,7 @@ a.ui-cita:focus-visible {
 
 .panel-contenido .ui-pagina .form-password input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid {
     border-color: var(--panel-error);
-    background: #FFF8F7;
+    background: var(--panel-error-campo);
 }
 
 .ui-pagina .form-password small {
@@ -2715,5 +2723,195 @@ a.ui-cita:focus-visible {
 @media (max-width: 900px) {
     .js .panel {
         grid-template-rows: auto 1fr;
+    }
+}
+
+/* =====================================================================
+   MODO OSCURO (panel y portal del paciente)
+   tema.js pone <html data-tema="oscuro">. Primero cambian las variables;
+   después, las pocas piezas que tienen colores propios.
+   ":root[data-tema="oscuro"]" delante hace que estas reglas ganen a las
+   de arriba sin tocarlas: el modo claro queda exactamente igual.
+   Contraste: textos >= 4.5:1 sobre --panel-superficie (#15242C).
+   ===================================================================== */
+:root[data-tema="oscuro"] .panel-body {
+    --panel-lateral:        #0B2731;
+    --panel-fondo:          #0E1A20;
+    --panel-superficie:     #15242C;
+    --panel-texto:          #E3EDF1;   /* 13:1 */
+    --panel-texto-suave:    #9DB0BA;   /* 7.1:1 */
+    --panel-acento-texto:   #5FD39A;   /* 8.4:1 */
+    --panel-borde:          #243A45;
+    --panel-tinte:          #173843;
+    --panel-lateral-texto:  #C9DCE3;
+    --panel-lateral-titulo: #8FB3BF;
+    --panel-lateral-activo: #103F4C;   /* "Mi perfil" encima: 5.0:1 */
+    --panel-sombra:         0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.2);
+    --panel-borde-fuerte:   #3A5563;
+    --panel-error:          #F4A199;   /* 7.6:1 (rojo claro para texto) */
+    --panel-error-fondo:    #3A1F1D;
+    --panel-error-borde:    #7A3A33;
+    --panel-exito-fondo:    #12342A;
+    --panel-exito-borde:    #2B6B4E;
+    --panel-info-borde:     #23566A;
+    --panel-anillo:         0 0 0 3px rgba(92, 196, 220, 0.45);
+    --panel-sutil:          #1A2C35;
+    --panel-error-campo:    #2A1A1A;
+    --panel-borde-hover:    #557785;
+    --panel-enlace:         #5CC4DC;   /* 7.9:1 */
+}
+
+/* Etiquetas de estado: fondo oscuro del mismo tono y letra clara */
+:root[data-tema="oscuro"] .estado-pendiente   { background: #3B2E14; color: #F5C66B; }
+:root[data-tema="oscuro"] .estado-confirmada  { background: #12352A; color: #6FD8A5; }
+:root[data-tema="oscuro"] .estado-atendida    { background: #263640; color: #B9CAD5; }
+:root[data-tema="oscuro"] .estado-cancelada   { background: #3D1E1B; color: #F4A199; }
+:root[data-tema="oscuro"] .estado-nueva       { background: #123B47; color: #7FD3E6; }
+:root[data-tema="oscuro"] .estado-no_asistio  { background: #2D2540; color: #C9B5EE; }
+:root[data-tema="oscuro"] .estado-descartada  { background: #283238; color: #B0BDC5; }
+:root[data-tema="oscuro"] .resumen-estado-confirmada { background: #12352A; }
+:root[data-tema="oscuro"] .resumen-estado-pendiente  { background: #3B2E14; color: #F5C66B; }
+
+/* Globito verde del menú (pendientes): la letra sigue siendo oscura,
+   como en modo claro (6:1). Con la letra clara del tema no se leía. */
+:root[data-tema="oscuro"] .panel-menu .globito {
+    color: #0B2731;
+}
+
+/* Sobre la tarjeta destacada (turquesa), la etiqueta es blanca translúcida */
+:root[data-tema="oscuro"] .ui-destacado .estado {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.16);
+}
+
+/* Avisos: el texto oscuro de cada tipo pasa a ser claro */
+:root[data-tema="oscuro"] .panel-contenido .ui-aviso-exito {
+    color: #B9EBD1;
+}
+
+:root[data-tema="oscuro"] .panel-contenido .ui-aviso-error {
+    color: #F8C4BE;
+}
+
+:root[data-tema="oscuro"] .panel-contenido .ui-aviso-advertencia {
+    color: #F5DDA6;
+    background: #33290F;
+    border-color: #6B5420;
+}
+
+:root[data-tema="oscuro"] .ui-aviso-advertencia .icono {
+    color: #F5C66B;
+}
+
+/* Botón de peligro: al pasar el ratón, rojo intenso con letra blanca */
+:root[data-tema="oscuro"] .ui-boton-peligro:hover {
+    background: #B42318;
+    border-color: #B42318;
+}
+
+/* Pestañas (Solicitudes, Cuentas...): el riel gris claro pasa a oscuro */
+:root[data-tema="oscuro"] .ui-pestanas {
+    background: #0E1A20;
+    box-shadow: inset 0 0 0 1px var(--panel-borde);
+}
+
+:root[data-tema="oscuro"] .ui-pestanas a:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+:root[data-tema="oscuro"] .ui-pestanas a[aria-current="page"] {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Código grande del 403/404 del panel: el degradado empieza en el
+   turquesa claro (el oscuro casi no se veía sobre el fondo) */
+:root[data-tema="oscuro"] .panel-contenido .error-codigo {
+    background-image: linear-gradient(135deg, var(--panel-enlace), var(--panel-acento));
+}
+
+/* Agenda: días pasados un poco más apagados que los demás */
+:root[data-tema="oscuro"] .ui-dia-pasado {
+    background: #122027;
+}
+
+/* Menú contraído: la etiqueta que aparece al lado usa el color del texto
+   como fondo; en oscuro ese fondo es claro, así que la letra va oscura */
+@media (min-width: 901px) {
+    :root[data-tema="oscuro"] .lateral-contraida .panel-menu-texto {
+        color: #0E1A20;
+    }
+}
+
+/* =====================================================================
+   SWITCH DE TEMA EN EL MENÚ LATERAL DEL PANEL
+   Se ve como una fila más del menú (igual que "Cerrar sesión").
+   ===================================================================== */
+.panel-usuario .switch-tema {
+    --switch-pista:        rgba(255, 255, 255, 0.12);
+    --switch-pista-borde:  rgba(255, 255, 255, 0.28);
+    --switch-pista-activa: #22B77A;
+    --switch-foco:         #FFFFFF;
+
+    width: 100%;
+    min-height: 40px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--panel-lateral-texto);
+    text-align: left;
+    border-radius: 8px;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion);
+}
+
+.panel-usuario .switch-tema:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.panel-usuario .switch-tema:hover .switch-tema-pista {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* La pista ocupa el lugar de los iconos del menú (que miden 20 px) */
+.panel-usuario .switch-tema-pista {
+    width: 40px;
+    height: 24px;
+    margin-left: -6px;
+}
+
+.panel-usuario .switch-tema-perilla {
+    width: 18px;
+    height: 18px;
+}
+
+.panel-usuario .switch-tema-icono {
+    width: 12px;
+    height: 12px;
+}
+
+.panel-usuario .switch-tema[aria-checked="true"] .switch-tema-perilla {
+    transform: translateX(16px);
+}
+
+/* Menú contraído (escritorio): solo la pista, centrada. El texto se oculta
+   a la vista, pero los lectores de pantalla lo siguen leyendo (es el
+   nombre del switch). */
+@media (min-width: 901px) {
+    .lateral-contraida .panel-usuario .switch-tema {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .lateral-contraida .panel-usuario .switch-tema-pista {
+        margin-left: 0;
+    }
+
+    .lateral-contraida .switch-tema-texto {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
     }
 }

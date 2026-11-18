@@ -16,8 +16,24 @@
     /* Gris para textos secundarios (notas, "sin datos", cabeceras de tabla). */
     --color-texto-suave:  #5B6B79;
 
+    /* Superficies, bordes y enlaces. En modo claro valen lo mismo que los
+       colores que antes estaban escritos a mano; el modo oscuro los cambia
+       (ver "MODO OSCURO" al final de este archivo). */
+    --color-superficie:   #FFFFFF;   /* fondo de cajas y formularios */
+    --color-separador:    #EDF1F4;   /* líneas suaves entre filas */
+    --color-borde:        #DDE5EA;
+    --color-borde-fuerte: #C5D0D8;   /* borde de campos */
+    --color-icono-suave:  #5A6B7A;
+    /* El color principal sirve de fondo (botones) y de texto (enlaces).
+       Se separan porque en modo oscuro el texto necesita un tono más claro. */
+    --color-enlace:       var(--color-principal);
+
     --fuente-texto: system-ui, -apple-system, "Segoe UI", sans-serif;
     --ancho-maximo: 1100px;
+
+    /* Le dice al navegador que dibuje sus controles (barras de
+       desplazamiento, calendario de las fechas...) en claro */
+    color-scheme: light;
 }
 
 * {
@@ -38,7 +54,7 @@ h1, h2, h3 {
 }
 
 a {
-    color: var(--color-principal);
+    color: var(--color-enlace);
 }
 
 /* Contenido */
@@ -104,7 +120,7 @@ a {
     font-size: clamp(4.5rem, 14vw, 8rem);
     font-weight: 700;
     line-height: 1;
-    color: var(--color-principal);
+    color: var(--color-enlace);
 }
 
 .error-pagina h1 {
@@ -123,8 +139,8 @@ a {
 
 .formulario {
     padding: 1.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
     border-radius: 12px;
 }
 
@@ -146,13 +162,13 @@ a {
     width: 100%;
     padding: 0.7rem 0.8rem;
     font: inherit;
-    border: 1px solid #C5D0D8;
+    border: 1px solid var(--color-borde-fuerte);
     border-radius: 8px;
 }
 
 .campo input:focus,
 .campo textarea:focus {
-    outline: 2px solid var(--color-principal);
+    outline: 2px solid var(--color-enlace);
     outline-offset: 1px;
 }
 
@@ -189,8 +205,8 @@ select {
     width: 100%;
     padding: 0.7rem 0.8rem;
     font: inherit;
-    background: var(--color-blanco);
-    border: 1px solid #C5D0D8;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde-fuerte);
     border-radius: 8px;
 }
 
@@ -386,7 +402,7 @@ select {
     padding: 2rem 1.75rem 1.25rem;
     text-align: center;
     color: var(--color-texto);
-    background: var(--color-blanco);
+    background: var(--color-superficie);
     border: none;
     border-top: 6px solid var(--color-acento);
     border-radius: 16px;
@@ -439,7 +455,7 @@ select {
     height: 36px;
     font-size: 1.6rem;
     line-height: 1;
-    color: #5A6B7A;
+    color: var(--color-icono-suave);
     background: transparent;
     border: none;
     border-radius: 50%;
@@ -449,7 +465,7 @@ select {
 .aviso-cerrar:hover,
 .aviso-cerrar:focus-visible {
     color: var(--color-titulos);
-    background: #EDF1F4;
+    background: var(--color-separador);
 }
 
 .aviso-botones {
@@ -538,4 +554,177 @@ select {
 
 .pie p {
     margin: 0.25rem 0;
+}
+
+/* =====================================================================
+   MODO OSCURO
+   tema.js pone <html data-tema="oscuro"> cuando corresponde. Aquí solo
+   cambian las variables de color; cada zona (publico.css, panel.css,
+   paciente.css) tiene su propio bloque "MODO OSCURO" al final.
+   Contraste comprobado: textos >= 4.5:1 y bordes de foco >= 3:1.
+   ===================================================================== */
+:root[data-tema="oscuro"] {
+    --color-titulos:      #E6EEF2;
+    --color-fondo:        #0E1A20;
+    --color-texto:        #C9D6DD;
+    --color-acento-texto: #5FD39A;
+    --color-texto-suave:  #9AAEB9;
+    --color-superficie:   #15242C;
+    --color-separador:    #22363F;
+    --color-borde:        #2A404B;
+    --color-borde-fuerte: #3A5563;
+    --color-icono-suave:  #9AAEB9;
+    --color-enlace:       #5CC4DC;   /* 7.9:1 sobre las superficies */
+
+    color-scheme: dark;
+}
+
+/* Estos dos usaban el color de los títulos como fondo, que en oscuro es
+   claro: se les da un fondo propio para que el texto blanco se lea. */
+:root[data-tema="oscuro"] .boton:hover {
+    background: #0A90AB;
+}
+
+:root[data-tema="oscuro"] .saltar-contenido {
+    color: #0E1A20;
+}
+
+/* El cambio de tema con el switch: los colores pasan suavemente.
+   tema.js pone "tema-cambiando" solo 0,3 s (y nunca con "reducir
+   movimiento"), así no retrasa los efectos normales de la página. */
+.tema-cambiando,
+.tema-cambiando *,
+.tema-cambiando *::before,
+.tema-cambiando *::after {
+    transition: background-color 250ms ease, color 250ms ease, border-color 250ms ease,
+                fill 250ms ease, stroke 250ms ease, box-shadow 250ms ease,
+                transform 250ms ease, opacity 250ms ease !important;
+}
+
+/* =====================================================================
+   SWITCH DE MODO CLARO / OSCURO (app/layout/switch_tema.php)
+   Es igual en las tres zonas; cada una solo ajusta sus colores con las
+   variables --switch-*. La perilla se desliza y el sol se cambia por la luna.
+   ===================================================================== */
+.switch-tema {
+    --switch-pista:        #E3EBEF;
+    --switch-pista-borde:  #C5D3DA;
+    --switch-pista-activa: #087C94;
+    --switch-foco:         #087C94;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 44px;   /* área cómoda para el dedo */
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+/* Sin JavaScript el switch no serviría: "hidden" lo oculta siempre */
+.switch-tema[hidden] {
+    display: none !important;
+}
+
+.switch-tema-pista {
+    position: relative;
+    flex-shrink: 0;
+    width: 52px;
+    height: 30px;
+    background: var(--switch-pista);
+    border: 1px solid var(--switch-pista-borde);
+    border-radius: 999px;
+    transition: background-color 250ms ease, border-color 250ms ease;
+}
+
+.switch-tema-perilla {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    color: #A86B00;            /* sol ámbar */
+    background: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(15, 42, 61, 0.3);
+    transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1), background-color 250ms ease,
+                color 250ms ease;
+}
+
+/* Sol y luna en el mismo sitio: uno aparece mientras el otro gira y se va */
+.switch-tema-icono {
+    grid-area: 1 / 1;
+    width: 16px;
+    height: 16px;
+    transition: opacity 200ms ease, transform 250ms ease;
+}
+
+.switch-tema-icono:last-child {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+}
+
+/* Encendido (modo oscuro): la perilla se va a la derecha y muestra la luna */
+.switch-tema[aria-checked="true"] .switch-tema-pista {
+    background: var(--switch-pista-activa);
+    border-color: var(--switch-pista-activa);
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-perilla {
+    color: #F5C66B;            /* luna amarilla suave */
+    background: #0E1A20;
+    transform: translateX(22px);
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-icono:first-child {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-icono:last-child {
+    opacity: 1;
+    transform: none;
+}
+
+.switch-tema:hover .switch-tema-pista {
+    border-color: var(--switch-pista-activa);
+}
+
+/* Foco con teclado: anillo alrededor de la pista */
+.switch-tema:focus-visible {
+    outline: none;
+}
+
+.switch-tema:focus-visible .switch-tema-pista {
+    outline: 2px solid var(--switch-foco);
+    outline-offset: 3px;
+}
+
+/* En oscuro, la pista apagada y el anillo de foco se aclaran */
+:root[data-tema="oscuro"] .switch-tema {
+    --switch-pista:        #22363F;
+    --switch-pista-borde:  #3A5563;
+    --switch-foco:         #5CC4DC;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .switch-tema-pista,
+    .switch-tema-perilla,
+    .switch-tema-icono {
+        transition: none;
+    }
+}
+
+/* En las cabeceras de la web pública y del portal, el switch no debe
+   estirarlas: mide lo que su pista (30 px de alto, más que el mínimo de
+   24 px para tocar con el dedo). */
+.pub-cabecera .switch-tema,
+.portal-sesion .switch-tema {
+    min-height: 0;
 }

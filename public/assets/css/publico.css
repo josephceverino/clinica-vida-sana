@@ -27,6 +27,14 @@ body.publico {
     --pub-anillo:        0 0 0 3px rgba(8, 124, 148, 0.25);
     --pub-transicion:    200ms ease;
     --pub-ancho:         1180px;
+    /* Colores que antes estaban escritos a mano (mismo valor en modo claro;
+       el modo oscuro los cambia al final de este archivo). */
+    --pub-borde-hover:   #9FB4BE;   /* borde de un campo al pasar el ratón */
+    --pub-error-campo:   #FFF8F7;   /* fondo de un campo mal llenado */
+    --pub-info-borde:    #BFE0E8;
+    /* Turquesa como TEXTO (enlaces). Como fondo se sigue usando
+       --pub-primario; en oscuro el texto necesita un tono más claro. */
+    --pub-enlace:        var(--pub-primario);
 
     color: var(--pub-texto);
     background: var(--pub-fondo);
@@ -41,7 +49,7 @@ body.publico {
 
 /* :where() deja esta regla con poca prioridad: las clases (.pub-boton...) ganan solas */
 :where(.publico) a {
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
 }
 
 /* Iconos de iconos.svg */
@@ -101,7 +109,7 @@ body.publico {
 }
 
 .pub-marca strong {
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
 }
 
 .pub-menu {
@@ -281,7 +289,7 @@ body.publico {
 
 /* Secundario: blanco con borde */
 .pub-boton-secundario {
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
     background: var(--pub-superficie);
     border-color: var(--pub-borde-fuerte);
     box-shadow: none;
@@ -349,7 +357,7 @@ body.publico {
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
 }
 
 /* Rayita verde antes de la etiqueta */
@@ -551,7 +559,7 @@ body.publico {
     width: 38px;
     height: 38px;
     padding: 9px;
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
     background: var(--pub-tinte);
     border-radius: 50%;
 }
@@ -671,7 +679,7 @@ body.publico {
     place-items: center;
     width: 52px;
     height: 52px;
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
     background: var(--pub-tinte);
     border-radius: 14px;
     transition: transform 240ms ease;
@@ -957,7 +965,7 @@ body.publico {
     place-items: center;
     width: 42px;
     height: 42px;
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
     background: var(--pub-superficie);
     border-radius: 12px;
 }
@@ -1045,7 +1053,7 @@ body.publico {
 
 .pub-campo input:hover,
 .pub-campo select:hover {
-    border-color: #9FB4BE;
+    border-color: var(--pub-borde-hover);
 }
 
 .pub-campo input:focus,
@@ -1059,7 +1067,7 @@ body.publico {
 .pub-campo input:user-invalid,
 .pub-campo select:user-invalid {
     border-color: var(--pub-error);
-    background: #FFF8F7;
+    background: var(--pub-error-campo);
 }
 
 .pub-campo input::placeholder {
@@ -1075,7 +1083,7 @@ body.publico {
     padding: 0.9rem 1rem;
     color: var(--pub-texto);
     background: var(--pub-tinte);
-    border: 1px solid #BFE0E8;
+    border: 1px solid var(--pub-info-borde);
     border-radius: 12px;
     animation: pub-subir 220ms ease-out;
 }
@@ -1086,7 +1094,7 @@ body.publico {
 
 .pub-aviso .pub-icono {
     margin-top: 2px;
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
 }
 
 .pub-aviso-exito {
@@ -1330,7 +1338,7 @@ body.publico {
 .pub-legal-indice a::before {
     content: counter(indice) ".";
     font-weight: 700;
-    color: var(--pub-primario);
+    color: var(--pub-enlace);
 }
 
 .pub-legal-indice a:hover {
@@ -1610,7 +1618,7 @@ body.publico {
     }
 
     .pub-menu a[aria-current="page"] {
-        color: var(--pub-primario);
+        color: var(--pub-enlace);
         background: var(--pub-tinte);
     }
 
@@ -1819,4 +1827,138 @@ body.publico {
 
 .publico .error-pagina::before {
     z-index: 0;
+}
+
+/* =====================================================================
+   MODO OSCURO (web pública)
+   tema.js pone <html data-tema="oscuro">. Primero cambian las variables;
+   después, las piezas con colores propios. ":root[data-tema="oscuro"]"
+   delante hace que ganen sin tocar las reglas de arriba (el modo claro
+   queda igual). Las secciones que ya eran oscuras (llamados, horario,
+   pie, carrusel) no cambian.
+   Contraste: textos >= 4.5:1 sobre --pub-superficie (#15242C).
+   ===================================================================== */
+:root[data-tema="oscuro"] body.publico {
+    --pub-fondo:        #0E1A20;
+    --pub-superficie:   #15242C;
+    --pub-texto:        #E3EDF1;   /* 13:1 */
+    --pub-suave:        #9DB0BA;   /* 7.1:1 */
+    --pub-acento-texto: #5FD39A;   /* 8.4:1 */
+    --pub-borde:        #243A45;
+    --pub-borde-fuerte: #3A5563;
+    --pub-tinte:        #173843;
+    --pub-error:        #F4A199;   /* 7.6:1 */
+    --pub-sombra:       0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    --pub-sombra-alta:  0 4px 10px rgba(0, 0, 0, 0.35), 0 18px 40px rgba(0, 0, 0, 0.35);
+    --pub-anillo:       0 0 0 3px rgba(92, 196, 220, 0.45);
+    --pub-borde-hover:  #557785;
+    --pub-error-campo:  #2A1A1A;
+    --pub-info-borde:   #23566A;
+    --pub-enlace:       #5CC4DC;   /* 7.9:1 */
+}
+
+/* Cabecera translúcida: blanca en claro, oscura en oscuro */
+:root[data-tema="oscuro"] .pub-cabecera {
+    background: rgba(14, 26, 32, 0.9);
+}
+
+/* Encabezado de las páginas interiores (degradado blanco -> celeste) */
+:root[data-tema="oscuro"] .pub-encabezado {
+    background: linear-gradient(120deg, #15242C 0%, #12303A 100%);
+}
+
+/* Números grandes "01, 02, 03" de la portada: el degradado empieza en el
+   turquesa claro (el oscuro casi no se veía sobre el fondo) */
+:root[data-tema="oscuro"] .pub-razones li::before {
+    background-image: linear-gradient(135deg, var(--pub-enlace), var(--pub-acento));
+}
+
+/* Código grande de las páginas de error (403, 404): mismo arreglo */
+:root[data-tema="oscuro"] .publico .error-codigo {
+    background-image: linear-gradient(135deg, var(--pub-enlace), var(--pub-acento));
+}
+
+/* Campos de formulario */
+:root[data-tema="oscuro"] .pub-campo input::placeholder {
+    color: #7F949F;
+}
+
+/* Avisos: el texto oscuro de cada tipo pasa a ser claro */
+:root[data-tema="oscuro"] .pub-aviso-exito {
+    color: #B9EBD1;
+    background: #12342A;
+    border-color: #2B6B4E;
+}
+
+:root[data-tema="oscuro"] .pub-aviso-error {
+    color: #F8C4BE;
+    background: #3A1F1D;
+    border-color: #7A3A33;
+}
+
+:root[data-tema="oscuro"] .pub-aviso-advertencia {
+    color: #F5DDA6;
+    background: #33290F;
+    border-color: #6B5420;
+}
+
+:root[data-tema="oscuro"] .pub-aviso-advertencia .pub-icono {
+    color: #F5C66B;
+}
+
+/* Casilla de aceptación marcada (registro) */
+:root[data-tema="oscuro"] .pub-casilla:has(input:checked) {
+    background: #12342A;
+    border-color: #2B6B4E;
+}
+
+/* =====================================================================
+   SWITCH DE TEMA EN LA CABECERA PÚBLICA
+   Escritorio: a la derecha del menú. Celular: entre la marca y el botón
+   "Menú" (el menú desplegado queda debajo de todo).
+   ===================================================================== */
+.pub-cabecera .switch-tema {
+    flex-shrink: 0;
+}
+
+@media (max-width: 860px) {
+    .pub-cabecera .pub-boton-menu {
+        order: 1;
+    }
+
+    .pub-cabecera .pub-menu {
+        order: 2;
+    }
+}
+
+/* Celulares angostos (menos de 390 px): marca + switch + "Menú" no caben
+   en una fila. El botón "Menú" queda solo con su icono (la palabra sigue
+   ahí para los lectores de pantalla) y el switch se achica un poco. */
+@media (max-width: 389px) {
+    .pub-cabecera-interior {
+        column-gap: 0.5rem;
+    }
+
+    .pub-boton-menu > span:last-child {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .pub-cabecera .switch-tema-pista {
+        width: 46px;
+        height: 28px;
+    }
+
+    .pub-cabecera .switch-tema-perilla {
+        width: 22px;
+        height: 22px;
+    }
+
+    .pub-cabecera .switch-tema[aria-checked="true"] .switch-tema-perilla {
+        transform: translateX(18px);
+    }
 }

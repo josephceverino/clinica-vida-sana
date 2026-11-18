@@ -25,7 +25,7 @@ $menu_paciente = [
 // Es el mismo ayudante que usa el panel, para que las páginas se escriban igual.
 $icono_panel = fn (string $id): string =>
     '<svg class="icono" aria-hidden="true" focusable="false"><use href="'
-    . e(url('/assets/img/iconos.svg#' . $id)) . '"></use></svg>';
+    . e(recurso('/assets/img/iconos.svg') . '#' . $id) . '"></use></svg>';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -34,13 +34,16 @@ $icono_panel = fn (string $id): string =>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
     <title><?= e($titulo_pagina) ?> | Portal del paciente</title>
-    <link rel="stylesheet" href="<?= e(url('/assets/css/base.css')) ?>">
+    <!-- Modo claro/oscuro: primero de todo y sin "defer", para aplicar el
+         tema elegido antes de pintar (sin parpadeo del tema equivocado). -->
+    <script src="<?= e(recurso('/assets/js/tema.js')) ?>"></script>
+    <link rel="stylesheet" href="<?= e(recurso('/assets/css/base.css')) ?>">
     <!-- Los componentes (botones, tarjetas, formularios, tablas, avisos y
          animaciones) son los mismos del panel: se reutiliza panel.css. -->
-    <link rel="stylesheet" href="<?= e(url('/assets/css/panel.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/paciente.css')) ?>">
+    <link rel="stylesheet" href="<?= e(recurso('/assets/css/panel.css')) ?>">
+    <link rel="stylesheet" href="<?= e(recurso('/assets/css/paciente.css')) ?>">
     <!-- Indicador "cargando" de los formularios (archivo aparte por la CSP). -->
-    <script src="<?= e(url('/assets/js/panel.js')) ?>"></script>
+    <script src="<?= e(recurso('/assets/js/panel.js')) ?>"></script>
 </head>
 <body class="panel-body portal">
 <!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->
@@ -70,6 +73,7 @@ $icono_panel = fn (string $id): string =>
         </nav>
 
         <div class="portal-sesion">
+            <?php require __DIR__ . '/switch_tema.php'; ?>
             <a class="portal-perfil <?= $pagina_activa === 'perfil.php' ? 'activo' : '' ?>"
                href="<?= e(url('/paciente/perfil.php')) ?>"
                <?= $pagina_activa === 'perfil.php' ? 'aria-current="page"' : '' ?>

@@ -75,6 +75,22 @@ function url(string $ruta = '/'): string
 }
 
 /**
+ * Ruta de un archivo de public/assets con su "versión" al final:
+ *   recurso('/assets/css/base.css')  ->  .../assets/css/base.css?v=1763490000
+ * La versión es la fecha en que se modificó el archivo. Cuando el archivo
+ * cambia, la ruta cambia y el navegador descarga la copia nueva en vez de
+ * usar la vieja de su caché. Uso: <?= e(recurso('/assets/js/tema.js')) ?>
+ */
+function recurso(string $ruta): string
+{
+    $archivo = __DIR__ . '/../../public/' . ltrim($ruta, '/');
+    // Si el archivo no existe, se devuelve la ruta sin versión.
+    $version = is_file($archivo) ? filemtime($archivo) : false;
+
+    return url($ruta) . ($version !== false ? '?v=' . $version : '');
+}
+
+/**
  * Inicia la sesión con cookies seguras (HttpOnly y SameSite=Lax).
  * Si la sesión ya está iniciada, no hace nada.
  */

@@ -47,7 +47,7 @@ $menu_panel = [
 // el texto del enlace ya dice qué es.
 $icono_panel = fn (string $id): string =>
     '<svg class="icono" aria-hidden="true" focusable="false"><use href="'
-    . e(url('/assets/img/iconos.svg#' . $id)) . '"></use></svg>';
+    . e(recurso('/assets/img/iconos.svg') . '#' . $id) . '"></use></svg>';
 
 // Números que se muestran como globito junto a un enlace del menú.
 $globitos_menu = [];
@@ -68,13 +68,16 @@ if (in_array($usuario['rol'], ['admin', 'admision'], true)) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
     <title><?= e($titulo_pagina) ?> | Panel Vida Sana</title>
-    <link rel="stylesheet" href="<?= e(url('/assets/css/base.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/panel.css')) ?>">
+    <!-- Modo claro/oscuro: primero de todo y sin "defer", para aplicar el
+         tema elegido antes de pintar (sin parpadeo del tema equivocado). -->
+    <script src="<?= e(recurso('/assets/js/tema.js')) ?>"></script>
+    <link rel="stylesheet" href="<?= e(recurso('/assets/css/base.css')) ?>">
+    <link rel="stylesheet" href="<?= e(recurso('/assets/css/panel.css')) ?>">
     <!-- Menú contraíble y menú del celular. Va en <head> y SIN "defer" a
          propósito: así aplica la preferencia guardada (menú contraído) antes
          de que se pinte la página, sin parpadeo. Es un archivo aparte porque
          la política de seguridad (CSP) bloquea el JavaScript incrustado. -->
-    <script src="<?= e(url('/assets/js/panel.js')) ?>"></script>
+    <script src="<?= e(recurso('/assets/js/panel.js')) ?>"></script>
 </head>
 <body class="panel-body">
 <!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->
@@ -154,6 +157,7 @@ if (in_array($usuario['rol'], ['admin', 'admision'], true)) {
 
         <!-- Abajo: el usuario (lleva a "Mi perfil") y cerrar sesión. -->
         <div class="panel-usuario">
+            <?php $switch_tema_texto = true; require __DIR__ . '/switch_tema.php'; ?>
             <a class="panel-perfil <?= $pagina_activa === 'perfil.php' ? 'activo' : '' ?>"
                href="<?= e(url('/panel/perfil.php')) ?>" title="Mi perfil y contraseña">
                 <?= $icono_panel('i-escudo') ?>

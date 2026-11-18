@@ -26,7 +26,7 @@ if ($pagina_actual === '/index.php') {
 // Dibuja un icono de public/assets/img/iconos.svg (decorativo).
 $icono_publico = fn (string $id): string =>
     '<svg class="pub-icono" aria-hidden="true" focusable="false"><use href="'
-    . e(url('/assets/img/iconos.svg#' . $id)) . '"></use></svg>';
+    . e(recurso('/assets/img/iconos.svg') . '#' . $id) . '"></use></svg>';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -34,17 +34,20 @@ $icono_publico = fn (string $id): string =>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($titulo_pagina) ?> | Clínica Vida Sana</title>
-    <link rel="stylesheet" href="<?= e(url('/assets/css/base.css')) ?>">
+    <!-- Modo claro/oscuro: primero de todo y sin "defer", para aplicar el
+         tema elegido antes de pintar (sin parpadeo del tema equivocado). -->
+    <script src="<?= e(recurso('/assets/js/tema.js')) ?>"></script>
+    <link rel="stylesheet" href="<?= e(recurso('/assets/css/base.css')) ?>">
     <!-- Diseño 2.0 de la web pública (independiente del panel y del portal) -->
-    <link rel="stylesheet" href="<?= e(url('/assets/css/publico.css')) ?>">
+    <link rel="stylesheet" href="<?= e(recurso('/assets/css/publico.css')) ?>">
     <?php if (!empty($script_pagina)): ?>
         <!-- JavaScript propio de esta página. "defer": se ejecuta cuando el
              HTML ya cargó. Va en un archivo aparte (no dentro del HTML)
              porque la política de seguridad (CSP) bloquea el JS incrustado. -->
-        <script src="<?= e(url('/assets/js/' . $script_pagina)) ?>" defer></script>
+        <script src="<?= e(recurso('/assets/js/' . $script_pagina)) ?>" defer></script>
     <?php endif; ?>
     <!-- Menú del celular, aparición al bajar y "cargando" de los formularios -->
-    <script src="<?= e(url('/assets/js/publico.js')) ?>" defer></script>
+    <script src="<?= e(recurso('/assets/js/publico.js')) ?>" defer></script>
 </head>
 <body class="publico">
 <!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->
@@ -75,6 +78,10 @@ $icono_publico = fn (string $id): string =>
                 <a class="pub-boton pub-boton-chico" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
             <?php endif; ?>
         </nav>
+
+        <!-- Modo claro/oscuro: fuera del menú, para que en el celular se vea
+             siempre junto al botón "Menú" -->
+        <?php require __DIR__ . '/switch_tema.php'; ?>
     </div>
 </header>
 <main class="pub-contenido" id="contenido" tabindex="-1">
