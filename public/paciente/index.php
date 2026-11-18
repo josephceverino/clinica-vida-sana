@@ -86,14 +86,14 @@ $primer_nombre = explode(' ', trim($usuario['nombre']))[0];
 
         <!-- Próxima cita: lo más importante, en grande -->
         <?php if ($proxima): ?>
-            <section class="portal-proxima" aria-label="Tu próxima cita">
+            <section class="ui-destacado" aria-label="Tu próxima cita">
                 <div>
-                    <p class="portal-proxima-etiqueta">Tu próxima cita</p>
-                    <p class="portal-proxima-fecha">
+                    <p class="ui-destacado-etiqueta">Tu próxima cita</p>
+                    <p class="ui-destacado-titulo">
                         <?= e(fecha_relativa($proxima['fecha'])) ?>
                         <span>a las <?= e(substr($proxima['hora'], 0, 5)) ?></span>
                     </p>
-                    <p class="portal-proxima-detalle">
+                    <p class="ui-destacado-detalle">
                         <?= e($proxima['area']) ?> &middot;
                         <?= e($proxima['medico'] ?? 'Médico por asignar') ?>
                     </p>

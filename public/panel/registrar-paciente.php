@@ -80,7 +80,7 @@ $pagina_activa = 'pacientes.php';
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<div class="ui-pagina">
+<div class="ui-pagina ui-animada">
 
     <a class="ui-migas" href="<?= e(url('/panel/pacientes.php')) ?>">
         <?= $icono_panel('i-volver') ?>

@@ -193,92 +193,6 @@
     padding: 2rem;
 }
 
-.panel-titulo {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.panel-titulo h1 {
-    margin: 0;
-    font-size: 1.8rem;
-}
-
-.panel-titulo p {
-    margin: 0.25rem 0 0;
-}
-
-.panel-titulo time {
-    padding: 0.35rem 0.8rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-principal);
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 999px;
-}
-
-/* Tarjetas de números */
-.tarjetas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.dato {
-    display: flex;
-    flex-direction: column;
-    padding: 1.25rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-top: 4px solid var(--color-principal);
-    border-radius: 12px;
-}
-
-.dato-alerta {
-    border-top-color: var(--color-acento);
-}
-
-.dato-numero {
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1.1;
-    color: var(--color-titulos);
-}
-
-.dato-texto {
-    margin-top: 0.25rem;
-    font-size: 0.9rem;
-}
-
-/* Cajas con listas */
-.panel-columnas {
-    display: grid;
-    grid-template-columns: 3fr 2fr;
-    gap: 1.25rem;
-    align-items: start;
-}
-
-.caja {
-    padding: 1.25rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 12px;
-}
-
-.caja h2 {
-    margin: 0 0 0.75rem;
-    font-size: 1.1rem;
-}
-
-.vacio {
-    margin: 0;
-    color: var(--color-texto-suave);
-}
-
 .agenda {
     margin: 0;
     padding: 0;
@@ -297,33 +211,6 @@
     border-bottom: none;
 }
 
-.agenda-hora {
-    display: flex;
-    flex-direction: column;
-    min-width: 3.2rem;
-    text-align: center;
-}
-
-.agenda-hora strong {
-    font-size: 1.05rem;
-    color: var(--color-principal);
-}
-
-.agenda-hora small {
-    color: var(--color-texto-suave);
-}
-
-.agenda-detalle {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-}
-
-.agenda-detalle small {
-    color: var(--color-texto-suave);
-}
-
 /* Etiquetas de estado */
 .estado {
     padding: 0.2rem 0.6rem;
@@ -340,58 +227,8 @@
 .estado-cancelada  { background: #FDECEA; color: #8A1F14; }
 .estado-nueva      { background: #D9EEF4; color: #0B6E8A; }
 
-/* ---------- Tablas, avisos y formularios del panel ---------- */
-.panel-columnas-usuarios {
-    grid-template-columns: 3fr 2fr;
-}
-
 .tabla-scroll {
     overflow-x: auto;
-}
-
-.tabla {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tabla th {
-    padding: 0.5rem 0.6rem;
-    text-align: left;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--color-texto-suave);
-    border-bottom: 2px solid #EDF1F4;
-}
-
-.tabla td {
-    padding: 0.7rem 0.6rem;
-    border-bottom: 1px solid #EDF1F4;
-    vertical-align: middle;
-}
-
-.tabla tr:last-child td {
-    border-bottom: none;
-}
-
-.tabla small {
-    color: var(--color-texto-suave);
-}
-
-.boton-tabla {
-    padding: 0.3rem 0.7rem;
-    font: inherit;
-    font-size: 0.85rem;
-    color: var(--color-principal);
-    background: transparent;
-    border: 1px solid var(--color-principal);
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.boton-tabla:hover {
-    background: var(--color-principal);
-    color: var(--color-blanco);
 }
 
 .aviso {
@@ -400,86 +237,12 @@
     border-radius: 8px;
 }
 
-.aviso-ok {
-    background: #DDF3E8;
-    border: 1px solid #A9DEC3;
-    color: #17744A;
-}
-
-.aviso-error {
-    background: #FDECEA;
-    border: 1px solid #F5B5AE;
-    color: #8A1F14;
-}
-
-.form-panel .campo {
-    margin-bottom: 0.9rem;
-}
-
-.form-panel .campo label {
-    display: block;
-    margin-bottom: 0.3rem;
-    font-weight: 600;
-    color: var(--color-titulos);
-}
-
-.form-panel .campo input,
-.form-panel .campo select {
-    width: 100%;
-    padding: 0.6rem 0.7rem;
-    font: inherit;
-    background: var(--color-blanco);
-    border: 1px solid #C5D0D8;
-    border-radius: 8px;
-}
-
-.form-panel .campo input:focus,
-.form-panel .campo select:focus {
-    outline: 2px solid var(--color-principal);
-    outline-offset: 1px;
-}
-
-.form-panel .boton {
-    width: 100%;
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 600;
-}
-
-/* ---------- Páginas del panel hechas con HTML simple ----------
-   Pacientes, citas y solicitudes usan etiquetas básicas (table, label,
-   input, etc.). Estas reglas les dan el estilo del panel sin cambiar
-   su HTML. Solo afectan lo que está dentro de .panel-contenido. */
-.panel-contenido .seccion {
-    padding: 0;
-}
-
-.panel-contenido .seccion > h1 {
-    margin: 0 0 1rem;
-    font-size: 1.8rem;
-}
-
-.panel-contenido .seccion > h2 {
-    margin: 1.5rem 0 0.75rem;
-    font-size: 1.2rem;
-}
-
 .panel-contenido table {
     width: 100%;
     border-collapse: collapse;
     background: var(--color-blanco);
     border: 1px solid #DDE5EA;
     border-radius: 12px;
-    overflow: hidden;
-}
-
-/* Tabla solo para lectores de pantalla ("Mi día" del médico). Una tabla no
-   se encoge a 1 px como otros elementos, y desbordaba la página (de lado y
-   hacia abajo). La caja que la contiene la recorta: no se ve ni ocupa
-   espacio, pero sigue siendo una tabla y los lectores la leen igual. */
-.caja:has(> table.solo-lectores) {
-    position: relative;
     overflow: hidden;
 }
 
@@ -541,10 +304,6 @@
     font-weight: 600;
 }
 
-.panel-contenido button.boton-claro {
-    border: 1px solid var(--color-principal);
-}
-
 /* Avisos: sus páginas marcan errores con role="alert" y éxitos con role="status" */
 .panel-contenido [role="alert"],
 .panel-contenido [role="status"] {
@@ -594,10 +353,7 @@
         padding: 1.25rem 1rem;
     }
 
-    .panel-columnas,
-    .panel-columnas-usuarios {
-        grid-template-columns: 1fr;
-    }
+    
 }
 
 /* ---------- Menú lateral agrupado y globito de pendientes ---------- */
@@ -623,38 +379,6 @@
     border-radius: 999px;
 }
 
-/* Tarjeta de número que también es un enlace */
-a.dato-enlace {
-    text-decoration: none;
-    color: inherit;
-}
-
-a.dato-enlace:hover {
-    background: #FAFCFD;
-}
-
-/* ---------- Pestañas (filtros de una lista) ---------- */
-.pestanas {
-    display: flex;
-    gap: 0.25rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #DDE5EA;
-}
-
-.pestanas a {
-    margin-bottom: -2px;
-    padding: 0.5rem 1rem;
-    text-decoration: none;
-    color: #5A6B7A;
-    border-bottom: 2px solid transparent;
-}
-
-.pestanas a.activo {
-    font-weight: 600;
-    color: var(--color-titulos);
-    border-bottom-color: var(--color-acento);
-}
-
 /* ---------- Tarjeta de una cuenta por verificar ---------- */
 .cuenta {
     margin-bottom: 1rem;
@@ -666,13 +390,6 @@ a.dato-enlace:hover {
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--color-texto-suave);
-}
-
-.cuenta-comparacion {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
 }
 
 .datos {
@@ -691,114 +408,7 @@ a.dato-enlace:hover {
     color: var(--color-titulos);
 }
 
-.cuenta-pie {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid #EDF1F4;
-}
-
-.cuenta-acciones {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.cuenta-acciones .boton {
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 600;
-}
-
-.cuenta-acciones .boton-claro {
-    border: 1px solid var(--color-principal);
-}
-
-@media (max-width: 700px) {
-    .cuenta-comparacion {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ---------- Botones dentro de una fila de tabla ---------- */
-/* Varios botones juntos en la última columna (ej. "Programar" y "Descartar") */
-.acciones-fila {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-
-.acciones-fila form {
-    margin: 0;
-}
-
-/* El "botón" también puede ser un enlace <a>: que se vea igual */
-a.boton-tabla {
-    display: inline-block;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-/* Versión gris, para la acción secundaria (ej. "Descartar") */
-.boton-tabla-claro {
-    color: #5A6B7A;
-    border-color: #C5D0D8;
-}
-
-.boton-tabla-claro:hover {
-    color: var(--color-blanco);
-    background: #5A6B7A;
-    border-color: #5A6B7A;
-}
-
-/* ---------- "Mi día" del médico ---------- */
-
-/* Siguiente paciente: franja destacada con el color principal */
-.siguiente-paciente {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 1.4rem 1.75rem;
-    color: var(--color-blanco);
-    background: linear-gradient(135deg, var(--color-principal), #0F5D75);
-    border-radius: 14px;
-}
-
-.siguiente-paciente p {
-    margin: 0 0 0.25rem;
-}
-
-.siguiente-etiqueta {
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.85;
-}
-
-.siguiente-nombre {
-    font-size: 1.6rem;
-    font-weight: 700;
-}
-
-/* Sin pacientes en espera: versión clara */
-.siguiente-libre {
-    color: var(--color-texto);
-    background: var(--color-blanco);
-    border: 2px dashed #C5D0D8;
-}
-
-.siguiente-libre .siguiente-nombre {
-    color: var(--color-titulos);
-}
-
 /* Botones de la agenda de hoy, alineados a la derecha */
-.agenda li .boton-tabla,
 .agenda li .estado {
     margin-left: auto;
 }
@@ -847,127 +457,10 @@ a.boton-tabla {
     opacity: 1;
 }
 
-/* ---------- Agenda semanal (calendario) ---------- */
-.agenda-controles {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.agenda-navegacion,
-.agenda-filtro {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.panel-contenido .agenda-filtro select {
-    width: auto;
-}
-
-/* 7 columnas (lunes a domingo). En pantallas chicas se desliza de lado. */
-.calendario {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(130px, 1fr));
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-}
-
-.calendario-dia {
-    min-height: 220px;
-    padding: 0.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 10px;
-}
-
-/* Hoy: borde con el color de acento */
-.calendario-dia.es-hoy {
-    border: 2px solid var(--color-acento);
-}
-
-/* Días pasados: un poco apagados */
-.calendario-dia.es-pasado {
-    background: #F8FAFB;
-}
-
-.calendario-cabecera {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.4rem;
-    border-bottom: 1px solid #EDF1F4;
-    color: var(--color-texto-suave);
-}
-
-.calendario-cabecera strong {
-    font-size: 1.3rem;
-    color: var(--color-titulos);
-}
-
-.calendario-vacio {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--color-texto-suave);
-}
-
-/* Cada cita: tarjetita con una franja de color a la izquierda según el estado */
-.calendario-cita {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0.4rem;
-    padding: 0.4rem 0.5rem;
-    font-size: 0.85rem;
-    line-height: 1.3;
-    color: var(--color-texto);
-    text-decoration: none;
-    background: #F3F6F8;
-    border-left: 4px solid #9AA8B4;
-    border-radius: 6px;
-}
-
-a.calendario-cita:hover {
-    background: #E6EEF2;
-}
-
-.calendario-cita strong {
-    color: var(--color-titulos);
-}
-
-.calendario-cita small {
-    color: var(--color-texto-suave);
-}
-
 /* Colores por estado (los mismos tonos que las etiquetas de estado) */
 .cita-pendiente  { border-left-color: #E0A526; }
 .cita-confirmada { border-left-color: var(--color-acento); }
 .cita-atendida   { border-left-color: #6B8599; }
-
-/* Leyenda de colores */
-.calendario-leyenda {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-size: 0.85rem;
-}
-
-.leyenda {
-    padding-left: 0.5rem;
-    border-left-width: 4px;
-    border-left-style: solid;
-}
-
-/* Formulario de contraseña dentro de una caja del panel: sin doble borde */
-.caja .form-password {
-    padding: 0;
-    border: none;
-}
 
 .form-password small {
     display: block;
@@ -975,15 +468,9 @@ a.calendario-cita:hover {
     color: var(--color-texto-suave);
 }
 
-/* Filtros de la auditoría: separados de la tabla */
-.filtro-auditoria {
-    margin-bottom: 0.75rem;
-}
-
 /* Estado "no asistió" (etiqueta y franja del calendario) */
 .estado-no_asistio { background: #EDE7F6; color: #4A2F7A; }
 .cita-no_asistio   { border-left-color: #7E57C2; }
-
 
 /* =====================================================================
    Rediseño 2.0 — Resumen administrativo (panel/index.php)
@@ -1327,7 +814,6 @@ a.resumen-pastilla:hover {
     }
 }
 
-
 /* =====================================================================
    Rediseño 2.0 — Etapa 2: menú contraíble (escritorio) y menú del celular
    Lo maneja public/assets/js/panel.js, que pone estas clases en <html>:
@@ -1620,7 +1106,6 @@ a.resumen-pastilla:hover {
         overflow: hidden;
     }
 }
-
 
 /* =====================================================================
    Rediseño 2.0 — Etapa 3: componentes reutilizables (clases "ui-")
@@ -2365,7 +1850,6 @@ a.resumen-pastilla:hover {
     font-weight: 700;
 }
 
-
 /* =====================================================================
    Rediseño 2.0 — Módulo Agenda y Solicitudes
    ===================================================================== */
@@ -3018,5 +2502,207 @@ a.ui-cita:focus-visible {
     .panel-contenido .ui-tabla-compacta td {
         padding-top: 0.55rem;
         padding-bottom: 0.55rem;
+    }
+}
+
+/* =====================================================================
+   Tarjeta destacada (.ui-destacado): lo más importante de una pantalla,
+   con el color principal. La usan "Mi día" del médico (siguiente
+   paciente) y el inicio del Portal del paciente (próxima cita).
+   ===================================================================== */
+.ui-destacado {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.25rem;
+    padding: 1.6rem 1.75rem;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, var(--panel-primario) 0%, var(--panel-lateral) 100%);
+    border-radius: var(--panel-radio);
+    box-shadow: 0 8px 24px rgba(8, 124, 148, 0.22);
+}
+
+.ui-destacado p {
+    margin: 0;
+}
+
+.ui-destacado-etiqueta {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+/* ".ui-destacado" delante: gana a ".ui-destacado p" (margin: 0) */
+.ui-destacado .ui-destacado-titulo {
+    margin: 0.35rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.ui-destacado-titulo span {
+    font-weight: 400;
+}
+
+.ui-destacado-detalle {
+    opacity: 0.9;
+}
+
+.ui-destacado .estado {
+    background: #FFFFFF;
+}
+
+/* Versión tranquila (sin nada urgente): fondo claro y borde punteado */
+.ui-destacado-tranquilo {
+    color: var(--panel-texto);
+    background: var(--panel-superficie);
+    border: 1px dashed var(--panel-borde-fuerte);
+    box-shadow: none;
+}
+
+.ui-animada .ui-destacado {
+    animation: ui-subir 220ms ease-out both;
+}
+
+@media (max-width: 760px) {
+    .ui-destacado {
+        padding: 1.25rem;
+    }
+
+    .ui-destacado .ui-destacado-titulo {
+        font-size: 1.45rem;
+    }
+
+    .ui-destacado .ui-boton {
+        flex: 1 1 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-animada .ui-destacado {
+        animation: none;
+    }
+}
+
+/* Botón blanco (sobre la tarjeta destacada de color) */
+.ui-boton-blanco {
+    color: var(--panel-lateral);
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+}
+
+.ui-boton-blanco:hover {
+    color: var(--panel-lateral);
+    background: #EAF6F8;
+    border-color: #EAF6F8;
+}
+
+.ui-boton-blanco:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+}
+
+/* La tabla para lectores de pantalla de "Mi día" ahora va en una .ui-tarjeta:
+   la tarjeta la recorta, igual que hacía .caja (sin desbordar la página). */
+.ui-tarjeta:has(> table.solo-lectores) {
+    position: relative;
+    overflow: hidden;
+}
+
+/* =====================================================================
+   Auditoría visual: piezas que faltaban
+   ===================================================================== */
+
+/* Entrada animada también para el Resumen y "Mi día" (mismas 220 ms) */
+.ui-animada .resumen-cabecera,
+.ui-animada .resumen-indicador,
+.ui-animada .resumen-caja {
+    animation: ui-subir 220ms ease-out both;
+}
+
+.ui-animada .resumen-indicador:nth-child(2) { animation-delay: 30ms; }
+.ui-animada .resumen-indicador:nth-child(3) { animation-delay: 60ms; }
+.ui-animada .resumen-indicador:nth-child(4) { animation-delay: 90ms; }
+.ui-animada .resumen-indicador:nth-child(5) { animation-delay: 120ms; }
+
+/* Página de error dentro del panel (403 y 404 del personal; el HTML lo
+   arma app/core/errores.php). Mismo aspecto que la de la web pública. */
+.panel-contenido .error-pagina {
+    position: relative;
+    max-width: 640px;
+    margin: 1rem auto;
+    padding: 3.5rem 2rem;
+    overflow: hidden;
+    text-align: center;
+    background: var(--panel-superficie);
+    border-radius: 20px;
+    box-shadow: var(--panel-sombra);
+    animation: ui-subir 260ms ease-out both;
+}
+
+.panel-contenido .error-codigo {
+    margin: 0;
+    font-size: clamp(4.5rem, 14vw, 7.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--panel-primario), var(--panel-acento));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.panel-contenido .error-pagina h1 {
+    margin: 0.5rem 0;
+    font-size: 1.6rem;
+    color: var(--panel-texto);
+}
+
+.panel-contenido .error-pagina p {
+    color: var(--panel-texto-suave);
+}
+
+/* Su botón ".boton" toma el aspecto de .ui-boton */
+.panel-contenido .error-pagina .boton {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    margin-top: 0.75rem;
+    padding: 0.6rem 1.15rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: var(--panel-primario);
+    border-radius: 8px;
+    transition: background-color var(--panel-transicion);
+}
+
+.panel-contenido .error-pagina .boton:hover {
+    background: var(--panel-primario-hover);
+}
+
+.panel-contenido .error-pagina .boton:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-animada .resumen-cabecera,
+    .ui-animada .resumen-indicador,
+    .ui-animada .resumen-caja,
+    .panel-contenido .error-pagina {
+        animation: none;
+    }
+}
+
+/* Celular: la barra superior mide lo suyo y el contenido ocupa el resto.
+   Sin esto, en páginas cortas la barra se estiraba hasta media pantalla
+   (el grid de 100vh repartía el espacio sobrante entre sus filas). */
+@media (max-width: 900px) {
+    .js .panel {
+        grid-template-rows: auto 1fr;
     }
 }

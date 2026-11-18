@@ -98,7 +98,7 @@ $diapositivas = [
             <strong>24 horas</strong>
         </div>
         <div>
-            <?= $icono_publico('i-reloj') ?>
+            <?= $icono_publico('i-telefono') ?>
             <span>Teléfono</span>
             <strong>(01) 555-0100</strong>
         </div>

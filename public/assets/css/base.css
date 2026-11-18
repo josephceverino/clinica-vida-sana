@@ -41,28 +41,6 @@ a {
     color: var(--color-principal);
 }
 
-/* Cabecera */
-.cabecera {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background: var(--color-blanco);
-    border-bottom: 1px solid #DDE5EA;
-}
-
-.marca {
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--color-titulos);
-    text-decoration: none;
-}
-
-.menu a {
-    margin-left: 1rem;
-    text-decoration: none;
-}
-
 /* Contenido */
 .contenido {
     max-width: var(--ancho-maximo);
@@ -75,23 +53,6 @@ a {
     padding: 1.5rem;
     text-align: center;
     font-size: 0.9rem;
-}
-
-/* ---------- Menú: que no se rompa en pantallas chicas ---------- */
-.cabecera {
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-}
-
-.menu {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem 1rem;
-}
-
-.menu a {
-    margin-left: 0;
 }
 
 /* ---------- Botones ---------- */
@@ -107,22 +68,6 @@ a {
 
 .boton:hover {
     background: var(--color-titulos);
-}
-
-.boton-claro {
-    background: var(--color-blanco);
-    color: var(--color-principal);
-    border: 1px solid var(--color-principal);
-}
-
-.boton-claro:hover {
-    background: var(--color-principal);
-    color: var(--color-blanco);
-}
-
-.boton-chico {
-    padding: 0.45rem 1rem;
-    font-size: 0.95rem;
 }
 
 /* ---------- Portada ---------- */
@@ -146,119 +91,6 @@ a {
 .portada h1 {
     margin: 0 0 1rem;
     font-size: clamp(2.2rem, 5vw, 3.4rem);
-}
-
-.portada-bajada {
-    max-width: 34rem;
-    font-size: 1.15rem;
-}
-
-.portada-botones {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-}
-
-/* Tarjeta de horarios */
-.tarjeta-horario {
-    padding: 1.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-top: 4px solid var(--color-acento);
-    border-radius: 12px;
-}
-
-.tarjeta-horario h2 {
-    margin: 0 0 1rem;
-    font-size: 1.15rem;
-}
-
-.tarjeta-horario ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.tarjeta-horario li {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid #EDF1F4;
-}
-
-.tarjeta-nota {
-    margin: 1rem 0 0;
-    font-size: 0.95rem;
-}
-
-/* ---------- Secciones ---------- */
-.seccion {
-    padding: 2rem 0;
-}
-
-.seccion > h2 {
-    margin: 0 0 1.5rem;
-    font-size: 1.8rem;
-}
-
-.rejilla-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-}
-
-.punto,
-.servicio {
-    padding: 1.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 12px;
-}
-
-.punto h3,
-.servicio h3 {
-    margin: 0.25rem 0 0.5rem;
-}
-
-.punto p,
-.servicio p {
-    margin: 0;
-}
-
-.punto-numero {
-    color: var(--color-principal);
-    font-weight: 700;
-    font-size: 1.4rem;
-}
-
-.servicio {
-    border-left: 4px solid var(--color-principal);
-}
-
-/* ---------- Llamado final ---------- */
-.llamado {
-    margin: 2rem 0;
-    padding: 2.5rem 1.5rem;
-    text-align: center;
-    background: var(--color-principal);
-    color: var(--color-blanco);
-    border-radius: 12px;
-}
-
-.llamado h2 {
-    margin: 0 0 0.5rem;
-    color: var(--color-blanco);
-}
-
-.llamado p {
-    margin: 0 0 1.25rem;
-}
-
-.llamado .boton-claro:hover {
-    background: var(--color-titulos);
-    border-color: var(--color-titulos);
 }
 
 /* ---------- Páginas de error (403, 404, 500) ---------- */
@@ -332,48 +164,9 @@ a {
     font-weight: 600;
 }
 
-.aviso-error {
-    padding: 0.8rem 1rem;
-    background: #FDECEA;
-    border: 1px solid #F5B5AE;
-    border-radius: 8px;
-    color: #8A1F14;
-}
-
-/* Lista de datos de contacto (etiqueta arriba, dato abajo) */
-.lista-datos {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.lista-datos li {
-    display: flex;
-    flex-direction: column;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid #EDF1F4;
-}
-
-.lista-datos li:last-child {
-    border-bottom: none;
-}
-
-.lista-datos span {
-    font-size: 0.85rem;
-}
-
-/* Rejilla de 2 columnas (misión y visión, contacto) */
-.rejilla-2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-}
-
 /* ---------- Pantallas chicas (celular) ---------- */
 @media (max-width: 800px) {
-    .portada,
-    .rejilla-2,
-    .rejilla-3 {
+    .portada {
         grid-template-columns: 1fr;
     }
 }
@@ -383,18 +176,6 @@ a {
     margin: 0 0 1rem;
     padding: 0.8rem 1rem;
     border-radius: 8px;
-}
-
-.aviso-ok {
-    background: #DDF3E8;
-    border: 1px solid #A9DEC3;
-    color: #17744A;
-}
-
-.aviso-pendiente {
-    background: #FFF1D6;
-    border: 1px solid #F0D395;
-    color: #7A5200;
 }
 
 /* ---------- Casillas de texto: tamaño fijo ---------- */
@@ -417,38 +198,6 @@ select {
 .registro {
     max-width: 760px;
     margin: 1rem auto;
-}
-
-.formulario-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 1.5rem;
-}
-
-.formulario-grid .campo {
-    margin-bottom: 1rem;
-}
-
-.formulario-grid .formulario-nota,
-.formulario-grid .boton {
-    grid-column: 1 / -1;
-}
-
-.formulario-nota {
-    margin: 0 0 1rem;
-    font-size: 0.9rem;
-    color: #5A6B7A;
-}
-
-.login-alterno {
-    margin-top: 1.25rem;
-    text-align: center;
-}
-
-@media (max-width: 640px) {
-    .formulario-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* ---------- Accesibilidad ---------- */
@@ -488,17 +237,6 @@ select {
     overflow: hidden;
     clip: rect(0 0 0 0);
     white-space: nowrap;
-}
-
-/* Botón blanco sobre fondo de color (carrusel, franjas destacadas) */
-.boton-blanco {
-    color: var(--color-principal);
-    background: var(--color-blanco);
-}
-
-.boton-blanco:hover {
-    color: var(--color-blanco);
-    background: var(--color-titulos);
 }
 
 /* =====================================================================
@@ -625,47 +363,6 @@ select {
 .carrusel-puntos button.activo {
     width: 28px;
     background: var(--color-acento);
-}
-
-/* ---------- Franja de horarios ---------- */
-.franja-horario {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
-    padding: 1.25rem 1.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 14px;
-}
-
-.franja-horario div {
-    display: flex;
-    flex-direction: column;
-    padding-left: 0.9rem;
-    border-left: 3px solid var(--color-acento);
-}
-
-.franja-horario span {
-    font-size: 0.85rem;
-    color: #5A6B7A;
-}
-
-.franja-horario strong {
-    font-size: 1.1rem;
-    color: var(--color-titulos);
-}
-
-/* ---------- Tarjetas que se levantan al pasar el ratón ---------- */
-.punto,
-.servicio {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.punto:hover,
-.servicio:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(15, 42, 61, 0.10);
 }
 
 /* ---------- Aparecer al bajar ---------- */
@@ -797,16 +494,12 @@ select {
         display: none;   /* en el celular se desliza con el dedo */
     }
 
-    .franja-horario {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    
 }
 
 /* ---------- Menos movimiento (accesibilidad) ---------- */
 @media (prefers-reduced-motion: reduce) {
     .carrusel-activo .carrusel-pista,
-    .punto,
-    .servicio,
     .carrusel-puntos button {
         transition: none;
     }
@@ -841,43 +534,6 @@ select {
         padding-left: 1.5rem;
         padding-right: 1.5rem;
     }
-}
-
-/* ---------- Política de privacidad y registro ---------- */
-/* Texto largo: líneas más cortas para leer cómodo */
-.texto-legal {
-    max-width: 760px;
-}
-
-.texto-legal h2 {
-    margin-top: 2rem;
-    font-size: 1.3rem;
-}
-
-.texto-legal li {
-    margin-bottom: 0.4rem;
-}
-
-/* Casilla "Acepto la política de privacidad" del registro */
-.casilla-privacidad {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: 0.6rem;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-    padding: 0.8rem 1rem;
-    font-size: 0.9rem;
-    background: #F3F6F8;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.casilla-privacidad input {
-    width: 18px;
-    height: 18px;
-    margin-top: 0.15rem;
-    flex-shrink: 0;
-    accent-color: var(--color-principal);
 }
 
 .pie p {

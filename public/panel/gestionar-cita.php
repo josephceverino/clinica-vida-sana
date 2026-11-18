@@ -173,7 +173,7 @@ $pagina_activa = 'citas.php';
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<div class="ui-pagina">
+<div class="ui-pagina ui-animada">
 
     <a class="ui-migas" href="<?= e(url(
         '/panel/citas.php'

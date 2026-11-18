@@ -112,7 +112,7 @@ $fecha_corta = function (string $fecha) use ($meses_cortos): string {
 
 <!-- Estilos propios de esta página: todo va dentro de .resumen-admin
      (ver panel.css) para no cambiar las demás pantallas del panel. -->
-<div class="resumen-admin">
+<div class="resumen-admin ui-animada">
 
     <header class="resumen-cabecera">
         <div>

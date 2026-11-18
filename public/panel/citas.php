@@ -75,7 +75,7 @@ $fecha_texto = $fecha_mostrar && $fecha_mostrar->format('Y-m-d') === $fecha
     : $fecha;
 ?>
 
-<div class="ui-pagina">
+<div class="ui-pagina ui-animada">
 
     <a class="ui-migas" href="<?= e(url('/panel/index.php')) ?>">
         <?= $icono_panel('i-volver') ?>

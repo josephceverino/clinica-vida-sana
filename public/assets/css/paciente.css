@@ -176,49 +176,6 @@
 }
 
 /* ---------- Inicio ---------- */
-/* Próxima cita: la tarjeta grande con el color principal */
-.portal-proxima {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-    padding: 1.6rem 1.75rem;
-    color: #FFFFFF;
-    background: var(--panel-primario);
-    border-radius: var(--panel-radio);
-    box-shadow: 0 8px 24px rgba(8, 124, 148, 0.22);
-}
-
-.portal-proxima p {
-    margin: 0;
-}
-
-.portal-proxima-etiqueta {
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0.85;
-}
-
-/* ".portal-proxima" delante: gana a ".portal-proxima p" (margin: 0) */
-.portal-proxima .portal-proxima-fecha {
-    margin: 0.35rem 0;
-    font-size: 1.75rem;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.portal-proxima-fecha span {
-    font-weight: 400;
-}
-
-.portal-proxima .estado {
-    background: #FFFFFF;
-}
-
 /* Tres números en fila (también son enlaces) */
 .portal-numeros {
     display: grid;
@@ -589,11 +546,6 @@
     border-radius: 999px;
 }
 
-/* ---------- Animación de entrada también para la próxima cita ---------- */
-.ui-animada .portal-proxima {
-    animation: ui-subir 220ms ease-out both;
-}
-
 /* ---------- Tableta: dos columnas pasan a una ---------- */
 @media (max-width: 1000px) {
     .portal-columnas {
@@ -695,14 +647,6 @@
         padding-bottom: calc(5rem + env(safe-area-inset-bottom));
     }
 
-    .portal-proxima {
-        padding: 1.25rem;
-    }
-
-    .portal-proxima .portal-proxima-fecha {
-        font-size: 1.45rem;
-    }
-
     .portal-numeros {
         grid-template-columns: minmax(0, 1fr);
         gap: 0.6rem;
@@ -747,7 +691,6 @@
 
 /* ---------- Menos movimiento ---------- */
 @media (prefers-reduced-motion: reduce) {
-    .ui-animada .portal-proxima,
     .portal-otra-opcion[open] > form {
         animation: none;
     }

@@ -23,12 +23,12 @@ require __DIR__ . '/../app/layout/publico_header.php';
         <h2>Cómo encontrarnos</h2>
         <ul class="pub-lista-datos">
             <li>
-                <span class="pub-lista-icono"><?= $icono_publico('i-casa') ?></span>
+                <span class="pub-lista-icono"><?= $icono_publico('i-ubicacion') ?></span>
                 <span>Dirección</span>
                 <strong>Av. Salud 123, Ciudad Ejemplo</strong>
             </li>
             <li>
-                <span class="pub-lista-icono"><?= $icono_publico('i-reloj') ?></span>
+                <span class="pub-lista-icono"><?= $icono_publico('i-telefono') ?></span>
                 <span>Teléfono</span>
                 <strong>(01) 555-0100</strong>
             </li>
@@ -38,7 +38,7 @@ require __DIR__ . '/../app/layout/publico_header.php';
                 <strong>(01) 555-0911</strong>
             </li>
             <li>
-                <span class="pub-lista-icono"><?= $icono_publico('i-documento') ?></span>
+                <span class="pub-lista-icono"><?= $icono_publico('i-correo') ?></span>
                 <span>Correo</span>
                 <strong>contacto@clinica.lan</strong>
             </li>

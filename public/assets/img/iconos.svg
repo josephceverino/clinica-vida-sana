@@ -109,6 +109,23 @@
         <path d="M4.5 20.5c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/>
     </symbol>
 
+    <!-- Teléfono -->
+    <symbol id="i-telefono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6.6 3.5h2.6l1.5 4-2 1.3a11 11 0 0 0 6.5 6.5l1.3-2 4 1.5v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/>
+    </symbol>
+
+    <!-- Correo (sobre) -->
+    <symbol id="i-correo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="5.5" width="17" height="13" rx="2"/>
+        <path d="M4 7l8 6 8-6"/>
+    </symbol>
+
+    <!-- Ubicación (marcador del mapa) -->
+    <symbol id="i-ubicacion" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/>
+        <circle cx="12" cy="10" r="2.4"/>
+    </symbol>
+
     <!-- Cruz de la marca -->
     <symbol id="i-cruz" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
         <path d="M12 4v16M4 12h16"/>
