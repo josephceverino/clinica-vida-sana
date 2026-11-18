@@ -1620,3 +1620,582 @@ a.resumen-pastilla:hover {
         overflow: hidden;
     }
 }
+
+
+/* =====================================================================
+   Rediseño 2.0 — Etapa 3: componentes reutilizables (clases "ui-")
+   Se usan página por página: solo cambian las pantallas que ya tienen
+   estas clases (por ahora Pacientes y Registrar paciente).
+   ===================================================================== */
+.panel-body {
+    --panel-borde-fuerte: #C5D3DA;   /* borde de campos y botón secundario */
+    --panel-primario-hover: #066A7F;
+    --panel-error:        #B42318;   /* 6.0:1 sobre blanco */
+    --panel-error-fondo:  #FDECEA;
+    --panel-error-borde:  #F5B5AE;
+    --panel-exito-fondo:  #E3F5EC;
+    --panel-exito-borde:  #A8DDC1;
+    --panel-info-borde:   #BFE0E8;
+    --panel-anillo:       0 0 0 3px rgba(8, 124, 148, 0.22);  /* foco */
+}
+
+/* ---------- Página ---------- */
+.panel-contenido:has(.ui-pagina) {
+    max-width: none;
+    padding: 2.25rem;
+}
+
+.ui-pagina {
+    max-width: 1200px;
+    color: var(--panel-texto);
+}
+
+.ui-pagina h1,
+.ui-pagina h2 {
+    color: var(--panel-texto);
+}
+
+/* Enlace "Volver" pequeño, arriba del título */
+.ui-migas {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--panel-primario);
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.ui-migas:hover {
+    text-decoration: underline;
+}
+
+.ui-migas .icono {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--panel-transicion);
+}
+
+.ui-migas:hover .icono {
+    transform: translateX(-2px);
+}
+
+/* Cabecera: título y descripción a la izquierda, acciones a la derecha */
+.ui-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.ui-cabecera h1 {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.ui-cabecera p {
+    margin: 0.35rem 0 0;
+    color: var(--panel-texto-suave);
+}
+
+/* ---------- Botones ---------- */
+.ui-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 42px;
+    padding: 0.6rem 1.15rem;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #FFFFFF;
+    text-decoration: none;
+    white-space: nowrap;
+    background: var(--panel-primario);
+    border: 1px solid var(--panel-primario);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--panel-transicion), border-color var(--panel-transicion),
+                box-shadow var(--panel-transicion), transform 120ms ease;
+}
+
+.ui-boton:hover {
+    color: #FFFFFF;
+    background: var(--panel-primario-hover);
+    border-color: var(--panel-primario-hover);
+}
+
+.ui-boton:active {
+    transform: translateY(1px);
+}
+
+.ui-boton:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+.ui-boton .icono {
+    width: 18px;
+    height: 18px;
+}
+
+/* Secundario: blanco con borde (acciones menos importantes) */
+.ui-boton-secundario {
+    color: var(--panel-primario);
+    background: var(--panel-superficie);
+    border-color: var(--panel-borde-fuerte);
+}
+
+.ui-boton-secundario:hover {
+    color: var(--panel-primario-hover);
+    background: var(--panel-tinte);
+    border-color: var(--panel-primario);
+}
+
+/* Deshabilitado (y mientras se envía el formulario) */
+.ui-boton:disabled,
+.ui-boton[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Cargando: un círculo que gira antes del texto (lo pone panel.js) */
+.ui-boton[aria-busy="true"]::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: ui-girar 700ms linear infinite;
+}
+
+@keyframes ui-girar {
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- Tarjeta ---------- */
+.ui-tarjeta {
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    background: var(--panel-superficie);
+    border-radius: var(--panel-radio);
+    box-shadow: var(--panel-sombra);
+}
+
+.ui-tarjeta-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.ui-tarjeta-cabecera h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.ui-nota {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+/* Etiqueta pequeña con un número (ej. "3 resultados") */
+.ui-insignia {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--panel-primario);
+    background: var(--panel-tinte);
+    border-radius: 999px;
+}
+
+/* ---------- Campos de formulario ---------- */
+.ui-campo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.panel-contenido .ui-campo label {
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--panel-texto);
+}
+
+/* El asterisco de "obligatorio": rojo, y los lectores lo saltan
+   (el campo ya dice "required") */
+.ui-obligatorio {
+    color: var(--panel-error);
+}
+
+/* Las reglas generales del panel para "input" son muy específicas
+   (".panel-contenido input:not(...):not(...):not(...)"); por eso este
+   selector repite los :not(), para poder ganarles. */
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.panel-contenido select.ui-entrada {
+    width: 100%;
+    max-width: none;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+    font: inherit;
+    color: var(--panel-texto);
+    background: var(--panel-superficie);
+    border: 1px solid var(--panel-borde-fuerte);
+    border-radius: 8px;
+    transition: border-color var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):hover,
+.panel-contenido select.ui-entrada:hover {
+    border-color: #9FB4BE;
+}
+
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):focus,
+.panel-contenido select.ui-entrada:focus {
+    outline: none;
+    border-color: var(--panel-primario);
+    box-shadow: var(--panel-anillo);
+}
+
+/* Validación: el navegador marca en rojo un campo mal llenado, pero solo
+   después de que el usuario lo tocó (:user-invalid), no al abrir la página. */
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid {
+    border-color: var(--panel-error);
+    background: #FFF8F7;
+}
+
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.18);
+}
+
+/* Texto de ayuda debajo del campo; se pone rojo si el campo es inválido */
+.ui-ayuda {
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--panel-texto-suave);
+}
+
+.ui-campo:has(.ui-entrada:user-invalid) .ui-ayuda {
+    color: var(--panel-error);
+}
+
+/* Formulario en dos columnas (una en el celular) */
+.ui-rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem 1.25rem;
+}
+
+.ui-rejilla .ui-campo-ancho {
+    grid-column: 1 / -1;
+}
+
+/* Fila de botones al final de un formulario */
+.ui-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--panel-borde);
+}
+
+/* ---------- Buscador ---------- */
+.ui-buscador {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.ui-buscador .ui-campo {
+    flex: 1 1 280px;
+}
+
+/* La lupa va dentro del campo, a la izquierda */
+.ui-con-icono {
+    position: relative;
+}
+
+.ui-con-icono .icono {
+    position: absolute;
+    left: 0.8rem;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    color: var(--panel-texto-suave);
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.panel-contenido .ui-con-icono input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) {
+    padding-left: 2.5rem;
+}
+
+/* ---------- Avisos ---------- */
+/* ".panel-contenido" delante: así gana a las reglas viejas de role="alert" */
+.panel-contenido .ui-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin: 0 0 1.25rem;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    color: var(--panel-texto);
+    background: var(--panel-tinte);
+    border: 1px solid var(--panel-info-borde);
+    border-radius: 10px;
+    animation: ui-aparecer 200ms ease;
+}
+
+.ui-aviso .icono {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--panel-primario);
+}
+
+.ui-aviso p {
+    margin: 0;
+}
+
+.panel-contenido .ui-aviso-exito {
+    color: #14532D;
+    background: var(--panel-exito-fondo);
+    border-color: var(--panel-exito-borde);
+}
+
+.ui-aviso-exito .icono {
+    color: var(--panel-acento-texto);
+}
+
+.panel-contenido .ui-aviso-error {
+    color: #7A1A12;
+    background: var(--panel-error-fondo);
+    border-color: var(--panel-error-borde);
+}
+
+.ui-aviso-error .icono {
+    color: var(--panel-error);
+}
+
+@keyframes ui-aparecer {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Tabla ---------- */
+/* Contenedor: si la tabla no cabe (celular), se desliza solo aquí dentro */
+.ui-tabla-contenedor {
+    overflow-x: auto;
+    border: 1px solid var(--panel-borde);
+    border-radius: 10px;
+}
+
+.panel-contenido .ui-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel-superficie);
+    border: none;
+    border-radius: 0;
+}
+
+.panel-contenido .ui-tabla th {
+    padding: 0.7rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--panel-texto-suave);
+    background: #F7FAFB;
+    border-bottom: 1px solid var(--panel-borde);
+}
+
+.panel-contenido .ui-tabla td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--panel-borde);
+}
+
+.panel-contenido .ui-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ui-tabla tbody tr {
+    transition: background-color var(--panel-transicion);
+}
+
+.ui-tabla tbody tr:hover {
+    background: #F7FAFB;
+}
+
+.ui-celda-fuerte {
+    font-weight: 600;
+}
+
+.ui-celda-suave {
+    color: var(--panel-texto-suave);
+    white-space: nowrap;
+}
+
+/* ---------- Estado vacío ---------- */
+.ui-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.ui-vacio-icono {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 0.4rem;
+    color: var(--panel-primario);
+    background: var(--panel-tinte);
+    border-radius: 50%;
+}
+
+.ui-vacio-icono .icono {
+    width: 24px;
+    height: 24px;
+}
+
+.ui-vacio strong {
+    font-size: 1.05rem;
+}
+
+.ui-vacio p {
+    max-width: 32rem;
+    margin: 0 0 0.6rem;
+    color: var(--panel-texto-suave);
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 640px) {
+    .panel-contenido:has(.ui-pagina) {
+        padding: 1.25rem 1rem;
+    }
+
+    .ui-cabecera h1 {
+        font-size: 1.5rem;
+    }
+
+    .ui-tarjeta {
+        padding: 1.1rem 1rem;
+    }
+
+    .ui-rejilla {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Botones de la cabecera y del formulario: ancho completo */
+    .ui-cabecera .ui-boton,
+    .ui-acciones .ui-boton,
+    .ui-buscador .ui-boton {
+        flex: 1 1 100%;
+    }
+}
+
+/* Menos movimiento: el círculo de carga gira lento y sin aparecer animado */
+@media (prefers-reduced-motion: reduce) {
+    .ui-boton[aria-busy="true"]::before {
+        animation-duration: 2s;
+    }
+
+    .panel-contenido .ui-aviso {
+        animation: none;
+    }
+
+    .ui-migas:hover .icono,
+    .ui-boton:active {
+        transform: none;
+    }
+}
+
+/* Nota debajo de una tabla (ej. "Se muestran hasta 50") */
+.ui-tabla-contenedor + .ui-nota {
+    margin-top: 0.75rem;
+}
+
+/* ---------- Tabla apilable: en el celular, cada fila es una tarjeta ----------
+   Los roles ARIA del HTML (table, row, cell...) mantienen la tabla para los
+   lectores de pantalla aunque aquí cambie su "display". La etiqueta de cada
+   dato sale de data-etiqueta y se oculta a los lectores (/ ""), porque ellos
+   ya leen el encabezado de la columna. */
+@media (max-width: 640px) {
+    .ui-tabla-contenedor:has(.ui-tabla-apilable) {
+        overflow: visible;
+        border: none;
+        border-radius: 0;
+    }
+
+    .ui-tabla-apilable thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .panel-contenido .ui-tabla-apilable,
+    .ui-tabla-apilable tbody,
+    .ui-tabla-apilable tr,
+    .ui-tabla-apilable td {
+        display: block;
+    }
+
+    .ui-tabla-apilable tbody tr {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--panel-borde);
+        border-radius: 10px;
+    }
+
+    .ui-tabla-apilable tbody tr:hover {
+        background: none;
+    }
+
+    .panel-contenido .ui-tabla-apilable td,
+    .panel-contenido .ui-tabla-apilable tbody tr:last-child td {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.3rem 0;
+        text-align: right;
+        border: none;
+    }
+
+    .ui-tabla-apilable td::before {
+        content: attr(data-etiqueta) / "";
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-align: left;
+        text-transform: uppercase;
+        color: var(--panel-texto-suave);
+    }
+}

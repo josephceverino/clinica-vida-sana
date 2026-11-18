@@ -64,6 +64,40 @@
         <path d="M6 6l12 12M18 6L6 18"/>
     </symbol>
 
+    <!-- Lupa (buscar) -->
+    <symbol id="i-buscar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="11" cy="11" r="6.5"/>
+        <path d="M16 16l4 4"/>
+    </symbol>
+
+    <!-- Agregar (más) -->
+    <symbol id="i-agregar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M12 5v14M5 12h14"/>
+    </symbol>
+
+    <!-- Volver (flecha a la izquierda) -->
+    <symbol id="i-volver" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+
+    <!-- Visto (éxito) -->
+    <symbol id="i-visto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M8.5 12.2l2.4 2.4 4.6-4.8"/>
+    </symbol>
+
+    <!-- Alerta (error) -->
+    <symbol id="i-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M12 7.5v5.5M12 16.3v.2"/>
+    </symbol>
+
+    <!-- Información -->
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M12 11v5.5M12 7.7v.2"/>
+    </symbol>
+
     <!-- Cruz de la marca -->
     <symbol id="i-cruz" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
         <path d="M12 4v16M4 12h16"/>

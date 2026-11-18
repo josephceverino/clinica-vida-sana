@@ -130,4 +130,45 @@
             });
         });
     });
+
+    // --- Formularios que tardan: indicador "cargando" ------------------
+    // Solo en formularios con el atributo data-cargando. El evento "submit"
+    // llega cuando el navegador ya validó los campos. El botón muestra un
+    // círculo que gira y su texto cambia (ej. "Registrando…"); así se ve que
+    // la página trabaja y no se envía dos veces. El mensaje de éxito lo
+    // sigue mostrando PHP cuando de verdad terminó.
+    document.addEventListener('DOMContentLoaded', function () {
+        var formularios = document.querySelectorAll('form[data-cargando]');
+
+        formularios.forEach(function (formulario) {
+            var boton = formulario.querySelector('button[type="submit"]');
+            if (!boton) {
+                return;
+            }
+            var texto_original = boton.textContent;
+
+            formulario.addEventListener('submit', function (evento) {
+                // Ya se está enviando: se ignora el segundo clic.
+                if (boton.getAttribute('aria-busy') === 'true') {
+                    evento.preventDefault();
+                    return;
+                }
+                boton.setAttribute('aria-busy', 'true');
+                if (boton.dataset.textoCargando) {
+                    boton.textContent = boton.dataset.textoCargando;
+                }
+                // Se desactiva un instante después, para no estorbar el envío.
+                window.setTimeout(function () {
+                    boton.disabled = true;
+                }, 0);
+            });
+
+            // Si el usuario vuelve con "Atrás", el botón vuelve a la normalidad.
+            window.addEventListener('pageshow', function () {
+                boton.removeAttribute('aria-busy');
+                boton.disabled = false;
+                boton.textContent = texto_original;
+            });
+        });
+    });
 }());

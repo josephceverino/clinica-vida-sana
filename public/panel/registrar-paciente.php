@@ -80,103 +80,138 @@ $pagina_activa = 'pacientes.php';
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<section class="seccion">
-    <h1>Registrar paciente</h1>
+<div class="ui-pagina">
 
-    <p>
-        <a href="<?= e(url('/panel/pacientes.php')) ?>">
-            Volver a pacientes
-        </a>
-    </p>
+    <a class="ui-migas" href="<?= e(url('/panel/pacientes.php')) ?>">
+        <?= $icono_panel('i-volver') ?>
+        Volver a pacientes
+    </a>
 
-    <p>Proyecto académico: utiliza únicamente datos ficticios.</p>
+    <header class="ui-cabecera">
+        <div>
+            <h1>Registrar paciente</h1>
+            <p>Crea la ficha de un paciente nuevo.</p>
+        </div>
+    </header>
 
     <?php if ($registrado): ?>
-        <p role="status">Paciente registrado correctamente.</p>
+        <div class="ui-aviso ui-aviso-exito" role="status">
+            <?= $icono_panel('i-visto') ?>
+            <p>Paciente registrado correctamente.</p>
+        </div>
     <?php endif; ?>
 
     <?php if ($error !== ''): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="ui-aviso ui-aviso-error" role="alert">
+            <?= $icono_panel('i-alerta') ?>
+            <p><?= e($error) ?></p>
+        </div>
     <?php endif; ?>
 
+    <div class="ui-aviso">
+        <?= $icono_panel('i-info') ?>
+        <p>Proyecto académico: utiliza únicamente datos ficticios.</p>
+    </div>
+
+    <!-- data-cargando: al enviar, panel.js muestra "Registrando…" y evita el doble envío -->
     <form
+        class="ui-tarjeta"
         method="post"
         action="<?= e(url('/panel/registrar-paciente.php')) ?>"
-        class="punto"
+        data-cargando
     >
         <?= csrf_campo() ?>
 
-        <p>Los campos con * son obligatorios.</p>
+        <div class="ui-tarjeta-cabecera">
+            <h2>Datos del paciente</h2>
+            <p class="ui-nota">Los campos con <span class="ui-obligatorio">*</span> son obligatorios.</p>
+        </div>
 
-        <p>
-            <label for="dni">DNI *</label><br>
-            <input
-                id="dni"
-                name="dni"
-                type="text"
-                inputmode="numeric"
-                pattern="[0-9]{8}"
-                minlength="8"
-                maxlength="8"
-                value="<?= e($valores['dni']) ?>"
-                required
-            >
-        </p>
+        <div class="ui-rejilla">
+            <div class="ui-campo">
+                <label for="dni">DNI <span class="ui-obligatorio" aria-hidden="true">*</span></label>
+                <input
+                    class="ui-entrada"
+                    id="dni"
+                    name="dni"
+                    type="text"
+                    inputmode="numeric"
+                    pattern="[0-9]{8}"
+                    minlength="8"
+                    maxlength="8"
+                    autocomplete="off"
+                    aria-describedby="ayuda-dni"
+                    value="<?= e($valores['dni']) ?>"
+                    required
+                >
+                <span class="ui-ayuda" id="ayuda-dni">8 dígitos, solo números.</span>
+            </div>
 
-        <p>
-            <label for="nombres">Nombres *</label><br>
-            <input
-                id="nombres"
-                name="nombres"
-                type="text"
-                maxlength="100"
-                value="<?= e($valores['nombres']) ?>"
-                required
-            >
-        </p>
+            <div class="ui-campo">
+                <label for="telefono">Teléfono (opcional)</label>
+                <input
+                    class="ui-entrada"
+                    id="telefono"
+                    name="telefono"
+                    type="tel"
+                    minlength="6"
+                    maxlength="20"
+                    autocomplete="off"
+                    aria-describedby="ayuda-telefono"
+                    value="<?= e($valores['telefono']) ?>"
+                >
+                <span class="ui-ayuda" id="ayuda-telefono">Entre 6 y 20 caracteres.</span>
+            </div>
 
-        <p>
-            <label for="apellidos">Apellidos *</label><br>
-            <input
-                id="apellidos"
-                name="apellidos"
-                type="text"
-                maxlength="100"
-                value="<?= e($valores['apellidos']) ?>"
-                required
-            >
-        </p>
+            <div class="ui-campo">
+                <label for="nombres">Nombres <span class="ui-obligatorio" aria-hidden="true">*</span></label>
+                <input
+                    class="ui-entrada"
+                    id="nombres"
+                    name="nombres"
+                    type="text"
+                    maxlength="100"
+                    autocomplete="off"
+                    value="<?= e($valores['nombres']) ?>"
+                    required
+                >
+            </div>
 
-        <p>
-            <label for="fecha_nacimiento">
-                Fecha de nacimiento *
-            </label><br>
-            <input
-                id="fecha_nacimiento"
-                name="fecha_nacimiento"
-                type="date"
-                max="<?= e($hoy) ?>"
-                value="<?= e($valores['fecha_nacimiento']) ?>"
-                required
-            >
-        </p>
+            <div class="ui-campo">
+                <label for="apellidos">Apellidos <span class="ui-obligatorio" aria-hidden="true">*</span></label>
+                <input
+                    class="ui-entrada"
+                    id="apellidos"
+                    name="apellidos"
+                    type="text"
+                    maxlength="100"
+                    autocomplete="off"
+                    value="<?= e($valores['apellidos']) ?>"
+                    required
+                >
+            </div>
 
-        <p>
-            <label for="telefono">Teléfono (opcional)</label><br>
-            <input
-                id="telefono"
-                name="telefono"
-                type="tel"
-                minlength="6"
-                maxlength="20"
-                value="<?= e($valores['telefono']) ?>"
-            >
-        </p>
+            <div class="ui-campo">
+                <label for="fecha_nacimiento">Fecha de nacimiento <span class="ui-obligatorio" aria-hidden="true">*</span></label>
+                <input
+                    class="ui-entrada"
+                    id="fecha_nacimiento"
+                    name="fecha_nacimiento"
+                    type="date"
+                    max="<?= e($hoy) ?>"
+                    value="<?= e($valores['fecha_nacimiento']) ?>"
+                    required
+                >
+            </div>
+        </div>
 
-        <button class="boton" type="submit">
-            Registrar paciente
-        </button>
+        <div class="ui-acciones">
+            <button class="ui-boton" type="submit" data-texto-cargando="Registrando…">
+                Registrar paciente
+            </button>
+            <a class="ui-boton ui-boton-secundario" href="<?= e(url('/panel/pacientes.php')) ?>">Cancelar</a>
+        </div>
     </form>
-</section>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>
