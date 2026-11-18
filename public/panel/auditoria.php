@@ -139,7 +139,7 @@ require __DIR__ . '/../../app/layout/panel_header.php';
                                     </span>
                                 </td>
                                 <td role="cell" data-etiqueta="Paciente"><?= e($registro['paciente'] ?? '—') ?></td>
-                                <td class="ui-celda-suave" role="cell" data-etiqueta="Detalle"><?= e($registro['detalle'] ?? '') ?></td>
+                                <td class="ui-celda-suave" role="cell" data-etiqueta="Detalle"><?= e(($registro['detalle'] ?? '') !== '' ? $registro['detalle'] : '—') ?></td>
                                 <td class="ui-celda-suave" role="cell" data-etiqueta="IP"><?= e($registro['ip']) ?></td>
                             </tr>
                         <?php endforeach; ?>

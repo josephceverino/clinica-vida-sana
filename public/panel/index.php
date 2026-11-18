@@ -167,29 +167,32 @@ $fecha_corta = function (string $fecha) use ($meses_cortos): string {
             <p class="resumen-vacio">No hay citas próximas.</p>
         <?php else: ?>
             <div class="tabla-scroll">
-                <table class="resumen-tabla">
-                    <thead>
-                        <tr>
-                            <th scope="col">Paciente</th>
-                            <th scope="col">Especialidad</th>
-                            <th scope="col">Fecha / hora</th>
-                            <th scope="col">Estado</th>
+                <!-- ui-tabla-apilable: en el celular cada cita se ve como una tarjeta -->
+                <table class="resumen-tabla ui-tabla-apilable" role="table">
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col" role="columnheader">Paciente</th>
+                            <th scope="col" role="columnheader">Especialidad</th>
+                            <th scope="col" role="columnheader">Fecha / hora</th>
+                            <th scope="col" role="columnheader">Estado</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody role="rowgroup">
                         <?php foreach ($proximas as $cita): ?>
-                            <tr>
-                                <td class="resumen-paciente">
+                            <tr role="row">
+                                <td class="resumen-paciente" role="cell" data-etiqueta="Paciente">
                                     <?= e($cita['nombres'] . ' ' . $cita['apellidos']) ?>
                                 </td>
-                                <td>
-                                    <?= e($cita['area']) ?>
-                                    <small><?= e($cita['motivo']) ?></small>
+                                <td role="cell" data-etiqueta="Especialidad">
+                                    <span class="ui-celda-valor">
+                                        <?= e($cita['area']) ?>
+                                        <small><?= e($cita['motivo']) ?></small>
+                                    </span>
                                 </td>
-                                <td class="resumen-fecha">
+                                <td class="resumen-fecha" role="cell" data-etiqueta="Fecha / hora">
                                     <?= e($fecha_corta($cita['fecha'])) ?> &middot; <?= e(substr($cita['hora'], 0, 5)) ?>
                                 </td>
-                                <td>
+                                <td role="cell" data-etiqueta="Estado">
                                     <span class="resumen-estado resumen-estado-<?= e($cita['estado']) ?>">
                                         <?= e(ucfirst(texto_estado($cita['estado']))) ?>
                                     </span>

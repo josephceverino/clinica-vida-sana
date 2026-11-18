@@ -2271,6 +2271,11 @@ a.ui-cita:focus-visible {
         text-align: right;
     }
 
+    /* En la tarjeta, un dato largo (fecha y hora) baja de línea en vez de cortarse */
+    .ui-tabla-apilable-ancha .ui-celda-suave {
+        white-space: normal;
+    }
+
     /* Botones de la fila: a la derecha, juntos */
     .ui-tabla-apilable-ancha .ui-acciones-fila {
         justify-content: flex-end;
@@ -2479,6 +2484,12 @@ a.ui-cita:focus-visible {
     .ui-filtros .ui-grupo {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Si solo está "Filtrar" (sin "Quitar filtros"), ocupa todo el ancho,
+       igual que el botón "Consultar" de Citas */
+    .ui-filtros .ui-grupo > .ui-boton:only-child {
+        grid-column: 1 / -1;
     }
 
     .panel-contenido .ui-pagina .form-password button.boton {
