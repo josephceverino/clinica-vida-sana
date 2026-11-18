@@ -11,7 +11,7 @@ Hoy cualquier persona puede enviar una solicitud de cita con datos inventados. N
 | Tema | Decisión |
 |---|---|
 | Verificación | La cuenta de paciente nace **pendiente**. Admisión comprueba la identidad y la activa. Hasta entonces no ve historial. |
-| Citas | El paciente **pide** la cita desde su cuenta y **admisión confirma**. No hay reserva directa (aún no existen horarios de médicos). |
+| Citas | **Decisión original:** el paciente pide la cita y admisión la confirma. **Actualizado (nov. 2026):** ya existen los horarios de los médicos, así que el paciente **reserva un horario libre** y la cita queda **confirmada al momento**. La solicitud a admisión sigue como plan B (si no hay horarios). Ver `backend.md`, sección *Horarios, reservas, cancelación e inasistencias*. |
 | Historia clínica | El paciente puede **ver su historia clínica** (solo lectura). El médico registra las atenciones. |
 | Acceso | **Un solo login** para todos. Se quita "Acceso personal". El botón del menú es **Portal del paciente**. |
 | Estructura | Se reordenan las carpetas (`app/core`, `app/modelos`, `public/errores`) **antes** de construir el portal. |

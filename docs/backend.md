@@ -26,7 +26,9 @@ Las páginas de `public/panel/` solo muestran y reciben datos; la lógica y las 
 
 ### Paciente (cuenta verificada)
 - **Mis citas** (`public/paciente/citas.php`): sus próximas citas, su historial y sus solicitudes. Solo las suyas: el paciente se toma de la **sesión**, nunca de la dirección ni de un formulario.
-- **Pedir cita** (`public/paciente/pedir-cita.php`): área pública, fecha preferida opcional (hoy a 6 meses) y motivo obligatorio (5 a 500 caracteres). Crea una solicitud ligada a su cuenta.
+- **Pedir cita** (`public/paciente/pedir-cita.php`) tiene dos caminos:
+  - **Reservar un horario libre** (el principal): elige área y día, ve los horarios libres de los médicos y reserva. La cita queda **confirmada** al momento (ver *Horarios, reservas, cancelación e inasistencias*).
+  - **Enviar una solicitud** (plan B, si no hay horarios): área pública, fecha preferida opcional (hoy a 6 meses) y motivo obligatorio (5 a 500 caracteres). Crea una solicitud ligada a su cuenta, y admisión la programa.
 - Máximo **3 solicitudes pendientes** a la vez por paciente. El conteo y el guardado van dentro de una transacción con `FOR UPDATE`, así que enviar varias a la vez no salta el límite.
 - Una cuenta pendiente de verificación no puede entrar a estas páginas.
 
@@ -68,11 +70,11 @@ Páginas: `public/panel/atender-cita.php` (el médico) y `public/paciente/histor
 
 ## Reglas de la agenda
 
-Al registrar una cita se rechaza:
-- Dos citas activas del **mismo médico** en la misma fecha y hora.
-- Dos citas del **mismo paciente** en la misma fecha y hora, salvo que la anterior esté cancelada.
+Reglas contra citas dobles:
+- **Al registrar** una cita (admisión) todavía no hay médico, así que solo se rechazan dos citas del **mismo paciente** en la misma fecha y hora, salvo que la anterior esté cancelada.
+- **Al asignar médico**, al **reservar** y al **programar una solicitud** se rechaza que el **médico** tenga otra cita que se cruce. Se compara por tramos (desde la hora de la cita hasta el fin de su turno), no solo por la hora exacta. Ver *Citas que se cruzan* en la sección *Horarios, reservas, cancelación e inasistencias*.
 
-> **Alcance:** la comprobación compara la fecha y hora **exactas**. No calcula la duración de las consultas ni los solapamientos entre intervalos.
+> **Alcance:** la regla del paciente sigue comparando la fecha y hora **exactas**; la del médico usa tramos.
 
 ## Estados
 
@@ -137,7 +139,7 @@ Los registros creados durante las pruebas locales **no** forman parte de `seed.s
 | `ver_historia` | El paciente abre su historia clínica. |
 | `ver_atencion` | El médico abre una cita en "Atender" (ve datos del paciente). |
 | `registrar_atencion` | El médico guarda una atención. |
-| `cambiar_password` | Cualquiera cambia su contraseña en "Mi perfil". |
+| `cambiar_password` | Cualquiera cambia su contraseña en "Mi perfil". Las otras sesiones abiertas de esa cuenta se cierran solas (cada sesión guarda una "huella" de la contraseña; si cambia, deja de valer). |
 | `verificar_cuenta` / `rechazar_cuenta` | Admisión verifica o rechaza una cuenta de paciente. |
 | `programar_cita` | Admisión convierte una solicitud en cita. |
 
@@ -153,6 +155,8 @@ Los registros creados durante las pruebas locales **no** forman parte de `seed.s
 **Horarios** (`app/modelos/horarios.php`, tabla `horarios_medico`): el admin define en *Panel → Horarios de médicos* bloques por día (ej. lunes 08:00–13:00, turnos de 20 min). Los bloques del mismo médico y día no pueden cruzarse. Quitar un bloque no borra las citas ya reservadas.
 
 **Huecos libres** = turnos del bloque − citas vigentes (pendiente/confirmada) − horas que ya pasaron (si es hoy).
+
+**Citas que se cruzan.** Cada cita ocupa un tramo: desde su hora hasta el fin de su turno (la duración del bloque del médico; 20 min si la hora cae fuera de sus horarios). Dos citas del mismo médico se cruzan si sus tramos se tocan; si una termina justo cuando empieza la otra, no. La regla es **una sola** (`medico_ocupado()` en `horarios.php`) y la usan reservar, asignar médico a una cita y programar una solicitud.
 
 **Reservar** (*Pedir cita* del paciente): área + día → horarios libres por médico → motivo → cita **confirmada** al momento.
 - `reservar_hueco()` bloquea al médico (`FOR UPDATE`) y vuelve a calcular el hueco dentro de la transacción: dos pacientes no pueden quedarse con la misma hora.
