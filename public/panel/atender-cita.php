@@ -86,101 +86,157 @@ $puede_atender = $cita['estado'] === 'confirmada'
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<header class="panel-titulo">
-    <div>
-        <h1>Atender cita</h1>
-        <p><a href="<?= e(url('/panel/citas.php?fecha=' . $cita['fecha'])) ?>">&larr; Volver a mis citas</a></p>
+<div class="ui-pagina">
+
+    <a class="ui-migas" href="<?= e(url('/panel/citas.php?fecha=' . $cita['fecha'])) ?>">
+        <?= $icono_panel('i-volver') ?>
+        Volver a mis citas
+    </a>
+
+    <header class="ui-cabecera">
+        <div>
+            <h1>Atender cita</h1>
+            <p><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?> a las <?= e(substr($cita['hora'], 0, 5)) ?> &middot; <?= e($cita['area']) ?></p>
+        </div>
+        <span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span>
+    </header>
+
+    <?php if ($mensaje !== null): ?>
+        <?php // Tipo del mensaje: "ok" (éxito) o "error"; cualquier otro, informativo. ?>
+        <?php $clase_mensaje = ['ok' => 'ui-aviso-exito', 'error' => 'ui-aviso-error'][$mensaje['tipo']] ?? ''; ?>
+        <div class="ui-aviso <?= e($clase_mensaje) ?>" role="status">
+            <?= $icono_panel($mensaje['tipo'] === 'error' ? 'i-alerta' : 'i-visto') ?>
+            <p><?= e($mensaje['texto']) ?></p>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($error !== ''): ?>
+        <!-- El error se muestra siempre, aunque la cita ya no admita el formulario. -->
+        <div class="ui-aviso ui-aviso-error" role="alert">
+            <?= $icono_panel('i-alerta') ?>
+            <p><?= e($error) ?></p>
+        </div>
+    <?php endif; ?>
+
+    <div class="ui-columnas">
+
+        <!-- Izquierda: datos del paciente y de la cita -->
+        <section class="ui-tarjeta">
+            <div class="ui-tarjeta-cabecera">
+                <h2>Paciente</h2>
+            </div>
+            <dl class="datos datos-rejilla">
+                <div class="datos-ancho">
+                    <dt>Nombre</dt>
+                    <dd><?= e($cita['nombres']) ?> <?= e($cita['apellidos']) ?></dd>
+                </div>
+                <div>
+                    <dt>Documento</dt>
+                    <dd><?= e($cita['tipo_documento']) ?> <?= e($cita['numero_documento']) ?></dd>
+                </div>
+                <div>
+                    <dt>Fecha de nacimiento</dt>
+                    <dd><?= e($cita['fecha_nacimiento'] !== null
+                        ? date('d/m/Y', strtotime($cita['fecha_nacimiento'])) : 'No registrada') ?></dd>
+                </div>
+                <div class="datos-ancho">
+                    <dt>Cita</dt>
+                    <dd><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?> a las <?= e(substr($cita['hora'], 0, 5)) ?> &middot; <?= e($cita['area']) ?></dd>
+                </div>
+                <div class="datos-ancho">
+                    <dt>Motivo</dt>
+                    <dd><?= e($cita['motivo'] ?? 'Sin motivo registrado') ?></dd>
+                </div>
+            </dl>
+        </section>
+
+        <?php if ($ya_atendida): ?>
+            <!-- La cita ya fue atendida: se muestra la atención (solo lectura). -->
+            <section class="ui-tarjeta">
+                <div class="ui-tarjeta-cabecera">
+                    <h2>Atención registrada</h2>
+                    <span class="ui-insignia"><?= e(date('d/m/Y H:i', strtotime($cita['atendida_en']))) ?></span>
+                </div>
+                <dl class="datos datos-rejilla">
+                    <div class="datos-ancho">
+                        <dt>Diagnóstico</dt>
+                        <dd><?= e($cita['diagnostico']) ?></dd>
+                    </div>
+                    <div class="datos-ancho">
+                        <dt>Tratamiento</dt>
+                        <dd><?= e($cita['tratamiento'] ?? 'No indicado') ?></dd>
+                    </div>
+                    <div class="datos-ancho">
+                        <dt>Notas</dt>
+                        <dd><?= e($cita['notas'] ?? 'Sin notas') ?></dd>
+                    </div>
+                    <div class="datos-ancho">
+                        <dt>Registrada el</dt>
+                        <dd><?= e(date('d/m/Y H:i', strtotime($cita['atendida_en']))) ?></dd>
+                    </div>
+                </dl>
+            </section>
+
+        <?php elseif ($puede_atender): ?>
+            <!-- data-cargando: al guardar, panel.js muestra "Guardando…" y evita el doble envío -->
+            <form class="ui-tarjeta" method="post"
+                  action="<?= e(url('/panel/atender-cita.php?id=' . (int) $cita['id'])) ?>" data-cargando>
+                <?= csrf_campo() ?>
+
+                <div class="ui-tarjeta-cabecera">
+                    <h2>Registrar la atención</h2>
+                    <p class="ui-nota">Los campos con <span class="ui-obligatorio">*</span> son obligatorios.</p>
+                </div>
+
+                <div class="ui-rejilla">
+                    <div class="ui-campo ui-campo-ancho">
+                        <label for="diagnostico">Diagnóstico <span class="ui-obligatorio" aria-hidden="true">*</span></label>
+                        <textarea class="ui-entrada" id="diagnostico" name="diagnostico" rows="3" minlength="5"
+                                  maxlength="500" aria-describedby="ayuda-diagnostico" required><?= e($valores['diagnostico']) ?></textarea>
+                        <span class="ui-ayuda" id="ayuda-diagnostico">Entre 5 y 500 caracteres.</span>
+                    </div>
+
+                    <div class="ui-campo ui-campo-ancho">
+                        <label for="tratamiento">Tratamiento</label>
+                        <textarea class="ui-entrada" id="tratamiento" name="tratamiento" rows="3"
+                                  maxlength="500" aria-describedby="ayuda-tratamiento"><?= e($valores['tratamiento']) ?></textarea>
+                        <span class="ui-ayuda" id="ayuda-tratamiento">Hasta 500 caracteres.</span>
+                    </div>
+
+                    <div class="ui-campo ui-campo-ancho">
+                        <label for="notas">Notas</label>
+                        <textarea class="ui-entrada" id="notas" name="notas" rows="4"
+                                  maxlength="1000" aria-describedby="ayuda-notas"><?= e($valores['notas']) ?></textarea>
+                        <span class="ui-ayuda" id="ayuda-notas">Hasta 1000 caracteres.</span>
+                    </div>
+                </div>
+
+                <div class="ui-acciones">
+                    <button class="ui-boton" type="submit" data-texto-cargando="Guardando…">Guardar atención</button>
+                </div>
+            </form>
+
+        <?php else: ?>
+            <!-- Todavía no se puede atender: se explica por qué. -->
+            <section class="ui-tarjeta">
+                <div class="ui-vacio">
+                    <span class="ui-vacio-icono"><?= $icono_panel('i-reloj') ?></span>
+                    <strong>Esta cita todavía no se puede atender</strong>
+                    <p>
+                        <?php if ($cita['estado'] === 'pendiente'): ?>
+                            Admisión aún no la confirmó.
+                        <?php elseif ($cita['estado'] === 'cancelada'): ?>
+                            La cita fue cancelada.
+                        <?php elseif ($cita['estado'] === 'confirmada'): ?>
+                            Aún no llega la fecha y la hora de la cita.
+                        <?php else: ?>
+                            No hay una atención registrada para esta cita.
+                        <?php endif; ?>
+                    </p>
+                </div>
+            </section>
+        <?php endif; ?>
     </div>
-    <span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span>
-</header>
-
-<?php if ($mensaje !== null): ?>
-    <p class="aviso aviso-<?= e($mensaje['tipo']) ?>" role="status"><?= e($mensaje['texto']) ?></p>
-<?php endif; ?>
-
-<?php if ($error !== ''): ?>
-    <!-- El error se muestra siempre, aunque la cita ya no admita el formulario. -->
-    <p class="aviso aviso-error" role="alert"><?= e($error) ?></p>
-<?php endif; ?>
-
-<section class="caja">
-    <h2>Paciente</h2>
-    <dl class="datos">
-        <dt>Nombre</dt>
-        <dd><?= e($cita['nombres']) ?> <?= e($cita['apellidos']) ?></dd>
-        <dt>Documento</dt>
-        <dd><?= e($cita['tipo_documento']) ?> <?= e($cita['numero_documento']) ?></dd>
-        <dt>Fecha de nacimiento</dt>
-        <dd><?= e($cita['fecha_nacimiento'] !== null
-            ? date('d/m/Y', strtotime($cita['fecha_nacimiento'])) : 'No registrada') ?></dd>
-        <dt>Cita</dt>
-        <dd><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?> a las <?= e(substr($cita['hora'], 0, 5)) ?> &middot; <?= e($cita['area']) ?></dd>
-        <dt>Motivo</dt>
-        <dd><?= e($cita['motivo'] ?? 'Sin motivo registrado') ?></dd>
-    </dl>
-</section>
-
-<?php if ($ya_atendida): ?>
-    <!-- La cita ya fue atendida: se muestra la atención (solo lectura). -->
-    <section class="caja">
-        <h2>Atención registrada</h2>
-        <dl class="datos">
-            <dt>Diagnóstico</dt>
-            <dd><?= e($cita['diagnostico']) ?></dd>
-            <dt>Tratamiento</dt>
-            <dd><?= e($cita['tratamiento'] ?? 'No indicado') ?></dd>
-            <dt>Notas</dt>
-            <dd><?= e($cita['notas'] ?? 'Sin notas') ?></dd>
-            <dt>Registrada el</dt>
-            <dd><?= e(date('d/m/Y H:i', strtotime($cita['atendida_en']))) ?></dd>
-        </dl>
-    </section>
-
-<?php elseif ($puede_atender): ?>
-    <section class="caja">
-        <h2>Registrar la atención</h2>
-
-        <form method="post" action="<?= e(url('/panel/atender-cita.php?id=' . (int) $cita['id'])) ?>">
-            <?= csrf_campo() ?>
-
-            <p>
-                <label for="diagnostico">Diagnóstico *</label><br>
-                <textarea id="diagnostico" name="diagnostico" rows="3" minlength="5"
-                          maxlength="500" required><?= e($valores['diagnostico']) ?></textarea>
-            </p>
-
-            <p>
-                <label for="tratamiento">Tratamiento</label><br>
-                <textarea id="tratamiento" name="tratamiento" rows="3"
-                          maxlength="500"><?= e($valores['tratamiento']) ?></textarea>
-            </p>
-
-            <p>
-                <label for="notas">Notas</label><br>
-                <textarea id="notas" name="notas" rows="4"
-                          maxlength="1000"><?= e($valores['notas']) ?></textarea>
-            </p>
-
-            <button class="boton" type="submit">Guardar atención</button>
-        </form>
-    </section>
-
-<?php else: ?>
-    <!-- Todavía no se puede atender: se explica por qué. -->
-    <section class="caja">
-        <h2>Esta cita todavía no se puede atender</h2>
-        <p class="vacio">
-            <?php if ($cita['estado'] === 'pendiente'): ?>
-                Admisión aún no la confirmó.
-            <?php elseif ($cita['estado'] === 'cancelada'): ?>
-                La cita fue cancelada.
-            <?php elseif ($cita['estado'] === 'confirmada'): ?>
-                Aún no llega la fecha y la hora de la cita.
-            <?php else: ?>
-                No hay una atención registrada para esta cita.
-            <?php endif; ?>
-        </p>
-    </section>
-<?php endif; ?>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>

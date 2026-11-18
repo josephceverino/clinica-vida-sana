@@ -141,33 +141,46 @@
         var formularios = document.querySelectorAll('form[data-cargando]');
 
         formularios.forEach(function (formulario) {
-            var boton = formulario.querySelector('button[type="submit"]');
-            if (!boton) {
+            // Un formulario puede tener varios botones (ej. Confirmar y
+            // Cancelar cita). Se guarda el texto original de cada uno.
+            var botones = Array.prototype.slice.call(
+                formulario.querySelectorAll('button[type="submit"]')
+            );
+            if (botones.length === 0) {
                 return;
             }
-            var texto_original = boton.textContent;
+            var textos = botones.map(function (boton) { return boton.textContent; });
+            var enviando = false;
 
             formulario.addEventListener('submit', function (evento) {
                 // Ya se está enviando: se ignora el segundo clic.
-                if (boton.getAttribute('aria-busy') === 'true') {
+                if (enviando) {
                     evento.preventDefault();
                     return;
                 }
-                boton.setAttribute('aria-busy', 'true');
-                if (boton.dataset.textoCargando) {
-                    boton.textContent = boton.dataset.textoCargando;
+                enviando = true;
+
+                // El botón pulsado (evento.submitter) muestra el círculo y su
+                // texto de carga; su name/value ya va en el envío.
+                var pulsado = evento.submitter || botones[0];
+                pulsado.setAttribute('aria-busy', 'true');
+                if (pulsado.dataset.textoCargando) {
+                    pulsado.textContent = pulsado.dataset.textoCargando;
                 }
-                // Se desactiva un instante después, para no estorbar el envío.
+                // Se desactivan un instante después, para no estorbar el envío.
                 window.setTimeout(function () {
-                    boton.disabled = true;
+                    botones.forEach(function (boton) { boton.disabled = true; });
                 }, 0);
             });
 
-            // Si el usuario vuelve con "Atrás", el botón vuelve a la normalidad.
+            // Si el usuario vuelve con "Atrás", los botones vuelven a la normalidad.
             window.addEventListener('pageshow', function () {
-                boton.removeAttribute('aria-busy');
-                boton.disabled = false;
-                boton.textContent = texto_original;
+                enviando = false;
+                botones.forEach(function (boton, i) {
+                    boton.removeAttribute('aria-busy');
+                    boton.disabled = false;
+                    boton.textContent = textos[i];
+                });
             });
         });
     });

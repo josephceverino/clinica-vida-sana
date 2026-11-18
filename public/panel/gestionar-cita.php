@@ -173,158 +173,206 @@ $pagina_activa = 'citas.php';
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<section class="seccion">
-    <h1>Gestionar cita</h1>
+<div class="ui-pagina">
 
-    <p>
-        <a href="<?= e(url(
-            '/panel/citas.php'
-            . ($cita ? '?fecha=' . $cita['fecha'] : '')
-        )) ?>">
-            Volver a citas
-        </a>
-    </p>
+    <a class="ui-migas" href="<?= e(url(
+        '/panel/citas.php'
+        . ($cita ? '?fecha=' . $cita['fecha'] : '')
+    )) ?>">
+        <?= $icono_panel('i-volver') ?>
+        Volver a citas
+    </a>
+
+    <header class="ui-cabecera">
+        <div>
+            <h1>Gestionar cita</h1>
+            <?php if ($cita): ?>
+                <p>Cita <?= e($cita['id']) ?> &middot; <?= e($cita['nombres']) ?> <?= e($cita['apellidos']) ?></p>
+            <?php endif; ?>
+        </div>
+        <?php if ($cita): ?>
+            <span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span>
+        <?php endif; ?>
+    </header>
 
     <?php if ($exito !== ''): ?>
-        <p role="status"><?= e($exito) ?></p>
+        <div class="ui-aviso ui-aviso-exito" role="status">
+            <?= $icono_panel('i-visto') ?>
+            <p><?= e($exito) ?></p>
+        </div>
     <?php endif; ?>
 
     <?php if ($error !== ''): ?>
-        <p role="alert"><?= e($error) ?></p>
+        <div class="ui-aviso ui-aviso-error" role="alert">
+            <?= $icono_panel('i-alerta') ?>
+            <p><?= e($error) ?></p>
+        </div>
     <?php endif; ?>
 
     <?php if ($cita): ?>
-        <article class="punto">
-            <h2>Cita <?= e($cita['id']) ?></h2>
+        <div class="ui-columnas">
 
-            <p>
-                <strong>Paciente:</strong>
-                <?= e($cita['nombres']) ?>
-                <?= e($cita['apellidos']) ?><br>
+            <!-- Izquierda: los datos de la cita -->
+            <section class="ui-tarjeta">
+                <div class="ui-tarjeta-cabecera">
+                    <h2>Cita <?= e($cita['id']) ?></h2>
+                </div>
+                <dl class="datos datos-rejilla">
+                    <div class="datos-ancho">
+                        <dt>Paciente</dt>
+                        <dd><?= e($cita['nombres']) ?> <?= e($cita['apellidos']) ?></dd>
+                    </div>
+                    <div>
+                        <dt>Área</dt>
+                        <dd><?= e($cita['area']) ?></dd>
+                    </div>
+                    <div>
+                        <dt>Estado</dt>
+                        <dd><span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span></dd>
+                    </div>
+                    <div>
+                        <dt>Fecha</dt>
+                        <?php // Se muestra como 16/11/2026; la base la guarda como 2026-11-16. ?>
+                        <dd><time datetime="<?= e($cita['fecha']) ?>"><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?></time></dd>
+                    </div>
+                    <div>
+                        <dt>Hora</dt>
+                        <dd><?= e(substr((string) $cita['hora'], 0, 5)) ?></dd>
+                    </div>
+                    <div class="datos-ancho">
+                        <dt>Médico asignado</dt>
+                        <dd><?= e($cita['medico'] ?? 'Sin médico asignado') ?></dd>
+                    </div>
+                </dl>
+            </section>
 
-                <strong>Área:</strong>
-                <?= e($cita['area']) ?><br>
+            <!-- Derecha: lo que se puede hacer con la cita -->
+            <div class="ui-columnas-pila">
+                <?php if ($puede_editar): ?>
+                    <section class="ui-tarjeta">
+                        <h2>Asignar médico</h2>
 
-                <strong>Fecha:</strong>
-                <?= e($cita['fecha']) ?><br>
+                        <?php if ($medicos === []): ?>
+                            <p class="ui-nota">No hay médicos activos en esta área.</p>
+                        <?php else: ?>
+                            <form method="post" action="<?= e(url($ruta)) ?>" data-cargando>
+                                <?= csrf_campo() ?>
 
-                <strong>Hora:</strong>
-                <?= e($cita['hora']) ?><br>
+                                <input
+                                    type="hidden"
+                                    name="accion"
+                                    value="asignar_medico"
+                                >
 
-                <strong>Estado:</strong>
-                <?= e(texto_estado($cita['estado'])) ?><br>
+                                <div class="ui-buscador">
+                                    <div class="ui-campo">
+                                        <label for="medico_id">Médico</label>
+                                        <select
+                                            class="ui-entrada"
+                                            id="medico_id"
+                                            name="medico_id"
+                                            required
+                                        >
+                                            <option value="">
+                                                Selecciona un médico
+                                            </option>
 
-                <strong>Médico asignado:</strong>
-                <?= e($cita['medico'] ?? 'Sin médico asignado') ?>
-            </p>
+                                            <?php foreach ($medicos as $medico): ?>
+                                                <option
+                                                    value="<?= e($medico['id']) ?>"
+                                                    <?= (int) $medico['id']
+                                                        === (int) $cita['medico_id']
+                                                        ? 'selected' : '' ?>
+                                                >
+                                                    <?= e($medico['nombre']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
 
-            <?php if ($puede_editar): ?>
-                <h3>Asignar médico</h3>
+                                    <button class="ui-boton" type="submit" data-texto-cargando="Guardando…">
+                                        Guardar médico
+                                    </button>
+                                </div>
+                            </form>
+                        <?php endif; ?>
+                    </section>
 
-                <?php if ($medicos === []): ?>
-                    <p>No hay médicos activos en esta área.</p>
-                <?php else: ?>
-                    <form method="post" action="<?= e(url($ruta)) ?>">
-                        <?= csrf_campo() ?>
+                    <section class="ui-tarjeta">
+                        <h2>Cambiar estado</h2>
 
-                        <input
-                            type="hidden"
-                            name="accion"
-                            value="asignar_medico"
-                        >
+                        <form method="post" action="<?= e(url($ruta)) ?>" data-cargando>
+                            <?= csrf_campo() ?>
 
-                        <p>
-                            <label for="medico_id">Médico</label><br>
-
-                            <select
-                                id="medico_id"
-                                name="medico_id"
-                                required
+                            <input
+                                type="hidden"
+                                name="accion"
+                                value="cambiar_estado"
                             >
-                                <option value="">
-                                    Selecciona un médico
-                                </option>
 
-                                <?php foreach ($medicos as $medico): ?>
-                                    <option
-                                        value="<?= e($medico['id']) ?>"
-                                        <?= (int) $medico['id']
-                                            === (int) $cita['medico_id']
-                                            ? 'selected' : '' ?>
+                            <div class="ui-acciones ui-acciones-simple">
+                                <?php if ($cita['estado'] === 'pendiente'): ?>
+                                    <button
+                                        class="ui-boton"
+                                        name="estado"
+                                        value="confirmada"
+                                        type="submit"
+                                        data-texto-cargando="Confirmando…"
                                     >
-                                        <?= e($medico['nombre']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                                        Confirmar
+                                    </button>
+                                <?php endif; ?>
+
+                                <?php // Solo si estaba confirmada y su hora ya pasó. ?>
+                                <?php if (
+                                    $cita['estado'] === 'confirmada'
+                                    && strtotime($cita['fecha'] . ' ' . $cita['hora']) <= time()
+                                ): ?>
+                                    <button
+                                        class="ui-boton ui-boton-secundario"
+                                        name="estado"
+                                        value="no_asistio"
+                                        type="submit"
+                                        data-texto-cargando="Guardando…"
+                                    >
+                                        No asistió
+                                    </button>
+                                <?php endif; ?>
+
+                                <button
+                                    class="ui-boton ui-boton-peligro"
+                                    name="estado"
+                                    value="cancelada"
+                                    type="submit"
+                                    data-texto-cargando="Cancelando…"
+                                >
+                                    Cancelar cita
+                                </button>
+                            </div>
+                        </form>
+
+                        <p class="ui-nota ui-nota-separada">
+                            La cita pasa a <strong>atendida</strong> cuando el médico
+                            registra la atención, no desde aquí. Si ya pasó su hora y el
+                            paciente no llegó, márcala como <strong>no asistió</strong>.
                         </p>
-
-                        <button class="boton" type="submit">
-                            Guardar médico
-                        </button>
-                    </form>
+                    </section>
+                <?php elseif (in_array(
+                    $cita['estado'],
+                    ['atendida', 'cancelada', 'no_asistio'],
+                    true
+                )): ?>
+                    <section class="ui-tarjeta">
+                        <div class="ui-vacio">
+                            <span class="ui-vacio-icono"><?= $icono_panel('i-escudo') ?></span>
+                            <strong>Esta cita ya no admite cambios.</strong>
+                            <p>Su estado es «<?= e(texto_estado($cita['estado'])) ?>».</p>
+                        </div>
+                    </section>
                 <?php endif; ?>
-
-                <h3>Cambiar estado</h3>
-
-                <form method="post" action="<?= e(url($ruta)) ?>">
-                    <?= csrf_campo() ?>
-
-                    <input
-                        type="hidden"
-                        name="accion"
-                        value="cambiar_estado"
-                    >
-
-                    <?php if ($cita['estado'] === 'pendiente'): ?>
-                        <button
-                            class="boton"
-                            name="estado"
-                            value="confirmada"
-                            type="submit"
-                        >
-                            Confirmar
-                        </button>
-                    <?php endif; ?>
-
-                    <button
-                        class="boton boton-claro"
-                        name="estado"
-                        value="cancelada"
-                        type="submit"
-                    >
-                        Cancelar cita
-                    </button>
-
-                    <?php // Solo si estaba confirmada y su hora ya pasó. ?>
-                    <?php if (
-                        $cita['estado'] === 'confirmada'
-                        && strtotime($cita['fecha'] . ' ' . $cita['hora']) <= time()
-                    ): ?>
-                        <button
-                            class="boton boton-claro"
-                            name="estado"
-                            value="no_asistio"
-                            type="submit"
-                        >
-                            No asistió
-                        </button>
-                    <?php endif; ?>
-                </form>
-
-                <p>
-                    La cita pasa a <strong>atendida</strong> cuando el médico
-                    registra la atención, no desde aquí. Si ya pasó su hora y el
-                    paciente no llegó, márcala como <strong>no asistió</strong>.
-                </p>
-            <?php elseif (in_array(
-                $cita['estado'],
-                ['atendida', 'cancelada', 'no_asistio'],
-                true
-            )): ?>
-                <p>Esta cita ya no admite cambios.</p>
-            <?php endif; ?>
-        </article>
+            </div>
+        </div>
     <?php endif; ?>
-</section>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>

@@ -2199,3 +2199,168 @@ a.resumen-pastilla:hover {
         color: var(--panel-texto-suave);
     }
 }
+
+/* ---------- Componentes ui-: añadidos para el módulo Citas ---------- */
+
+/* Cuadros de texto largos (motivo, diagnóstico): mismo aspecto que .ui-entrada */
+.panel-contenido textarea.ui-entrada {
+    width: 100%;
+    max-width: none;
+    min-height: 6rem;
+    padding: 0.6rem 0.8rem;
+    font: inherit;
+    line-height: 1.5;
+    color: var(--panel-texto);
+    background: var(--panel-superficie);
+    border: 1px solid var(--panel-borde-fuerte);
+    border-radius: 8px;
+    resize: vertical;
+    transition: border-color var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.panel-contenido textarea.ui-entrada:hover {
+    border-color: #9FB4BE;
+}
+
+.panel-contenido textarea.ui-entrada:focus {
+    outline: none;
+    border-color: var(--panel-primario);
+    box-shadow: var(--panel-anillo);
+}
+
+.panel-contenido textarea.ui-entrada:user-invalid,
+.panel-contenido select.ui-entrada:user-invalid {
+    border-color: var(--panel-error);
+    background: #FFF8F7;
+}
+
+/* Botón destructivo (ej. "Cancelar cita"): rojo con borde, no relleno */
+.ui-boton-peligro {
+    color: var(--panel-error);
+    background: var(--panel-superficie);
+    border-color: var(--panel-error-borde);
+}
+
+.ui-boton-peligro:hover {
+    color: #FFFFFF;
+    background: var(--panel-error);
+    border-color: var(--panel-error);
+}
+
+.ui-boton-peligro:focus-visible {
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.22);
+}
+
+/* Fila de botones sin la línea de arriba (dentro de una tarjeta) */
+.ui-acciones-simple {
+    margin-top: 1rem;
+    padding-top: 0;
+    border-top: none;
+}
+
+/* Dos columnas: datos a la izquierda, acciones o formulario a la derecha */
+.ui-columnas {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.ui-columnas > * {
+    margin-bottom: 0;
+}
+
+.ui-columnas-pila {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.ui-columnas-pila > * {
+    margin-bottom: 0;
+}
+
+/* Lista de datos (.datos, la de siempre) en dos columnas dentro de una tarjeta */
+.ui-tarjeta .datos-rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1.25rem;
+}
+
+.ui-tarjeta .datos-rejilla > div {
+    min-width: 0;
+}
+
+.ui-tarjeta .datos-rejilla .datos-ancho {
+    grid-column: 1 / -1;
+}
+
+.ui-tarjeta .datos dt {
+    margin-top: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--panel-texto-suave);
+}
+
+.ui-tarjeta .datos dd {
+    margin: 0.2rem 0 0;
+    color: var(--panel-texto);
+    overflow-wrap: anywhere;
+}
+
+/* Texto pequeño debajo del dato principal de una celda (ej. el documento) */
+.ui-tabla td small {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--panel-texto-suave);
+}
+
+/* La etiqueta de estado (.estado, la de siempre) un poco más grande aquí */
+.ui-pagina .estado {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 1000px) {
+    .ui-columnas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .ui-tarjeta .datos-rejilla {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ui-acciones-simple .ui-boton {
+        flex: 1 1 100%;
+    }
+
+    /* En la tarjeta del celular, dato y subtexto van juntos a la derecha */
+    .ui-tabla-apilable .ui-celda-valor {
+        display: block;
+        text-align: right;
+    }
+}
+
+/* Aviso dentro de un formulario, debajo de los campos */
+.panel-contenido .ui-rejilla + .ui-aviso {
+    margin: 1.25rem 0 0;
+}
+
+/* Nota separada del contenido de arriba */
+.ui-nota-separada {
+    margin-top: 1rem;
+}
+
+/* Título suelto de una tarjeta (sin .ui-tarjeta-cabecera): mismo tamaño */
+.ui-tarjeta > h2 {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
