@@ -63,30 +63,21 @@
 
 /* Marca del panel */
 .panel-marca {
-    display: grid;
+    display: block;
     min-width: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
 }
 
-.panel-marca .logo-oficial {
+.panel-lateral .panel-marca .logo-oficial,
+.panel-barra-movil .panel-marca .logo-oficial {
     width: 144px;
-    background: #FFFFFF;
-    border: 4px solid #FFFFFF;
+    /* Aclara el azul y el turquesa sobre el fondo de la navegación. */
+    filter: contrast(0.5) brightness(1.6);
 }
 
 .panel-marca .panel-isotipo {
     display: none;
-}
-
-.panel-marca-lema {
-    grid-column: 1 / -1;
-    margin-top: 0.6rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--panel-lateral-titulo);
 }
 
 .panel-menu {
@@ -335,10 +326,6 @@
         position: static;
         height: auto;
         padding: 1rem;
-    }
-
-    .panel-marca {
-        padding-bottom: 0.75rem;
     }
 
     .panel-menu {
@@ -834,8 +821,9 @@ a.resumen-pastilla:hover {
 .panel-cabecera-lateral {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 /* Botones redondos de la barra lateral (contraer, cerrar) */
@@ -926,15 +914,6 @@ a.resumen-pastilla:hover {
     .lateral-contraida .panel-marca .panel-isotipo {
         display: block;
         width: 36px;
-    }
-
-    .lateral-contraida .panel-marca-lema {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        white-space: nowrap;
     }
 
     /* La flecha mira hacia el otro lado: "expandir" */

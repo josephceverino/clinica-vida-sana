@@ -101,7 +101,6 @@ if (in_array($usuario['rol'], ['admin', 'admision'], true)) {
             <a class="panel-marca" href="<?= e(url('/panel/index.php')) ?>">
                 <img class="logo-oficial" src="<?= e(recurso('/assets/img/branding/logo.png')) ?>" width="2172" height="724" alt="Clínica Vida Sana">
                 <img class="logo-oficial panel-isotipo" src="<?= e(recurso('/assets/img/branding/isotipo.png')) ?>" width="192" height="192" alt="Clínica Vida Sana">
-                <span class="panel-marca-lema">Gestión clínica</span>
             </a>
             <!-- Escritorio: contraer o expandir el menú. -->
             <button type="button" class="panel-boton-lateral panel-contraer" data-contraer-lateral

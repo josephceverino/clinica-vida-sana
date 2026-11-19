@@ -52,7 +52,6 @@ $icono_panel = fn (string $id): string =>
     <div class="portal-barra-interior">
         <a class="portal-marca" href="<?= e(url('/paciente/index.php')) ?>">
             <img class="logo-oficial" src="<?= e(recurso('/assets/img/branding/logo.png')) ?>" width="2172" height="724" alt="Clínica Vida Sana">
-            <small>Portal del paciente</small>
         </a>
 
         <!-- En el celular, este menú pasa a una barra fija abajo -->

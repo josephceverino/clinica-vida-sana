@@ -61,8 +61,6 @@ require __DIR__ . '/../app/layout/publico_header.php';
 <!-- Pantalla partida: marca a la izquierda, formulario a la derecha -->
 <section class="pub-acceso aparecer">
     <div class="pub-acceso-marca" aria-hidden="true">
-        <span class="pub-acceso-cruz"><?= $icono_publico('i-cruz') ?></span>
-        <p class="pub-acceso-lema">Tu salud es lo primero.</p>
         <img src="<?= e(url('/assets/img/slide-citas.svg')) ?>" alt="" width="320" height="240">
     </div>
 

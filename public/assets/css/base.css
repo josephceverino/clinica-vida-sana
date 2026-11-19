@@ -747,10 +747,4 @@ select {
     display: block;
     max-width: 100%;
     height: auto;
-    border-radius: 6px;
-}
-
-[data-tema="oscuro"] .logo-oficial {
-    background: #FFFFFF;
-    border: 4px solid #FFFFFF;
 }

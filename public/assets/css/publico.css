@@ -106,8 +106,6 @@ body.publico {
 
 .pub-pie .logo-oficial {
     width: 176px;
-    background: #FFFFFF;
-    border: 4px solid #FFFFFF;
 }
 
 .pub-menu {
@@ -1146,8 +1144,7 @@ body.publico {
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 1.5rem;
+    justify-content: center;
     padding: 2.5rem;
     color: #FFFFFF;
     background: linear-gradient(160deg, var(--pub-primario) 0%, var(--pub-oscuro) 70%, var(--pub-noche) 100%);
@@ -1163,23 +1160,6 @@ body.publico {
     height: 300px;
     background: radial-gradient(circle, rgba(34, 183, 122, 0.35), transparent 70%);
     border-radius: 50%;
-}
-
-.pub-acceso-cruz .pub-icono {
-    width: 46px;
-    height: 46px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.16);
-    border-radius: 14px;
-}
-
-.pub-acceso-lema {
-    position: relative;
-    z-index: 1;
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1.15;
 }
 
 .pub-acceso-marca img {

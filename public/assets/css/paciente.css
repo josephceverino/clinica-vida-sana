@@ -32,8 +32,7 @@
 
 /* Marca del portal */
 .portal-marca {
-    display: grid;
-    gap: 0.2rem;
+    display: block;
     min-width: 0;
     color: var(--panel-texto);
     text-decoration: none;
@@ -42,12 +41,6 @@
 
 .portal-marca .logo-oficial {
     width: 144px;
-}
-
-.portal-marca small {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--panel-texto-suave);
 }
 
 /* Menú: Inicio · Mis citas · Pedir cita · Historia clínica */
@@ -560,10 +553,6 @@
     .portal-barra-interior {
         gap: 0.75rem;
         padding: 0.6rem 1rem;
-    }
-
-    .portal-marca small {
-        display: none;
     }
 
     .portal-marca .logo-oficial {
