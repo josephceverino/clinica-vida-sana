@@ -61,27 +61,22 @@
     overflow-y: auto;
 }
 
-/* Marca: cruz + "VIDA SANA" y debajo "GESTIÓN CLÍNICA" */
+/* Marca del panel */
 .panel-marca {
     display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    column-gap: 0.6rem;
+    min-width: 0;
     margin-bottom: 0.5rem;
-    color: #FFFFFF;
     text-decoration: none;
 }
 
-.panel-marca .icono {
-    width: 22px;
-    height: 22px;
+.panel-marca .logo-oficial {
+    width: 144px;
+    background: #FFFFFF;
+    border: 4px solid #FFFFFF;
 }
 
-.panel-marca-nombre {
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
+.panel-marca .panel-isotipo {
+    display: none;
 }
 
 .panel-marca-lema {
@@ -924,8 +919,15 @@ a.resumen-pastilla:hover {
         margin-bottom: 0;
     }
 
-    /* Nombre y lema de la marca: ocultos a la vista, no para los lectores */
-    .lateral-contraida .panel-marca-nombre,
+    .lateral-contraida .panel-marca .logo-oficial {
+        display: none;
+    }
+
+    .lateral-contraida .panel-marca .panel-isotipo {
+        display: block;
+        width: 36px;
+    }
+
     .lateral-contraida .panel-marca-lema {
         position: absolute;
         width: 1px;
@@ -1029,10 +1031,6 @@ a.resumen-pastilla:hover {
 
     .js .panel-barra-movil .panel-marca {
         margin: 0;
-    }
-
-    .js .panel-barra-movil .panel-marca-nombre {
-        font-size: 1.1rem;
     }
 
     .panel-boton-menu {

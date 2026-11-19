@@ -100,18 +100,14 @@ body.publico {
     border-radius: 8px;
 }
 
-.pub-marca .pub-icono {
-    width: 34px;
-    height: 34px;
-    padding: 7px;
-    color: #FFFFFF;
-    background: linear-gradient(135deg, var(--pub-primario), var(--pub-oscuro));
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(8, 124, 148, 0.3);
+.pub-cabecera .logo-oficial {
+    width: clamp(130px, 23vw, 192px);
 }
 
-.pub-marca strong {
-    color: var(--pub-enlace);
+.pub-pie .logo-oficial {
+    width: 176px;
+    background: #FFFFFF;
+    border: 4px solid #FFFFFF;
 }
 
 .pub-menu {

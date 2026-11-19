@@ -3,8 +3,11 @@
     <div class="pub-pie-interior">
         <div class="pub-pie-marca">
             <a class="pub-marca pub-marca-clara" href="<?= e(url('/')) ?>">
-                <?= $icono_publico('i-cruz') ?>
-                <span>Clínica <strong>Vida Sana</strong></span>
+                <?php if (in_array($pagina_actual, ['/login.php', '/registro.php'], true)): ?>
+                    <span>Clínica Vida Sana</span>
+                <?php else: ?>
+                    <img class="logo-oficial" src="<?= e(recurso('/assets/img/branding/logo.png')) ?>" width="2172" height="724" alt="Clínica Vida Sana">
+                <?php endif; ?>
             </a>
             <p>Clínica Vida Sana &mdash; clínica simulada, proyecto académico UCV 2026.</p>
         </div>

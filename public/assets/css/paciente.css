@@ -30,32 +30,18 @@
     padding: 0.7rem 2.25rem;
 }
 
-/* Marca: cruz + "Vida Sana" + "Portal del paciente" */
+/* Marca del portal */
 .portal-marca {
     display: grid;
-    grid-template-columns: auto auto;
-    align-items: center;
-    column-gap: 0.5rem;
+    gap: 0.2rem;
+    min-width: 0;
     color: var(--panel-texto);
     text-decoration: none;
     border-radius: 6px;
 }
 
-.portal-marca .icono {
-    grid-row: span 2;
-    width: 26px;
-    height: 26px;
-    padding: 4px;
-    color: #FFFFFF;
-    background: var(--panel-primario);
-    border-radius: 7px;
-}
-
-.portal-marca span {
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.1;
-    text-transform: uppercase;
+.portal-marca .logo-oficial {
+    width: 144px;
 }
 
 .portal-marca small {
@@ -554,8 +540,7 @@
 }
 
 /* Escritorio estrecho: los textos del menú no se parten y el nombre se oculta */
-.portal-menu a,
-.portal-marca span {
+.portal-menu a {
     white-space: nowrap;
 }
 
@@ -581,8 +566,8 @@
         display: none;
     }
 
-    .portal-marca .icono {
-        grid-row: auto;
+    .portal-marca .logo-oficial {
+        width: clamp(110px, 32vw, 144px);
     }
 
     .portal-sesion {

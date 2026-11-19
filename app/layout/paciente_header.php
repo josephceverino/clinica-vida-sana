@@ -51,8 +51,7 @@ $icono_panel = fn (string $id): string =>
 <header class="portal-barra">
     <div class="portal-barra-interior">
         <a class="portal-marca" href="<?= e(url('/paciente/index.php')) ?>">
-            <?= $icono_panel('i-cruz') ?>
-            <span>Vida Sana</span>
+            <img class="logo-oficial" src="<?= e(recurso('/assets/img/branding/logo.png')) ?>" width="2172" height="724" alt="Clínica Vida Sana">
             <small>Portal del paciente</small>
         </a>
 

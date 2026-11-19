@@ -55,8 +55,7 @@ $icono_publico = fn (string $id): string =>
 <header class="pub-cabecera" data-cabecera>
     <div class="pub-cabecera-interior">
         <a class="pub-marca" href="<?= e(url('/')) ?>">
-            <?= $icono_publico('i-cruz') ?>
-            <span>Clínica <strong>Vida Sana</strong></span>
+            <img class="logo-oficial" src="<?= e(recurso('/assets/img/branding/logo.png')) ?>" width="2172" height="724" alt="Clínica Vida Sana">
         </a>
 
         <!-- Celular: este botón abre y cierra el menú (lo activa publico.js) -->

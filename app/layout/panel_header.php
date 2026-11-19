@@ -87,8 +87,7 @@ if (in_array($usuario['rol'], ['admin', 'admision'], true)) {
     <!-- Barra superior: solo se ve en el celular (con JavaScript). -->
     <div class="panel-barra-movil">
         <a class="panel-marca" href="<?= e(url('/panel/index.php')) ?>">
-            <?= $icono_panel('i-cruz') ?>
-            <span class="panel-marca-nombre">Vida Sana</span>
+            <img class="logo-oficial" src="<?= e(recurso('/assets/img/branding/logo.png')) ?>" width="2172" height="724" alt="Clínica Vida Sana">
         </a>
         <button type="button" class="panel-boton-menu" data-abrir-menu
                 aria-controls="panel-lateral" aria-expanded="false" hidden>
@@ -100,8 +99,8 @@ if (in_array($usuario['rol'], ['admin', 'admision'], true)) {
     <aside class="panel-lateral" id="panel-lateral">
         <div class="panel-cabecera-lateral">
             <a class="panel-marca" href="<?= e(url('/panel/index.php')) ?>">
-                <?= $icono_panel('i-cruz') ?>
-                <span class="panel-marca-nombre">Vida Sana</span>
+                <img class="logo-oficial" src="<?= e(recurso('/assets/img/branding/logo.png')) ?>" width="2172" height="724" alt="Clínica Vida Sana">
+                <img class="logo-oficial panel-isotipo" src="<?= e(recurso('/assets/img/branding/isotipo.png')) ?>" width="192" height="192" alt="Clínica Vida Sana">
                 <span class="panel-marca-lema">Gestión clínica</span>
             </a>
             <!-- Escritorio: contraer o expandir el menú. -->
