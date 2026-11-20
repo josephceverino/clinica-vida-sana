@@ -7,14 +7,19 @@ require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
 <!-- 1. Quiénes somos -->
-<section class="pub-encabezado aparecer">
-    <p class="pub-etiqueta">Nosotros</p>
-    <h1>Una clínica pensada para las personas</h1>
-    <p class="pub-bajada">
-        En Clínica Vida Sana creemos que una buena atención empieza por
-        escuchar. Somos un equipo de médicos, enfermeras y personal de
-        apoyo que trabaja para que te sientas acompañado en cada visita.
-    </p>
+<section class="pub-encabezado pub-nosotros-encabezado aparecer">
+    <div class="pub-nosotros-texto">
+        <p class="pub-etiqueta">Nosotros</p>
+        <h1>Una clínica pensada para las personas</h1>
+        <p class="pub-bajada">
+            En Clínica Vida Sana creemos que una buena atención empieza por
+            escuchar. Somos un equipo de médicos, enfermeras y personal de
+            apoyo que trabaja para que te sientas acompañado en cada visita.
+        </p>
+    </div>
+    <img class="pub-nosotros-foto" src="<?= e(recurso('/assets/img/clinica/atencion-paciente.webp')) ?>"
+         alt="Una médica acompaña a un paciente sentado en el consultorio."
+         width="1672" height="941" decoding="async">
 </section>
 
 <!-- 2. Misión y visión: un bloque partido en dos tonos -->

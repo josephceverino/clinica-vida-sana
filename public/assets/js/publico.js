@@ -5,6 +5,7 @@
 //      (En Inicio lo hace portada.js, que se carga antes: aquí no se repite.)
 //   3. Formularios con data-cargando: el botón muestra "Ingresando…" o
 //      "Creando cuenta…" mientras el servidor responde.
+//   4. Botón de WhatsApp de demostración.
 // Sin JavaScript todo sigue funcionando: el menú se ve completo y nada se oculta.
 // =====================================================================
 (function () {
@@ -114,4 +115,116 @@
             enviar.textContent = texto;
         });
     });
+
+    document.querySelectorAll('.pub-notificacion-cerrar').forEach(function (cerrar) {
+        var aviso = cerrar.closest('.pub-notificacion');
+        cerrar.hidden = false;
+        cerrar.addEventListener('click', function () {
+            var campo = document.querySelector('main .pub-campo-flotante input');
+            if (document.activeElement === cerrar && campo) {
+                campo.focus({ preventScroll: true });
+            }
+            aviso.inert = true;
+            aviso.classList.add('pub-notificacion-cerrando');
+            var animaciones = aviso.getAnimations();
+            Promise.allSettled(animaciones.map(function (animacion) {
+                return animacion.finished;
+            })).then(function () {
+                aviso.remove();
+            });
+        });
+    });
+
+    var whatsapp = document.querySelector('.pub-whatsapp');
+    var dialogo_whatsapp = document.getElementById('pub-whatsapp-demo');
+    if (whatsapp && dialogo_whatsapp && typeof dialogo_whatsapp.showModal === 'function') {
+        whatsapp.hidden = false;
+        whatsapp.addEventListener('click', function () { dialogo_whatsapp.showModal(); });
+        dialogo_whatsapp.querySelector('[data-whatsapp-cerrar]').addEventListener('click', function () {
+            dialogo_whatsapp.close();
+        });
+    }
+
+    if (whatsapp && !whatsapp.hidden) {
+        // Deja libres los controles cuando pasan por debajo del botón flotante.
+        var controles_publicos = document.querySelectorAll(
+            'main a[href], main button, main input:not([type="hidden"]), main select, main textarea, main iframe, ' +
+            '.pub-pie a, [data-whatsapp-proteger], .pub-lista-datos strong, .pub-horario strong'
+        );
+        var despeje = 0;
+        var cuadro_pendiente = false;
+        var formulario_publico = document.querySelector('main .pub-formulario');
+        var ancho_movil = window.matchMedia('(max-width: 640px)');
+        var ventana_visual = window.visualViewport;
+        var selector_campo = 'input:not([type="hidden"]), select, textarea';
+
+        function campo_enfocado() {
+            return formulario_publico.contains(document.activeElement)
+                && document.activeElement.matches(selector_campo);
+        }
+
+        function despejar_controles() {
+            cuadro_pendiente = false;
+            var boton_rect = whatsapp.getBoundingClientRect();
+            var base = whatsapp.offsetTop + despeje;
+            var destino = base;
+            var altura = boton_rect.height;
+            var controles = Array.from(controles_publicos, function (control) {
+                return control.getBoundingClientRect();
+            }).filter(function (rect) {
+                return rect.height > 0 && rect.right > boton_rect.left - 6 && rect.left < boton_rect.right + 6;
+            }).sort(function (a, b) { return b.bottom - a.bottom; });
+
+            controles.forEach(function (rect) {
+                if (rect.bottom + 6 > destino && rect.top - 6 < destino + altura) {
+                    destino = rect.top - altura - 6;
+                }
+            });
+
+            despeje = Math.max(0, Math.floor(base - Math.max(100, destino)));
+            whatsapp.style.setProperty('--pub-wa-despeje', despeje + 'px');
+
+            if (formulario_publico) {
+                var movil = ancho_movil.matches;
+                var arriba = base - despeje;
+                var abajo = arriba + altura;
+                var visible_arriba = ventana_visual ? ventana_visual.offsetTop : 0;
+                var visible_abajo = visible_arriba + (ventana_visual ? ventana_visual.height : window.innerHeight);
+                var interfiere = controles.some(function (rect) {
+                    return rect.bottom > visible_arriba && rect.top < visible_abajo
+                        && rect.bottom > arriba && rect.top < abajo;
+                });
+
+                // El límite del desplazamiento puede dejar el botón encima de un campo.
+                whatsapp.toggleAttribute('inert', movil && (
+                    campo_enfocado() || interfiere || arriba < visible_arriba || abajo > visible_abajo
+                ));
+            }
+        }
+
+        function programar_despeje() {
+            if (!cuadro_pendiente) {
+                cuadro_pendiente = true;
+                window.requestAnimationFrame(despejar_controles);
+            }
+        }
+
+        window.addEventListener('scroll', programar_despeje, { passive: true });
+        window.addEventListener('resize', programar_despeje);
+        window.addEventListener('load', programar_despeje);
+        if (formulario_publico) {
+            formulario_publico.addEventListener('focusin', function () {
+                if (ancho_movil.matches && campo_enfocado()) {
+                    whatsapp.setAttribute('inert', '');
+                }
+                programar_despeje();
+            });
+            formulario_publico.addEventListener('focusout', programar_despeje);
+            if (ventana_visual) {
+                ventana_visual.addEventListener('resize', programar_despeje);
+                ventana_visual.addEventListener('scroll', programar_despeje);
+            }
+        }
+        programar_despeje();
+    }
 }());

@@ -993,6 +993,22 @@ a.resumen-pastilla:hover {
     }
 }
 
+@media (min-width: 901px) and (max-height: 900px) {
+    :root:not(.lateral-contraida) .panel-lateral {
+        padding-block: 1rem;
+    }
+
+    :root:not(.lateral-contraida) .panel-menu {
+        gap: 0.3rem;
+    }
+
+    :root:not(.lateral-contraida) .panel-usuario {
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+    }
+}
+
 /* ---------- Celular: barra arriba y menú que se desliza ---------- */
 @media (max-width: 900px) {
     /* Barra superior fija: marca + botón "Menú" */

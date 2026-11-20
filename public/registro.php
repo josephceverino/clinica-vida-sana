@@ -67,13 +67,16 @@ require __DIR__ . '/../app/layout/publico_header.php';
     </header>
 
     <?php if (count($errores) > 0): ?>
-        <div class="pub-aviso pub-aviso-error" role="alert">
+        <div class="pub-aviso pub-aviso-error pub-notificacion" role="alert">
             <?= $icono_publico('i-alerta') ?>
             <div>
                 <?php foreach ($errores as $error): ?>
                     <p><?= e($error) ?></p>
                 <?php endforeach; ?>
             </div>
+            <button class="pub-notificacion-cerrar" type="button" aria-label="Cerrar notificación" hidden>
+                <?= $icono_publico('i-cerrar') ?>
+            </button>
         </div>
     <?php endif; ?>
 
@@ -83,18 +86,18 @@ require __DIR__ . '/../app/layout/publico_header.php';
         <?= csrf_campo() ?>
 
         <!-- Por filas: así el orden del Tab es el mismo que se ve, en escritorio y en el celular -->
-        <div class="pub-campo">
-            <label for="nombres">Nombres</label>
+        <div class="pub-campo pub-campo-flotante">
             <input type="text" id="nombres" name="nombres" maxlength="100"
                    placeholder="Nombres" value="<?= e($valores['nombres']) ?>"
                    autocomplete="given-name" required>
+            <label for="nombres">Nombres</label>
         </div>
 
-        <div class="pub-campo">
-            <label for="apellidos">Apellidos</label>
+        <div class="pub-campo pub-campo-flotante">
             <input type="text" id="apellidos" name="apellidos" maxlength="100"
                    placeholder="Apellidos" value="<?= e($valores['apellidos']) ?>"
                    autocomplete="family-name" required>
+            <label for="apellidos">Apellidos</label>
         </div>
 
         <div class="pub-campo">
@@ -110,37 +113,37 @@ require __DIR__ . '/../app/layout/publico_header.php';
             </select>
         </div>
 
-        <div class="pub-campo">
-            <label for="numero_documento">N.º de documento</label>
+        <div class="pub-campo pub-campo-flotante">
             <input type="text" id="numero_documento" name="numero_documento" maxlength="12"
                    placeholder="Número de documento" value="<?= e($valores['numero_documento']) ?>"
                    autocomplete="off" required>
+            <label for="numero_documento">N.º de documento</label>
         </div>
 
-        <div class="pub-campo">
-            <label for="correo">Correo</label>
+        <div class="pub-campo pub-campo-flotante">
             <input type="email" id="correo" name="correo" maxlength="120"
                    placeholder="tu.correo@example.com" value="<?= e($valores['correo']) ?>"
                    autocomplete="email" required>
+            <label for="correo">Correo</label>
         </div>
 
-        <div class="pub-campo">
-            <label for="celular">Número de celular</label>
+        <div class="pub-campo pub-campo-flotante">
             <input type="tel" id="celular" name="celular" maxlength="20"
                    placeholder="Celular" value="<?= e($valores['celular']) ?>"
                    autocomplete="tel" required>
+            <label for="celular">Número de celular</label>
         </div>
 
-        <div class="pub-campo">
-            <label for="password">Establece una contraseña</label>
+        <div class="pub-campo pub-campo-flotante">
             <input type="password" id="password" name="password"
                    placeholder="Contraseña" autocomplete="new-password" required>
+            <label for="password">Establece una contraseña</label>
         </div>
 
-        <div class="pub-campo">
-            <label for="confirmar_password">Confirma tu contraseña</label>
+        <div class="pub-campo pub-campo-flotante">
             <input type="password" id="confirmar_password" name="confirmar_password"
                    placeholder="Repite la contraseña" autocomplete="new-password" required>
+            <label for="confirmar_password">Confirma tu contraseña</label>
         </div>
 
         <div class="pub-aviso pub-aviso-info pub-campo-ancho">

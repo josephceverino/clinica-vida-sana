@@ -15,10 +15,16 @@ $consulta->execute();
 $areas = $consulta->fetchAll();
 
 require __DIR__ . '/../app/layout/publico_header.php';
+
+$visuales = [
+    'Medicina General' => ['clinica/consulta-general.webp', 'foto', 1774, 887, 'Una médica conversa con un paciente.'],
+    'Pediatría' => ['slide-pediatria.svg', 'pediatria', 480, 360, ''],
+    'Laboratorio' => ['slide-laboratorio.svg', 'laboratorio', 480, 360, ''],
+];
 ?>
 
 <!-- Encabezado de la página -->
-<section class="pub-encabezado aparecer">
+<section class="pub-encabezado pub-servicios-encabezado aparecer">
     <p class="pub-etiqueta">Servicios</p>
     <h1>Cuidamos cada etapa de tu salud</h1>
     <p class="pub-bajada">
@@ -27,22 +33,32 @@ require __DIR__ . '/../app/layout/publico_header.php';
     </p>
 </section>
 
-<!-- Áreas (salen de la base de datos): lista numerada en dos columnas -->
+<!-- Áreas publicadas, con recursos visuales para las especialidades conocidas. -->
 <section class="pub-seccion aparecer">
     <?php if (count($areas) === 0): ?>
         <p class="pub-bajada">Pronto publicaremos nuestros servicios.</p>
     <?php else: ?>
-        <ol class="pub-servicios">
+        <ul class="pub-tarjetas-servicio" role="list">
             <?php foreach ($areas as $area): ?>
-                <li class="pub-servicio">
-                    <span class="pub-servicio-icono"><?= $icono_publico('i-cruz') ?></span>
-                    <div>
+                <?php $visual = $visuales[$area['nombre']] ?? null; ?>
+                <li class="pub-tarjeta-servicio">
+                    <?php if ($visual): ?>
+                        <?php [$archivo, $tipo, $ancho, $alto, $alt] = $visual; ?>
+                        <div class="pub-servicio-visual<?= $tipo === 'foto' ? '' : ' pub-servicio-visual-' . e($tipo) ?>">
+                            <img<?= $tipo === 'foto' ? ' class="pub-servicio-foto"' : '' ?>
+                                 src="<?= e(recurso('/assets/img/' . $archivo)) ?>" alt="<?= e($alt) ?>"
+                                 width="<?= $ancho ?>" height="<?= $alto ?>" loading="lazy" decoding="async">
+                        </div>
+                    <?php else: ?>
+                        <div class="pub-servicio-visual"><?= $icono_publico('i-cruz') ?></div>
+                    <?php endif; ?>
+                    <div class="pub-servicio-texto">
                         <h2><?= e($area['nombre']) ?></h2>
                         <p><?= e($area['descripcion']) ?></p>
                     </div>
                 </li>
             <?php endforeach; ?>
-        </ol>
+        </ul>
     <?php endif; ?>
 </section>
 

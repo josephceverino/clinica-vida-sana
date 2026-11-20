@@ -605,9 +605,9 @@ select {
    (nada se mueve ni cambia de tamaño). tema.js pone "tema-cambiando" solo
    un momento (y nunca con "reducir movimiento"), así no retrasa los
    efectos normales de la página. El switch queda fuera: tiene su propia
-   animación (la perilla que se desliza). */
+   transición de la pista, la perilla y el paisaje. */
 .tema-cambiando,
-.tema-cambiando *:not(.switch-tema-perilla):not(.switch-tema-icono),
+.tema-cambiando *:not(.switch-tema-pista, .switch-tema-pista *),
 .tema-cambiando *::before,
 .tema-cambiando *::after {
     transition: background-color var(--mov-medio) var(--mov-curva), color var(--mov-medio) var(--mov-curva), border-color var(--mov-medio) var(--mov-curva),
@@ -621,10 +621,11 @@ select {
    variables --switch-*. La perilla se desliza y el sol se cambia por la luna.
    ===================================================================== */
 .switch-tema {
-    --switch-pista:        #E3EBEF;
-    --switch-pista-borde:  #C5D3DA;
+    --switch-pista:        #BEE4EC;
+    --switch-pista-borde:  #8CBAC8;
     --switch-pista-activa: #087C94;
     --switch-foco:         #087C94;
+    --switch-transicion:   400ms cubic-bezier(0.45, 0, 0.25, 1);
 
     display: inline-flex;
     align-items: center;
@@ -646,13 +647,44 @@ select {
 
 .switch-tema-pista {
     position: relative;
+    overflow: hidden;
     flex-shrink: 0;
     width: 52px;
     height: 30px;
-    background: var(--switch-pista);
+    background-color: var(--switch-pista);
+    background-image: linear-gradient(180deg, transparent 30%, rgba(11, 110, 138, 0.16));
     border: 1px solid var(--switch-pista-borde);
     border-radius: 999px;
-    transition: background-color var(--mov-medio) var(--mov-curva), border-color var(--mov-medio) var(--mov-curva);
+    transition: background-color var(--switch-transicion), border-color var(--switch-transicion);
+}
+
+.switch-tema-nubes,
+.switch-tema-estrellas {
+    position: absolute;
+    width: 43%;
+    height: 86%;
+    pointer-events: none;
+    transition: opacity var(--switch-transicion), transform var(--switch-transicion);
+}
+
+.switch-tema-nubes {
+    right: 1px;
+    bottom: 0;
+    fill: #F1FAFC;
+    opacity: 1;
+    transform: none;
+}
+
+.switch-tema-nube-lejana {
+    opacity: 0.55;
+}
+
+.switch-tema-estrellas {
+    top: 7%;
+    left: 1px;
+    fill: #D1F1F2;
+    opacity: 0;
+    transform: translate(-3px, 5px) scale(0.7);
 }
 
 .switch-tema-perilla {
@@ -663,11 +695,11 @@ select {
     place-items: center;
     width: 24px;
     height: 24px;
-    color: #A86B00;            /* sol ámbar */
-    background: #FFFFFF;
+    color: #925A13;
+    background: #FFF8E7;
     border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(15, 42, 61, 0.3);
-    transition: transform var(--mov-medio) var(--mov-curva), background-color var(--mov-medio) var(--mov-curva), color var(--mov-medio) var(--mov-curva);
+    box-shadow: 0 1px 3px rgba(15, 42, 61, 0.35);
+    transition: transform var(--switch-transicion), background-color var(--switch-transicion), color var(--switch-transicion);
 }
 
 /* Sol y luna en el mismo sitio: uno aparece mientras el otro gira y se va */
@@ -675,7 +707,7 @@ select {
     grid-area: 1 / 1;
     width: 16px;
     height: 16px;
-    transition: opacity var(--mov-medio) var(--mov-curva), transform var(--mov-medio) var(--mov-curva);
+    transition: opacity var(--switch-transicion), transform var(--switch-transicion);
 }
 
 .switch-tema-icono:last-child {
@@ -685,13 +717,23 @@ select {
 
 /* Encendido (modo oscuro): la perilla se va a la derecha y muestra la luna */
 .switch-tema[aria-checked="true"] .switch-tema-pista {
-    background: var(--switch-pista-activa);
+    background-color: color-mix(in srgb, #153C4B 82%, var(--switch-pista-activa));
     border-color: var(--switch-pista-activa);
 }
 
+.switch-tema[aria-checked="true"] .switch-tema-nubes {
+    opacity: 0;
+    transform: translate(5px, 4px);
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-estrellas {
+    opacity: 1;
+    transform: none;
+}
+
 .switch-tema[aria-checked="true"] .switch-tema-perilla {
-    color: #F5C66B;            /* luna amarilla suave */
-    background: #0E1A20;
+    color: #15566A;
+    background: #D8F1EE;
     transform: translateX(22px);
 }
 
@@ -729,7 +771,9 @@ select {
 @media (prefers-reduced-motion: reduce) {
     .switch-tema-pista,
     .switch-tema-perilla,
-    .switch-tema-icono {
+    .switch-tema-icono,
+    .switch-tema-nubes,
+    .switch-tema-estrellas {
         transition: none;
     }
 }

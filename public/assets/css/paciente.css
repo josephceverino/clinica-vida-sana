@@ -85,6 +85,10 @@
     cursor: not-allowed;
 }
 
+.portal-menu .portal-menu-perfil {
+    display: none;
+}
+
 /* Mi perfil y Salir */
 .portal-sesion {
     display: flex;
@@ -550,6 +554,11 @@
 
 /* ---------- Celular y tableta: el menú pasa a una barra de pestañas abajo ---------- */
 @media (max-width: 900px) {
+    :root:has(> body.portal) {
+        --portal-menu-reserva: calc(5rem + env(safe-area-inset-bottom));
+        scroll-padding-bottom: var(--portal-menu-reserva);
+    }
+
     .portal-barra-interior {
         gap: 0.75rem;
         padding: 0.6rem 1rem;
@@ -581,13 +590,14 @@
 
     /* Barra de pestañas fija abajo: icono y texto debajo */
     .portal-menu {
+        --portal-menu-movimiento: 220ms var(--mov-curva);
         position: fixed;
         left: 0;
         right: 0;
         bottom: 0;
         z-index: 30;
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
         gap: 0;
         padding: 0.3rem 0.25rem calc(0.3rem + env(safe-area-inset-bottom));
         background: var(--panel-superficie);
@@ -597,14 +607,28 @@
 
     .portal-menu a,
     .portal-menu .deshabilitado {
+        position: relative;
+        min-width: 0;
         flex-direction: column;
         justify-content: center;
         gap: 0.2rem;
         min-height: 52px;
         padding: 0.35rem 0.2rem;
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         text-align: center;
         line-height: 1.15;
+    }
+
+    .portal-menu .portal-menu-perfil {
+        display: inline-flex;
+    }
+
+    .portal-menu .portal-menu-detalle {
+        display: none;
+    }
+
+    .portal-menu a {
+        transition: background-color var(--portal-menu-movimiento), color var(--portal-menu-movimiento);
     }
 
     .portal-menu .icono {
@@ -612,13 +636,49 @@
         height: 22px;
     }
 
-    .portal-menu a.activo {
+    .portal-menu a[aria-current="page"] {
+        color: var(--panel-enlace);
         background: var(--panel-tinte);
+    }
+
+    .portal-menu a[aria-current="page"] .icono {
+        transform: translateY(-2px);
+        animation: portal-menu-elevar var(--portal-menu-movimiento);
+    }
+
+    .portal-menu a[aria-current="page"]::after {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        bottom: 1px;
+        width: 1.25rem;
+        height: 2px;
+        margin-inline: auto;
+        border-radius: 999px;
+        background: var(--panel-enlace);
+        pointer-events: none;
+        animation: portal-menu-indicador var(--portal-menu-movimiento);
+    }
+
+    .portal-barra .portal-menu a:focus-visible {
+        outline: 2px solid var(--panel-enlace);
+        outline-offset: -2px;
+        box-shadow: none;
+    }
+
+    @keyframes portal-menu-elevar {
+        from { transform: none; }
+        to   { transform: translateY(-2px); }
+    }
+
+    @keyframes portal-menu-indicador {
+        from { opacity: 0; transform: scaleX(0.4); }
+        to   { opacity: 1; transform: scaleX(1); }
     }
 
     /* Espacio para que la barra de abajo no tape el contenido ni el pie */
     .portal .pie {
-        padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+        padding-bottom: var(--portal-menu-reserva);
     }
 
     .portal-numeros {
@@ -649,6 +709,18 @@
 
     .portal-atencion::before {
         left: -1.4rem;
+    }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+    .portal-menu a {
+        transition: none;
+    }
+
+    .portal-menu a[aria-current="page"] .icono,
+    .portal-menu a[aria-current="page"]::after {
+        transform: none;
+        animation: none;
     }
 }
 

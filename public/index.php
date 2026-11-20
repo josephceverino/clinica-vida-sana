@@ -5,16 +5,17 @@ $titulo_pagina = 'Inicio';
 $script_pagina = 'portada.js';
 require __DIR__ . '/../app/layout/publico_header.php';
 
-// Diapositivas del carrusel. Para cambiar una imagen por una foto, deja el
-// archivo en public/assets/img/ y cambia aquí su nombre.
+// Diapositivas del carrusel. Las imágenes se guardan en public/assets/img/.
 $diapositivas = [
     [
         'etiqueta' => 'Clínica Vida Sana',
         'titulo'   => 'Tu salud es lo primero.',
         'texto'    => 'Atención cercana, médicos que te escuchan y turnos que se adaptan a tu día.',
         'boton'    => ['Portal del paciente', '/login.php'],
-        'imagen'   => 'slide-bienvenida.svg',
-        'tono'     => 'tono-azul',
+        'imagen'   => 'clinica/consulta-general.webp',
+        'alt'      => 'Una médica conversa con un paciente durante una consulta.',
+        'ancho'    => 1774,
+        'alto'     => 887,
     ],
     [
         'etiqueta' => 'Pediatría',
@@ -22,7 +23,7 @@ $diapositivas = [
         'texto'    => 'Controles, vacunas y seguimiento para los más pequeños de la casa.',
         'boton'    => ['Ver servicios', '/servicios.php'],
         'imagen'   => 'slide-pediatria.svg',
-        'tono'     => 'tono-verde',
+        'tono'     => 'diapositiva-pediatria',
     ],
     [
         'etiqueta' => 'Laboratorio',
@@ -30,7 +31,7 @@ $diapositivas = [
         'texto'    => 'Análisis clínicos en el mismo lugar donde te atiende tu médico.',
         'boton'    => ['Ver servicios', '/servicios.php'],
         'imagen'   => 'slide-laboratorio.svg',
-        'tono'     => 'tono-oscuro',
+        'tono'     => 'diapositiva-laboratorio',
     ],
     [
         'etiqueta' => 'Citas en línea',
@@ -38,7 +39,6 @@ $diapositivas = [
         'texto'    => 'Crea tu cuenta, elige el área y reserva un horario libre. Tu cita queda confirmada al momento.',
         'boton'    => ['Crear mi cuenta', '/registro.php'],
         'imagen'   => 'slide-citas.svg',
-        'tono'     => 'tono-azul',
     ],
 ];
 ?>
@@ -50,7 +50,7 @@ $diapositivas = [
              data-carrusel>
         <div class="carrusel-pista" data-pista>
             <?php foreach ($diapositivas as $i => $d): ?>
-                <article class="diapositiva <?= e($d['tono']) ?>"
+                <article class="diapositiva<?= isset($d['tono']) ? ' ' . e($d['tono']) : '' ?>"
                          aria-roledescription="diapositiva"
                          aria-label="<?= ($i + 1) . ' de ' . count($diapositivas) ?>">
                     <div class="diapositiva-texto">
@@ -59,28 +59,33 @@ $diapositivas = [
                         <?php $etiqueta_titulo = $i === 0 ? 'h1' : 'h2'; ?>
                         <<?= $etiqueta_titulo ?>><?= e($d['titulo']) ?></<?= $etiqueta_titulo ?>>
                         <p><?= e($d['texto']) ?></p>
-                        <a class="pub-boton pub-boton-blanco" href="<?= e(url($d['boton'][1])) ?>"><?= e($d['boton'][0]) ?></a>
+                        <a class="pub-boton" href="<?= e(url($d['boton'][1])) ?>"><?= e($d['boton'][0]) ?></a>
                     </div>
-                    <img class="diapositiva-imagen" src="<?= e(url('/assets/img/' . $d['imagen'])) ?>"
-                         alt="" width="480" height="360" <?= $i > 0 ? 'loading="lazy"' : '' ?>>
+                    <div class="diapositiva-visual<?= $i === 0 ? ' diapositiva-visual-foto' : '' ?>">
+                        <img class="diapositiva-imagen" src="<?= e(recurso('/assets/img/' . $d['imagen'])) ?>"
+                             alt="<?= e($d['alt'] ?? '') ?>" width="<?= $d['ancho'] ?? 480 ?>"
+                             height="<?= $d['alto'] ?? 360 ?>" <?= $i === 0 ? 'fetchpriority="high"' : 'loading="lazy"' ?>>
+                    </div>
                 </article>
             <?php endforeach; ?>
         </div>
 
         <!-- Controles (los activa portada.js) -->
-        <button class="carrusel-flecha carrusel-anterior" type="button" data-anterior
-                aria-label="Diapositiva anterior" hidden>&#8249;</button>
-        <button class="carrusel-flecha carrusel-siguiente" type="button" data-siguiente
-                aria-label="Diapositiva siguiente" hidden>&#8250;</button>
-        <div class="carrusel-puntos" data-puntos hidden>
-            <?php foreach ($diapositivas as $i => $d): ?>
-                <button type="button" data-ir="<?= $i ?>"
-                        aria-label="Ir a la diapositiva <?= $i + 1 ?>"></button>
-            <?php endforeach; ?>
+        <div class="carrusel-controles" hidden>
+            <button class="carrusel-flecha carrusel-anterior" type="button" data-anterior
+                    aria-label="Diapositiva anterior">&#8249;</button>
+            <div class="carrusel-puntos" data-puntos>
+                <?php foreach ($diapositivas as $i => $d): ?>
+                    <button type="button" data-ir="<?= $i ?>"
+                            aria-label="Ir a la diapositiva <?= $i + 1 ?>"></button>
+                <?php endforeach; ?>
+            </div>
+            <button class="carrusel-flecha carrusel-siguiente" type="button" data-siguiente
+                    aria-label="Diapositiva siguiente">&#8250;</button>
         </div>
     </section>
 
-    <!-- Horarios en una franja que se monta sobre el carrusel (datos ficticios) -->
+    <!-- Horarios y contacto al pie del carrusel (datos ficticios). -->
     <section class="pub-franja aparecer" aria-label="Horarios de atención">
         <div>
             <?= $icono_publico('i-calendario') ?>
@@ -127,7 +132,7 @@ $diapositivas = [
     </ol>
 </section>
 
-<!-- 3. Servicios: mosaico con uno destacado -->
+<!-- 3. Servicios -->
 <section class="pub-seccion aparecer">
     <div class="pub-seccion-cabecera">
         <div>
@@ -136,21 +141,36 @@ $diapositivas = [
         </div>
         <a class="pub-enlace-flecha" href="<?= e(url('/servicios.php')) ?>">Ver todos los servicios <span aria-hidden="true">&rarr;</span></a>
     </div>
-    <div class="pub-mosaico">
-        <article class="pub-mosaico-item pub-mosaico-destacado">
-            <span class="pub-mosaico-icono"><?= $icono_publico('i-cruz') ?></span>
-            <h3>Medicina General</h3>
-            <p>Controles, chequeos y atención de molestias del día a día.</p>
+    <div class="pub-tarjetas-servicio">
+        <article class="pub-tarjeta-servicio">
+            <div class="pub-servicio-visual">
+                <img class="pub-servicio-foto" src="<?= e(recurso('/assets/img/clinica/consulta-general.webp')) ?>"
+                     alt="Una médica conversa con un paciente." width="1774" height="887" loading="lazy" decoding="async">
+            </div>
+            <div class="pub-servicio-texto">
+                <h3>Medicina General</h3>
+                <p>Controles, chequeos y atención de molestias del día a día.</p>
+            </div>
         </article>
-        <article class="pub-mosaico-item">
-            <span class="pub-mosaico-icono"><?= $icono_publico('i-personas') ?></span>
-            <h3>Pediatría</h3>
-            <p>Cuidado y seguimiento del crecimiento de los más pequeños.</p>
+        <article class="pub-tarjeta-servicio">
+            <div class="pub-servicio-visual pub-servicio-visual-pediatria">
+                <img src="<?= e(recurso('/assets/img/slide-pediatria.svg')) ?>"
+                     alt="" width="480" height="360" loading="lazy" decoding="async">
+            </div>
+            <div class="pub-servicio-texto">
+                <h3>Pediatría</h3>
+                <p>Cuidado y seguimiento del crecimiento de los más pequeños.</p>
+            </div>
         </article>
-        <article class="pub-mosaico-item">
-            <span class="pub-mosaico-icono"><?= $icono_publico('i-documento') ?></span>
-            <h3>Laboratorio</h3>
-            <p>Análisis clínicos con resultados claros y a tiempo.</p>
+        <article class="pub-tarjeta-servicio">
+            <div class="pub-servicio-visual pub-servicio-visual-laboratorio">
+                <img src="<?= e(recurso('/assets/img/slide-laboratorio.svg')) ?>"
+                     alt="" width="480" height="360" loading="lazy" decoding="async">
+            </div>
+            <div class="pub-servicio-texto">
+                <h3>Laboratorio</h3>
+                <p>Análisis clínicos con resultados claros y a tiempo.</p>
+            </div>
         </article>
     </div>
 </section>

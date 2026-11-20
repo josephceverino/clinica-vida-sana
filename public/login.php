@@ -69,16 +69,22 @@ require __DIR__ . '/../app/layout/publico_header.php';
         <p class="pub-bajada">Ingresa para ver tus citas y tu historial. El personal de la clínica entra por aquí también.</p>
 
         <?php if ($mensaje !== null): ?>
-            <div class="pub-aviso <?= $mensaje['tipo'] === 'error' ? 'pub-aviso-error' : 'pub-aviso-exito' ?>" role="status">
+            <div class="pub-aviso pub-notificacion <?= $mensaje['tipo'] === 'error' ? 'pub-aviso-error' : 'pub-aviso-exito' ?>" role="status">
                 <?= $icono_publico($mensaje['tipo'] === 'error' ? 'i-alerta' : 'i-visto') ?>
                 <p><?= e($mensaje['texto']) ?></p>
+                <button class="pub-notificacion-cerrar" type="button" aria-label="Cerrar notificación" hidden>
+                    <?= $icono_publico('i-cerrar') ?>
+                </button>
             </div>
         <?php endif; ?>
 
         <?php if ($error !== ''): ?>
-            <div class="pub-aviso pub-aviso-error" role="alert">
+            <div class="pub-aviso pub-aviso-error pub-notificacion" role="alert">
                 <?= $icono_publico('i-alerta') ?>
                 <p><?= e($error) ?></p>
+                <button class="pub-notificacion-cerrar" type="button" aria-label="Cerrar notificación" hidden>
+                    <?= $icono_publico('i-cerrar') ?>
+                </button>
             </div>
         <?php endif; ?>
 
@@ -86,16 +92,16 @@ require __DIR__ . '/../app/layout/publico_header.php';
         <form class="pub-formulario" method="post" action="<?= e(url('/login.php')) ?>" data-cargando>
             <?= csrf_campo() ?>
 
-            <div class="pub-campo">
-                <label for="identificador">Usuario o correo</label>
+            <div class="pub-campo pub-campo-flotante">
                 <input type="text" id="identificador" name="identificador" maxlength="120"
-                       value="<?= e($identificador) ?>" autocomplete="username" required autofocus>
+                       value="<?= e($identificador) ?>" placeholder=" " autocomplete="username" required autofocus>
+                <label for="identificador">Usuario o correo</label>
             </div>
 
-            <div class="pub-campo">
-                <label for="password">Contraseña</label>
+            <div class="pub-campo pub-campo-flotante">
                 <input type="password" id="password" name="password"
-                       autocomplete="current-password" required>
+                       placeholder=" " autocomplete="current-password" required>
+                <label for="password">Contraseña</label>
             </div>
 
             <button class="pub-boton pub-boton-ancho" type="submit" data-texto-cargando="Ingresando…">Ingresar</button>

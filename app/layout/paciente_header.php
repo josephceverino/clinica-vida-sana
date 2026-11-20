@@ -62,12 +62,21 @@ $icono_panel = fn (string $id): string =>
                        class="<?= $archivo === $pagina_activa ? 'activo' : '' ?>"
                        <?= $archivo === $pagina_activa ? 'aria-current="page"' : '' ?>>
                         <?= $icono_panel($icono) ?>
-                        <span><?= e($texto) ?></span>
+                        <?php if ($archivo === 'historia.php'): ?>
+                            <span>Historia<span class="portal-menu-detalle"> clínica</span></span>
+                        <?php else: ?>
+                            <span><?= e($texto) ?></span>
+                        <?php endif; ?>
                     </a>
                 <?php else: ?>
                     <span class="deshabilitado"><?= $icono_panel($icono) ?><span><?= e($texto) ?> <small>pronto</small></span></span>
                 <?php endif; ?>
             <?php endforeach; ?>
+            <a class="portal-menu-perfil" href="<?= e(url('/paciente/perfil.php')) ?>"
+               <?= $pagina_activa === 'perfil.php' ? 'aria-current="page"' : '' ?>>
+                <?= $icono_panel('i-usuario') ?>
+                <span>Perfil</span>
+            </a>
         </nav>
 
         <div class="portal-sesion">
