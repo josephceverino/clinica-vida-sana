@@ -15,36 +15,59 @@ $consulta->execute();
 $areas = $consulta->fetchAll();
 
 require __DIR__ . '/../app/layout/publico_header.php';
+
+$visuales = [
+    'Medicina General' => ['clinica/consulta-general.webp', 'foto', 1774, 887, 'Una médica conversa con un paciente.'],
+    'Pediatría' => ['slide-pediatria.svg', 'pediatria', 480, 360, ''],
+    'Laboratorio' => ['slide-laboratorio.svg', 'laboratorio', 480, 360, ''],
+];
 ?>
 
-<section class="seccion">
-    <p class="etiqueta">Servicios</p>
+<!-- Encabezado de la página -->
+<section class="pub-encabezado pub-servicios-encabezado aparecer">
+    <p class="pub-etiqueta">Servicios</p>
     <h1>Cuidamos cada etapa de tu salud</h1>
-    <p class="portada-bajada">
+    <p class="pub-bajada">
         Estas son las áreas donde te atendemos. Si no sabes a cuál ir,
         pide tu cita y te orientamos.
     </p>
 </section>
 
-<section class="seccion">
+<!-- Áreas publicadas, con recursos visuales para las especialidades conocidas. -->
+<section class="pub-seccion aparecer">
     <?php if (count($areas) === 0): ?>
-        <p>Pronto publicaremos nuestros servicios.</p>
+        <p class="pub-bajada">Pronto publicaremos nuestros servicios.</p>
     <?php else: ?>
-        <div class="rejilla-3">
+        <ul class="pub-tarjetas-servicio" role="list">
             <?php foreach ($areas as $area): ?>
-                <article class="servicio">
-                    <h3><?= e($area['nombre']) ?></h3>
-                    <p><?= e($area['descripcion']) ?></p>
-                </article>
+                <?php $visual = $visuales[$area['nombre']] ?? null; ?>
+                <li class="pub-tarjeta-servicio">
+                    <?php if ($visual): ?>
+                        <?php [$archivo, $tipo, $ancho, $alto, $alt] = $visual; ?>
+                        <div class="pub-servicio-visual<?= $tipo === 'foto' ? '' : ' pub-servicio-visual-' . e($tipo) ?>">
+                            <img<?= $tipo === 'foto' ? ' class="pub-servicio-foto"' : '' ?>
+                                 src="<?= e(recurso('/assets/img/' . $archivo)) ?>" alt="<?= e($alt) ?>"
+                                 width="<?= $ancho ?>" height="<?= $alto ?>" loading="lazy" decoding="async">
+                        </div>
+                    <?php else: ?>
+                        <div class="pub-servicio-visual"><?= $icono_publico('i-cruz') ?></div>
+                    <?php endif; ?>
+                    <div class="pub-servicio-texto">
+                        <h2><?= e($area['nombre']) ?></h2>
+                        <p><?= e($area['descripcion']) ?></p>
+                    </div>
+                </li>
             <?php endforeach; ?>
-        </div>
+        </ul>
     <?php endif; ?>
 </section>
 
-<section class="llamado">
-    <h2>¿Listo para tu consulta?</h2>
-    <p>Ingresa al Portal del paciente y reserva tu cita en el horario que prefieras.</p>
-    <a class="boton boton-claro" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
+<section class="pub-llamado aparecer">
+    <div>
+        <h2>¿Listo para tu consulta?</h2>
+        <p>Ingresa al Portal del paciente y reserva tu cita en el horario que prefieras.</p>
+    </div>
+    <a class="pub-boton pub-boton-blanco" href="<?= e(url('/login.php')) ?>">Portal del paciente</a>
 </section>
 
 <?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

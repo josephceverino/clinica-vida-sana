@@ -74,98 +74,129 @@ $mensaje = mensaje_tomar();
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<header class="panel-titulo">
-    <div>
-        <h1>Solicitudes de cita</h1>
-        <p>Lo que piden los pacientes desde su portal. Prográmalas como cita o descártalas.</p>
-    </div>
-</header>
+<div class="ui-pagina ui-animada">
 
-<?php if ($mensaje): ?>
-    <p role="status"><?= e($mensaje['texto']) ?></p>
-<?php endif; ?>
+    <header class="ui-cabecera">
+        <div>
+            <h1>Solicitudes de cita</h1>
+            <p>Lo que piden los pacientes desde su portal. Prográmalas como cita o descártalas.</p>
+        </div>
+    </header>
 
-<?php if ($error !== ''): ?>
-    <p role="alert"><?= e($error) ?></p>
-<?php endif; ?>
+    <?php if ($mensaje): ?>
+        <div class="ui-aviso ui-aviso-exito" role="status">
+            <?= $icono_panel('i-visto') ?>
+            <p><?= e($mensaje['texto']) ?></p>
+        </div>
+    <?php endif; ?>
 
-<nav class="pestanas" aria-label="Filtro de solicitudes">
-    <?php foreach ($filtros as $clave => $texto): ?>
-        <a href="<?= e(url('/panel/solicitudes.php?estado=' . $clave)) ?>"
-           class="<?= $clave === $filtro ? 'activo' : '' ?>"><?= e($texto) ?></a>
-    <?php endforeach; ?>
-</nav>
+    <?php if ($error !== ''): ?>
+        <div class="ui-aviso ui-aviso-error" role="alert">
+            <?= $icono_panel('i-alerta') ?>
+            <p><?= e($error) ?></p>
+        </div>
+    <?php endif; ?>
 
-<?php if ($solicitudes === [] && $error === ''): ?>
-    <section class="caja">
-        <p class="vacio">No hay solicitudes en esta lista.</p>
+    <nav class="ui-pestanas" aria-label="Filtro de solicitudes">
+        <?php foreach ($filtros as $clave => $texto): ?>
+            <a href="<?= e(url('/panel/solicitudes.php?estado=' . $clave)) ?>"
+               <?= $clave === $filtro ? 'aria-current="page"' : '' ?>><?= e($texto) ?></a>
+        <?php endforeach; ?>
+    </nav>
+
+    <?php // Con error y sin datos, basta el aviso rojo de arriba (sin tarjeta vacía). ?>
+    <?php if ($solicitudes !== [] || $error === ''): ?>
+    <section class="ui-tarjeta">
+        <?php if ($solicitudes === []): ?>
+            <div class="ui-vacio">
+                <span class="ui-vacio-icono"><?= $icono_panel('i-documento') ?></span>
+                <strong>No hay solicitudes en esta lista.</strong>
+                <p>
+                    <?= $filtro === 'nueva'
+                        ? 'Cuando un paciente pida una cita desde su portal, aparecerá aquí.'
+                        : 'Prueba con otra pestaña.' ?>
+                </p>
+            </div>
+        <?php elseif ($solicitudes !== []): ?>
+            <div class="ui-tarjeta-cabecera">
+                <h2><?= e($filtros[$filtro]) ?></h2>
+                <span class="ui-insignia"><?= count($solicitudes) ?> solicitud<?= count($solicitudes) === 1 ? '' : 'es' ?></span>
+            </div>
+
+            <div class="ui-tabla-contenedor">
+                <table class="ui-tabla ui-tabla-apilable ui-tabla-apilable-ancha" role="table">
+                    <caption class="solo-lectores">Solicitudes de cita: <?= e($filtros[$filtro]) ?></caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col" role="columnheader">Paciente</th>
+                            <th scope="col" role="columnheader">Área</th>
+                            <th scope="col" role="columnheader">Fecha preferida</th>
+                            <th scope="col" role="columnheader">Motivo</th>
+                            <th scope="col" role="columnheader">Estado</th>
+                            <th scope="col" role="columnheader">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <?php foreach ($solicitudes as $solicitud): ?>
+                            <tr role="row">
+                                <td class="ui-celda-fuerte" role="cell" data-etiqueta="Paciente">
+                                    <span class="ui-celda-valor">
+                                        <?= e($solicitud['nombre']) ?>
+                                        <small>
+                                            <?= e($solicitud['tipo_documento'] . ' ' . $solicitud['numero_documento']) ?>
+                                            &middot; Tel. <?= e($solicitud['telefono'] ?? '—') ?>
+                                        </small>
+                                    </span>
+                                </td>
+                                <td role="cell" data-etiqueta="Área"><?= e($solicitud['area']) ?></td>
+                                <td class="ui-celda-suave" role="cell" data-etiqueta="Fecha preferida">
+                                    <?= $solicitud['fecha_preferida']
+                                        ? e(date('d/m/Y', strtotime($solicitud['fecha_preferida'])))
+                                        : 'Sin preferencia' ?>
+                                </td>
+                                <td role="cell" data-etiqueta="Motivo"><?= e($solicitud['mensaje'] ?? '') ?></td>
+                                <td role="cell" data-etiqueta="Estado">
+                                    <?php [$clase, $texto] = etiqueta_solicitud($solicitud); ?>
+                                    <span class="estado estado-<?= e($clase) ?>"><?= e($texto) ?></span>
+                                </td>
+                                <td role="cell" data-etiqueta="Acción">
+                                    <?php if ($solicitud['estado'] === 'nueva'): ?>
+                                        <div class="ui-acciones-fila">
+                                            <a class="ui-boton ui-boton-chico"
+                                               href="<?= e(url('/panel/programar-solicitud.php?id=' . $solicitud['id'])) ?>">
+                                                Programar cita
+                                            </a>
+                                            <!-- data-cargando: al enviar, el botón muestra "Descartando…" -->
+                                            <form method="post"
+                                                  action="<?= e(url('/panel/solicitudes.php?estado=' . $filtro)) ?>"
+                                                  data-cargando>
+                                                <?= csrf_campo() ?>
+                                                <input type="hidden" name="solicitud_id"
+                                                       value="<?= (int) $solicitud['id'] ?>">
+                                                <button class="ui-boton ui-boton-peligro ui-boton-chico" type="submit"
+                                                        data-texto-cargando="Descartando…">
+                                                    Descartar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    <?php elseif ($solicitud['cita_id']): ?>
+                                        <a class="ui-enlace" href="<?= e(url('/panel/gestionar-cita.php?id=' . $solicitud['cita_id'])) ?>">
+                                            Ver cita del
+                                            <?= e(date('d/m', strtotime($solicitud['cita_fecha']))) ?>
+                                            a las <?= e(substr($solicitud['cita_hora'], 0, 5)) ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <span aria-hidden="true">—</span><span class="solo-lectores">Sin acciones</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
     </section>
-<?php else: ?>
-    <div class="caja tabla-scroll">
-        <table class="tabla">
-            <thead>
-                <tr>
-                    <th>Paciente</th>
-                    <th>Área</th>
-                    <th>Fecha preferida</th>
-                    <th>Motivo</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($solicitudes as $solicitud): ?>
-                    <tr>
-                        <td>
-                            <strong><?= e($solicitud['nombre']) ?></strong><br>
-                            <small>
-                                <?= e($solicitud['tipo_documento'] . ' ' . $solicitud['numero_documento']) ?>
-                                &middot; Tel. <?= e($solicitud['telefono'] ?? '—') ?>
-                            </small>
-                        </td>
-                        <td><?= e($solicitud['area']) ?></td>
-                        <td>
-                            <?= $solicitud['fecha_preferida']
-                                ? e(date('d/m/Y', strtotime($solicitud['fecha_preferida'])))
-                                : '<span class="vacio">Sin preferencia</span>' ?>
-                        </td>
-                        <td><?= e($solicitud['mensaje'] ?? '') ?></td>
-                        <td>
-                            <?php [$clase, $texto] = etiqueta_solicitud($solicitud); ?>
-                            <span class="estado estado-<?= e($clase) ?>"><?= e($texto) ?></span>
-                        </td>
-                        <td>
-                            <?php if ($solicitud['estado'] === 'nueva'): ?>
-                                <div class="acciones-fila">
-                                    <a class="boton-tabla"
-                                       href="<?= e(url('/panel/programar-solicitud.php?id=' . $solicitud['id'])) ?>">
-                                        Programar cita
-                                    </a>
-                                    <form method="post"
-                                          action="<?= e(url('/panel/solicitudes.php?estado=' . $filtro)) ?>">
-                                        <?= csrf_campo() ?>
-                                        <input type="hidden" name="solicitud_id"
-                                               value="<?= (int) $solicitud['id'] ?>">
-                                        <button class="boton-tabla boton-tabla-claro" type="submit">
-                                            Descartar
-                                        </button>
-                                    </form>
-                                </div>
-                            <?php elseif ($solicitud['cita_id']): ?>
-                                <a href="<?= e(url('/panel/gestionar-cita.php?id=' . $solicitud['cita_id'])) ?>">
-                                    Ver cita del
-                                    <?= e(date('d/m', strtotime($solicitud['cita_fecha']))) ?>
-                                    a las <?= e(substr($solicitud['cita_hora'], 0, 5)) ?>
-                                </a>
-                            <?php else: ?>
-                                <span class="vacio">—</span>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-<?php endif; ?>
+    <?php endif; ?>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>

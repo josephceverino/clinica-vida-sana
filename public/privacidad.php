@@ -7,27 +7,48 @@ $titulo_pagina = 'Política de privacidad';
 require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
-<section class="seccion texto-legal">
-    <p class="etiqueta">Privacidad</p>
+<!-- Encabezado -->
+<section class="pub-encabezado aparecer">
+
+    <p class="pub-etiqueta">Privacidad</p>
     <h1>Política de privacidad</h1>
-    <p class="portada-bajada">
+    <p class="pub-bajada">
         Tus datos de salud son tuyos. Aquí te contamos, sin letra pequeña,
         qué guardamos, para qué y quién puede verlo.
     </p>
+</section>
 
-    <p class="aviso aviso-pendiente">
-        Clínica Vida Sana es una <strong>clínica simulada</strong> de un proyecto
-        académico. Este texto es un ejemplo y no tiene valor legal.
-    </p>
+<!-- Texto legal con índice: en escritorio el índice queda fijo a la izquierda -->
+<section class="pub-seccion pub-legal">
+    <nav class="pub-legal-indice" aria-label="Apartados de la política">
+        <p>En esta página</p>
+        <ol>
+            <li><a href="#apartado-1">Quién cuida tus datos</a></li>
+            <li><a href="#apartado-2">Qué datos guardamos</a></li>
+            <li><a href="#apartado-3">Para qué los usamos</a></li>
+            <li><a href="#apartado-4">Quién puede verlos</a></li>
+            <li><a href="#apartado-5">Cómo los protegemos</a></li>
+            <li><a href="#apartado-6">Tus derechos</a></li>
+            <li><a href="#apartado-7">Tu consentimiento</a></li>
+        </ol>
+    </nav>
 
-    <h2>1. Quién cuida tus datos</h2>
+    <article class="pub-legal-texto">
+
+    <div class="pub-aviso pub-aviso-advertencia">
+        <?= $icono_publico('i-info') ?>
+        <p>Clínica Vida Sana es una <strong>clínica simulada</strong> de un proyecto
+        académico. Este texto es un ejemplo y no tiene valor legal.</p>
+    </div>
+
+    <h2 id="apartado-1">1. Quién cuida tus datos</h2>
     <p>
         Clínica Vida Sana es la responsable de tus datos personales. Para cualquier
         consulta sobre ellos puedes acercarte a <strong>admisión</strong> o escribir
         desde la página de <a href="<?= e(url('/contacto.php')) ?>">contacto</a>.
     </p>
 
-    <h2>2. Qué datos guardamos</h2>
+    <h2 id="apartado-2">2. Qué datos guardamos</h2>
     <ul>
         <li><strong>De identificación:</strong> nombres, apellidos, tipo y número de documento.</li>
         <li><strong>De contacto:</strong> correo y celular.</li>
@@ -35,14 +56,14 @@ require __DIR__ . '/../app/layout/publico_header.php';
         <li><strong>De salud:</strong> tus citas y tu historia clínica (diagnósticos, tratamientos y notas de tus médicos). Son <strong>datos sensibles</strong> y reciben la mayor protección.</li>
     </ul>
 
-    <h2>3. Para qué los usamos</h2>
+    <h2 id="apartado-3">3. Para qué los usamos</h2>
     <p>
         Solo para <strong>atenderte</strong>: identificarte, programar tus citas,
         que tu médico conozca tus antecedentes y que tú puedas consultar tu historia.
         <strong>No vendemos ni compartimos tus datos</strong> con terceros para publicidad.
     </p>
 
-    <h2>4. Quién puede verlos</h2>
+    <h2 id="apartado-4">4. Quién puede verlos</h2>
     <ul>
         <li><strong>Tú</strong>, desde el Portal del paciente, una vez verificada tu cuenta.</li>
         <li><strong>Admisión</strong>: tus datos de contacto y tus citas, para organizarlas. No ve tu historia clínica.</li>
@@ -54,7 +75,7 @@ require __DIR__ . '/../app/layout/publico_header.php';
         dentro del portal.
     </p>
 
-    <h2>5. Cómo los protegemos</h2>
+    <h2 id="apartado-5">5. Cómo los protegemos</h2>
     <ul>
         <li>La web funciona con conexión cifrada (HTTPS).</li>
         <li>Las contraseñas se guardan cifradas y hay un límite de intentos para entrar.</li>
@@ -62,7 +83,7 @@ require __DIR__ . '/../app/layout/publico_header.php';
         <li>Llevamos un registro de auditoría de los accesos a datos clínicos.</li>
     </ul>
 
-    <h2>6. Tus derechos</h2>
+    <h2 id="apartado-6">6. Tus derechos</h2>
     <p>
         Puedes pedir en admisión, con tu documento de identidad:
     </p>
@@ -74,12 +95,13 @@ require __DIR__ . '/../app/layout/publico_header.php';
     </ul>
     <p>Tu contraseña la puedes cambiar tú mismo en cualquier momento desde "Mi perfil".</p>
 
-    <h2>7. Tu consentimiento</h2>
+    <h2 id="apartado-7">7. Tu consentimiento</h2>
     <p>
         Al crear tu cuenta marcas la casilla de aceptación y guardamos la
         <strong>fecha y hora</strong> en que lo hiciste. Sin esa aceptación no
         podemos crear tu cuenta en el portal (puedes atenderte igual en admisión).
     </p>
+    </article>
 </section>
 
 <?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>

@@ -63,139 +63,170 @@ $proximas = array_reverse($proximas);
 require __DIR__ . '/../../app/layout/paciente_header.php';
 ?>
 
-<section class="seccion">
-    <p class="etiqueta">Portal del paciente</p>
-    <h1>Mis citas</h1>
+<div class="ui-pagina ui-animada">
+
+    <header class="ui-cabecera">
+        <div>
+            <h1>Mis citas</h1>
+            <p>Tus próximas citas, tus solicitudes y tu historial.</p>
+        </div>
+        <a class="ui-boton" href="<?= e(url('/paciente/pedir-cita.php')) ?>">
+            <?= $icono_panel('i-agregar') ?>
+            Pedir una cita
+        </a>
+    </header>
 
     <?php if ($mensaje !== null): ?>
-        <p class="aviso aviso-<?= e($mensaje['tipo']) ?>" role="status"><?= e($mensaje['texto']) ?></p>
-    <?php endif; ?>
-
-    <p><a class="boton" href="<?= e(url('/paciente/pedir-cita.php')) ?>">Pedir una cita</a></p>
-</section>
-
-<!-- Próximas citas -->
-<section class="seccion">
-    <h2>Próximas citas</h2>
-    <?php if (count($proximas) === 0): ?>
-        <p class="vacio">No tienes citas próximas.</p>
-    <?php else: ?>
-        <div class="tabla-scroll">
-            <table class="lista-paciente">
-                <thead>
-                    <tr>
-                        <th scope="col">Fecha</th>
-                        <th scope="col">Hora</th>
-                        <th scope="col">Área</th>
-                        <th scope="col">Médico</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col"><span class="solo-lectores">Acción</span></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($proximas as $cita): ?>
-                        <tr>
-                            <td><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?></td>
-                            <td><?= e(substr($cita['hora'], 0, 5)) ?></td>
-                            <td><?= e($cita['area']) ?></td>
-                            <td><?= e($cita['medico'] ?? 'Por asignar') ?></td>
-                            <td><span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span></td>
-                            <td>
-                                <?php if (puede_cancelar_paciente($cita)): ?>
-                                    <form method="post" action="<?= e(url('/paciente/citas.php')) ?>">
-                                        <?= csrf_campo() ?>
-                                        <input type="hidden" name="cita_id" value="<?= (int) $cita['id'] ?>">
-                                        <button class="boton-cancelar" type="submit">Cancelar</button>
-                                    </form>
-                                <?php else: ?>
-                                    <small class="vacio">Para cambios, llama a admisión</small>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+        <div class="ui-aviso <?= $mensaje['tipo'] === 'error' ? 'ui-aviso-error' : 'ui-aviso-exito' ?>"
+             role="<?= $mensaje['tipo'] === 'error' ? 'alert' : 'status' ?>">
+            <?= $icono_panel($mensaje['tipo'] === 'error' ? 'i-alerta' : 'i-visto') ?>
+            <p><?= e($mensaje['texto']) ?></p>
         </div>
     <?php endif; ?>
-</section>
 
-<!-- Mis solicitudes -->
-<section class="seccion">
-    <h2>Mis solicitudes</h2>
-    <p>Son las citas que pediste. Admisión las revisa y te confirma.</p>
-    <?php if (count($solicitudes) === 0): ?>
-        <p class="vacio">No has pedido ninguna cita todavía.</p>
-    <?php else: ?>
-        <div class="tabla-scroll">
-            <table class="lista-paciente">
-                <thead>
-                    <tr>
-                        <th scope="col">Pedida el</th>
-                        <th scope="col">Área</th>
-                        <th scope="col">Fecha preferida</th>
-                        <th scope="col">Motivo</th>
-                        <th scope="col">Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($solicitudes as $solicitud): ?>
-                        <tr>
-                            <td><?= e(date('d/m/Y', strtotime($solicitud['creado_en']))) ?></td>
-                            <td><?= e($solicitud['area']) ?></td>
-                            <td><?= e($solicitud['fecha_preferida'] !== null
-                                ? date('d/m/Y', strtotime($solicitud['fecha_preferida']))
-                                : 'Sin preferencia') ?></td>
-                            <td><?= e($solicitud['mensaje']) ?></td>
-                            <td>
-                                <?php [$clase, $texto] = etiqueta_solicitud($solicitud); ?>
-                                <?php if ($solicitud['estado'] === 'nueva'): ?>
-                                    <span class="estado estado-nueva">en revisión</span>
-                                <?php else: ?>
-                                    <span class="estado estado-<?= e($clase) ?>"><?= e($texto) ?></span>
-                                <?php endif; ?>
-                                <?php if ($solicitud['cita_id']): ?>
-                                    <!-- Admisión la convirtió en cita: le decimos de cuándo era. -->
-                                    <br><small>
-                                        Cita del <?= e(date('d/m/Y', strtotime($solicitud['cita_fecha']))) ?>
-                                        a las <?= e(substr($solicitud['cita_hora'], 0, 5)) ?>
-                                    </small>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+    <!-- Próximas citas -->
+    <section class="ui-tarjeta">
+        <div class="ui-tarjeta-cabecera">
+            <h2>Próximas citas</h2>
+            <?php if (count($proximas) > 0): ?>
+                <span class="ui-insignia"><?= count($proximas) ?></span>
+            <?php endif; ?>
         </div>
-    <?php endif; ?>
-</section>
-
-<!-- Historial -->
-<?php if (count($anteriores) > 0): ?>
-    <section class="seccion">
-        <h2>Historial de citas</h2>
-        <div class="tabla-scroll">
-            <table class="lista-paciente">
-                <thead>
-                    <tr>
-                        <th scope="col">Fecha</th>
-                        <th scope="col">Área</th>
-                        <th scope="col">Motivo</th>
-                        <th scope="col">Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($anteriores as $cita): ?>
-                        <tr>
-                            <td><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?></td>
-                            <td><?= e($cita['area']) ?></td>
-                            <td><?= e($cita['motivo']) ?></td>
-                            <td><span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span></td>
+        <?php if (count($proximas) === 0): ?>
+            <div class="ui-vacio">
+                <span class="ui-vacio-icono"><?= $icono_panel('i-calendario') ?></span>
+                <strong>No tienes citas próximas.</strong>
+                <p>Reserva un horario libre en «Pedir una cita».</p>
+            </div>
+        <?php else: ?>
+            <div class="ui-tabla-contenedor">
+                <table class="ui-tabla ui-tabla-apilable" role="table">
+                    <caption class="solo-lectores">Próximas citas</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col" role="columnheader">Fecha</th>
+                            <th scope="col" role="columnheader">Hora</th>
+                            <th scope="col" role="columnheader">Área</th>
+                            <th scope="col" role="columnheader">Médico</th>
+                            <th scope="col" role="columnheader">Estado</th>
+                            <th scope="col" role="columnheader"><span class="solo-lectores">Acción</span></th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <?php foreach ($proximas as $cita): ?>
+                            <tr role="row">
+                                <td class="ui-celda-fuerte" role="cell" data-etiqueta="Fecha"><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?></td>
+                                <td role="cell" data-etiqueta="Hora"><?= e(substr($cita['hora'], 0, 5)) ?></td>
+                                <td role="cell" data-etiqueta="Área"><?= e($cita['area']) ?></td>
+                                <td role="cell" data-etiqueta="Médico"><?= e($cita['medico'] ?? 'Por asignar') ?></td>
+                                <td role="cell" data-etiqueta="Estado"><span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span></td>
+                                <td role="cell" data-etiqueta="Acción">
+                                    <?php if (puede_cancelar_paciente($cita)): ?>
+                                        <form method="post" action="<?= e(url('/paciente/citas.php')) ?>" data-cargando>
+                                            <?= csrf_campo() ?>
+                                            <input type="hidden" name="cita_id" value="<?= (int) $cita['id'] ?>">
+                                            <button class="ui-boton ui-boton-peligro ui-boton-chico" type="submit"
+                                                    data-texto-cargando="Cancelando…">Cancelar</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <small class="ui-nota">Para cambios, llama a admisión</small>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
     </section>
-<?php endif; ?>
+
+    <!-- Mis solicitudes -->
+    <section class="ui-tarjeta">
+        <div class="ui-tarjeta-cabecera">
+            <h2>Mis solicitudes</h2>
+            <p class="ui-nota">Son las citas que pediste. Admisión las revisa y te confirma.</p>
+        </div>
+        <?php if (count($solicitudes) === 0): ?>
+            <div class="ui-vacio">
+                <span class="ui-vacio-icono"><?= $icono_panel('i-documento') ?></span>
+                <strong>No has pedido ninguna cita todavía.</strong>
+            </div>
+        <?php else: ?>
+            <div class="ui-tabla-contenedor">
+                <table class="ui-tabla ui-tabla-apilable ui-tabla-apilable-ancha" role="table">
+                    <caption class="solo-lectores">Mis solicitudes</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col" role="columnheader">Pedida el</th>
+                            <th scope="col" role="columnheader">Área</th>
+                            <th scope="col" role="columnheader">Fecha preferida</th>
+                            <th scope="col" role="columnheader">Motivo</th>
+                            <th scope="col" role="columnheader">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <?php foreach ($solicitudes as $solicitud): ?>
+                            <tr role="row">
+                                <td class="ui-celda-suave" role="cell" data-etiqueta="Pedida el"><?= e(date('d/m/Y', strtotime($solicitud['creado_en']))) ?></td>
+                                <td role="cell" data-etiqueta="Área"><?= e($solicitud['area']) ?></td>
+                                <td class="ui-celda-suave" role="cell" data-etiqueta="Fecha preferida"><?= e($solicitud['fecha_preferida'] !== null
+                                    ? date('d/m/Y', strtotime($solicitud['fecha_preferida']))
+                                    : 'Sin preferencia') ?></td>
+                                <td role="cell" data-etiqueta="Motivo"><?= e($solicitud['mensaje']) ?></td>
+                                <td role="cell" data-etiqueta="Estado">
+                                    <span class="ui-celda-valor">
+                                        <?php [$clase, $texto] = etiqueta_solicitud($solicitud); ?>
+                                        <?php if ($solicitud['estado'] === 'nueva'): ?>
+                                            <span class="estado estado-nueva">en revisión</span>
+                                        <?php else: ?>
+                                            <span class="estado estado-<?= e($clase) ?>"><?= e($texto) ?></span>
+                                        <?php endif; ?>
+                                        <?php if ($solicitud['cita_id']): ?>
+                                            <!-- Admisión la convirtió en cita: le decimos de cuándo era. -->
+                                            <small>
+                                                Cita del <?= e(date('d/m/Y', strtotime($solicitud['cita_fecha']))) ?>
+                                                a las <?= e(substr($solicitud['cita_hora'], 0, 5)) ?>
+                                            </small>
+                                        <?php endif; ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </section>
+
+    <!-- Historial -->
+    <?php if (count($anteriores) > 0): ?>
+        <section class="ui-tarjeta">
+            <h2>Historial de citas</h2>
+            <div class="ui-tabla-contenedor">
+                <table class="ui-tabla ui-tabla-apilable" role="table">
+                    <caption class="solo-lectores">Historial de citas</caption>
+                    <thead role="rowgroup">
+                        <tr role="row">
+                            <th scope="col" role="columnheader">Fecha</th>
+                            <th scope="col" role="columnheader">Área</th>
+                            <th scope="col" role="columnheader">Motivo</th>
+                            <th scope="col" role="columnheader">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <?php foreach ($anteriores as $cita): ?>
+                            <tr role="row">
+                                <td class="ui-celda-suave" role="cell" data-etiqueta="Fecha"><?= e(date('d/m/Y', strtotime($cita['fecha']))) ?></td>
+                                <td role="cell" data-etiqueta="Área"><?= e($cita['area']) ?></td>
+                                <td role="cell" data-etiqueta="Motivo"><?= e($cita['motivo']) ?></td>
+                                <td role="cell" data-etiqueta="Estado"><span class="estado estado-<?= e($cita['estado']) ?>"><?= e(texto_estado($cita['estado'])) ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    <?php endif; ?>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/paciente_footer.php'; ?>

@@ -97,92 +97,141 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $solicitud) {
 require __DIR__ . '/../../app/layout/panel_header.php';
 ?>
 
-<header class="panel-titulo">
-    <div>
-        <h1>Programar solicitud</h1>
-        <p>Elige fecha, hora y médico. La cita queda confirmada.</p>
-    </div>
-</header>
+<div class="ui-pagina ui-animada">
 
-<p><a href="<?= e(url('/panel/solicitudes.php')) ?>">&larr; Volver a solicitudes</a></p>
+    <a class="ui-migas" href="<?= e(url('/panel/solicitudes.php')) ?>">
+        <?= $icono_panel('i-volver') ?>
+        Volver a solicitudes
+    </a>
 
-<?php if ($error !== ''): ?>
-    <p role="alert"><?= e($error) ?></p>
-<?php endif; ?>
+    <header class="ui-cabecera">
+        <div>
+            <h1>Programar solicitud</h1>
+            <p>Elige fecha, hora y médico. La cita queda confirmada.</p>
+        </div>
+    </header>
 
-<?php if ($solicitud): ?>
-    <div class="panel-columnas">
-        <!-- Lo que pidió el paciente -->
-        <section class="caja">
-            <h2>Lo que pidió el paciente</h2>
-            <dl class="datos">
-                <dt>Paciente</dt>
-                <dd><?= e($solicitud['nombre']) ?></dd>
-                <dt>Documento</dt>
-                <dd><?= e($solicitud['tipo_documento'] . ' ' . $solicitud['numero_documento']) ?></dd>
-                <dt>Teléfono</dt>
-                <dd><?= e($solicitud['telefono'] ?? 'Sin teléfono') ?></dd>
-                <dt>Área</dt>
-                <dd><?= e($solicitud['area']) ?></dd>
-                <dt>Fecha preferida</dt>
-                <dd><?= $solicitud['fecha_preferida']
-                    ? e(date('d/m/Y', strtotime($solicitud['fecha_preferida'])))
-                    : 'Sin preferencia' ?></dd>
-                <dt>Motivo</dt>
-                <dd><?= e($solicitud['mensaje'] ?? '') ?></dd>
-                <dt>Enviada el</dt>
-                <dd><?= e(date('d/m/Y H:i', strtotime($solicitud['creado_en']))) ?></dd>
-            </dl>
-        </section>
+    <?php if ($error !== ''): ?>
+        <div class="ui-aviso ui-aviso-error" role="alert">
+            <?= $icono_panel('i-alerta') ?>
+            <p><?= e($error) ?></p>
+        </div>
+    <?php endif; ?>
 
-        <!-- Formulario para programarla -->
-        <section class="caja">
-            <h2>Datos de la cita</h2>
-
-            <?php if ($solicitud['estado'] !== 'nueva'): ?>
-                <p class="vacio">Esta solicitud ya fue procesada (<?= e($solicitud['estado']) ?>).</p>
-            <?php elseif ($medicos === []): ?>
-                <p role="alert">
-                    No hay médicos activos en <?= e($solicitud['area']) ?>.
-                    Crea uno en "Usuarios del personal" antes de programar.
-                </p>
-            <?php else: ?>
-                <form class="form-panel" method="post"
-                      action="<?= e(url('/panel/programar-solicitud.php?id=' . $id)) ?>">
-                    <?= csrf_campo() ?>
-
-                    <div class="campo">
-                        <label for="medico_id">Médico</label>
-                        <select id="medico_id" name="medico_id" required>
-                            <option value="">Selecciona un médico</option>
-                            <?php foreach ($medicos as $medico): ?>
-                                <option value="<?= (int) $medico['id'] ?>"
-                                    <?= $valores['medico_id'] === (string) $medico['id'] ? 'selected' : '' ?>>
-                                    <?= e($medico['nombre']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+    <?php if ($solicitud): ?>
+        <div class="ui-columnas">
+            <!-- Lo que pidió el paciente -->
+            <section class="ui-tarjeta">
+                <h2>Lo que pidió el paciente</h2>
+                <dl class="datos datos-rejilla">
+                    <div class="datos-ancho">
+                        <dt>Paciente</dt>
+                        <dd><?= e($solicitud['nombre']) ?></dd>
                     </div>
-
-                    <div class="campo">
-                        <label for="fecha">Fecha</label>
-                        <input type="date" id="fecha" name="fecha" required
-                               min="<?= e(date('Y-m-d')) ?>"
-                               value="<?= e($valores['fecha']) ?>">
+                    <div>
+                        <dt>Documento</dt>
+                        <dd><?= e($solicitud['tipo_documento'] . ' ' . $solicitud['numero_documento']) ?></dd>
                     </div>
-
-                    <div class="campo">
-                        <label for="hora">Hora</label>
-                        <input type="time" id="hora" name="hora" required
-                               min="07:00" max="20:00" step="900"
-                               value="<?= e($valores['hora']) ?>">
+                    <div>
+                        <dt>Teléfono</dt>
+                        <dd><?= e($solicitud['telefono'] ?? 'Sin teléfono') ?></dd>
                     </div>
+                    <div>
+                        <dt>Área</dt>
+                        <dd><?= e($solicitud['area']) ?></dd>
+                    </div>
+                    <div>
+                        <dt>Fecha preferida</dt>
+                        <dd><?= $solicitud['fecha_preferida']
+                            ? e(date('d/m/Y', strtotime($solicitud['fecha_preferida'])))
+                            : 'Sin preferencia' ?></dd>
+                    </div>
+                    <div class="datos-ancho">
+                        <dt>Motivo</dt>
+                        <dd><?= e($solicitud['mensaje'] ?? '') ?></dd>
+                    </div>
+                    <div class="datos-ancho">
+                        <dt>Enviada el</dt>
+                        <dd><?= e(date('d/m/Y H:i', strtotime($solicitud['creado_en']))) ?></dd>
+                    </div>
+                </dl>
+            </section>
 
-                    <button class="boton" type="submit">Programar y confirmar cita</button>
-                </form>
-            <?php endif; ?>
-        </section>
-    </div>
-<?php endif; ?>
+            <!-- Formulario para programarla -->
+            <section class="ui-tarjeta">
+                <h2>Datos de la cita</h2>
+
+                <?php if ($solicitud['estado'] !== 'nueva'): ?>
+                    <div class="ui-vacio">
+                        <span class="ui-vacio-icono"><?= $icono_panel('i-visto') ?></span>
+                        <strong>Esta solicitud ya fue procesada (<?= e($solicitud['estado']) ?>).</strong>
+                        <p>No se puede programar de nuevo.</p>
+                        <a class="ui-boton ui-boton-secundario" href="<?= e(url('/panel/solicitudes.php')) ?>">Ver solicitudes</a>
+                    </div>
+                <?php elseif ($medicos === []): ?>
+                    <div class="ui-aviso ui-aviso-error" role="alert">
+                        <?= $icono_panel('i-alerta') ?>
+                        <p>
+                            No hay médicos activos en <?= e($solicitud['area']) ?>.
+                            Crea uno en "Usuarios del personal" antes de programar.
+                        </p>
+                    </div>
+                <?php else: ?>
+                    <!-- data-cargando: al enviar, el botón muestra "Programando…" y evita el doble envío -->
+                    <form method="post"
+                          action="<?= e(url('/panel/programar-solicitud.php?id=' . $id)) ?>" data-cargando>
+                        <?= csrf_campo() ?>
+
+                        <div class="ui-rejilla">
+                            <div class="ui-campo ui-campo-ancho">
+                                <label for="medico_id">Médico <span class="ui-obligatorio" aria-hidden="true">*</span></label>
+                                <select class="ui-entrada" id="medico_id" name="medico_id" required
+                                        aria-describedby="ayuda-medico">
+                                    <option value="">Selecciona un médico</option>
+                                    <?php foreach ($medicos as $medico): ?>
+                                        <option value="<?= (int) $medico['id'] ?>"
+                                            <?= $valores['medico_id'] === (string) $medico['id'] ? 'selected' : '' ?>>
+                                            <?= e($medico['nombre']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <span class="ui-ayuda" id="ayuda-medico">Médicos activos de <?= e($solicitud['area']) ?>.</span>
+                            </div>
+
+                            <div class="ui-campo">
+                                <label for="fecha">Fecha <span class="ui-obligatorio" aria-hidden="true">*</span></label>
+                                <input class="ui-entrada" type="date" id="fecha" name="fecha" required
+                                       min="<?= e(date('Y-m-d')) ?>"
+                                       aria-describedby="ayuda-fecha"
+                                       value="<?= e($valores['fecha']) ?>">
+                                <span class="ui-ayuda" id="ayuda-fecha">
+                                    <?= e($solicitud['fecha_preferida']
+                                        ? 'El paciente prefiere el ' . date('d/m/Y', strtotime($solicitud['fecha_preferida'])) . '.'
+                                        : 'Desde hoy en adelante.') ?>
+                                </span>
+                            </div>
+
+                            <div class="ui-campo">
+                                <label for="hora">Hora <span class="ui-obligatorio" aria-hidden="true">*</span></label>
+                                <input class="ui-entrada" type="time" id="hora" name="hora" required
+                                       min="07:00" max="20:00" step="900"
+                                       aria-describedby="ayuda-hora"
+                                       value="<?= e($valores['hora']) ?>">
+                                <span class="ui-ayuda" id="ayuda-hora">Entre 07:00 y 20:00, cada 15 minutos.</span>
+                            </div>
+                        </div>
+
+                        <div class="ui-acciones">
+                            <button class="ui-boton" type="submit" data-texto-cargando="Programando…">
+                                Programar y confirmar cita
+                            </button>
+                            <a class="ui-boton ui-boton-secundario" href="<?= e(url('/panel/solicitudes.php')) ?>">Cancelar</a>
+                        </div>
+                    </form>
+                <?php endif; ?>
+            </section>
+        </div>
+    <?php endif; ?>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/panel_footer.php'; ?>

@@ -1,0 +1,2268 @@
+/* =====================================================================
+   Clínica Vida Sana 2.0 — Web pública
+   Solo se carga en las páginas públicas (app/layout/publico_header.php).
+   Usa los mismos colores del panel y del portal, pero con sus propias
+   variables: así la web pública se puede cambiar sin tocar el panel.
+   Todo va dentro de body.publico.
+   ===================================================================== */
+
+body.publico {
+    --pub-primario:      #087C94;
+    --pub-primario-hover:#066A7F;
+    --pub-oscuro:        #075267;
+    --pub-noche:         #0D2F3B;   /* fondo de llamados y pie */
+    --pub-fondo:         #F2F7F9;
+    --pub-superficie:    #FFFFFF;
+    --pub-texto:         #193847;
+    --pub-suave:         #5B6B79;   /* 5.4:1 sobre el fondo */
+    --pub-acento:        #22B77A;   /* solo rellenos y detalles */
+    --pub-acento-texto:  #1F7A4D;
+    --pub-borde:         #E1EAEE;
+    --pub-borde-fuerte:  #C5D3DA;
+    --pub-tinte:         #E6F2F5;
+    --pub-error:         #B42318;
+    --pub-radio:         14px;
+    --pub-sombra:        0 1px 2px rgba(25, 56, 71, 0.05), 0 8px 24px rgba(25, 56, 71, 0.06);
+    --pub-sombra-alta:   0 4px 10px rgba(25, 56, 71, 0.08), 0 18px 40px rgba(25, 56, 71, 0.12);
+    --pub-anillo:        0 0 0 3px rgba(8, 124, 148, 0.25);
+    --pub-transicion:    var(--mov-rapido) var(--mov-curva);
+    --pub-ancho:         1180px;
+    /* Colores que antes estaban escritos a mano (mismo valor en modo claro;
+       el modo oscuro los cambia al final de este archivo). */
+    --pub-borde-hover:   #9FB4BE;   /* borde de un campo al pasar el ratón */
+    --pub-error-campo:   #FFF8F7;   /* fondo de un campo mal llenado */
+    --pub-info-borde:    #BFE0E8;
+    /* Turquesa como TEXTO (enlaces). Como fondo se sigue usando
+       --pub-primario; en oscuro el texto necesita un tono más claro. */
+    /* Un poco más oscuro que el de los botones: 5.1:1 sobre los fondos
+       celestes (--pub-tinte) y 5.8:1 sobre blanco. */
+    --pub-enlace:        #076F85;
+
+    color: var(--pub-texto);
+    background: var(--pub-fondo);
+}
+
+.publico h1,
+.publico h2,
+.publico h3 {
+    color: var(--pub-texto);
+    letter-spacing: -0.01em;
+}
+
+/* :where() deja esta regla con poca prioridad: las clases (.pub-boton...) ganan solas */
+:where(.publico) a {
+    color: var(--pub-enlace);
+}
+
+/* Iconos de iconos.svg */
+.pub-icono {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+/* ---------- Contenido ---------- */
+.pub-contenido {
+    max-width: var(--pub-ancho);
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+/* =====================================================================
+   Cabecera y menú
+   ===================================================================== */
+.pub-cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--pub-borde);
+    backdrop-filter: saturate(160%) blur(8px);
+}
+
+.pub-cabecera-interior {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: var(--pub-ancho);
+    margin: 0 auto;
+    padding: 0.8rem 1.5rem;
+}
+
+.pub-marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-right: auto;
+    font-size: 1.08rem;
+    color: var(--pub-texto);
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.pub-cabecera .logo-oficial {
+    width: clamp(130px, 23vw, 192px);
+}
+
+.pub-pie .logo-oficial {
+    width: 176px;
+}
+
+.pub-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Enlaces con una línea que crece por debajo al pasar el ratón */
+.pub-menu a:not(.pub-boton) {
+    position: relative;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    color: var(--pub-suave);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: color var(--pub-transicion);
+}
+
+.pub-menu a:not(.pub-boton)::after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.25rem;
+    height: 2px;
+    background: var(--pub-acento);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--mov-medio) var(--mov-curva);
+}
+
+.pub-menu a:not(.pub-boton):hover,
+.pub-menu a[aria-current="page"] {
+    color: var(--pub-texto);
+}
+
+.pub-menu a:not(.pub-boton):hover::after,
+.pub-menu a[aria-current="page"]::after {
+    transform: scaleX(1);
+}
+
+.pub-menu .pub-boton {
+    margin-left: 0.5rem;
+}
+
+/* Botón "Menú" (solo en el celular y con JavaScript) */
+.pub-boton-menu {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 42px;
+    padding: 0.45rem 0.85rem;
+    font: inherit;
+    font-weight: 600;
+    color: var(--pub-texto);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde-fuerte);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.pub-boton-menu[hidden] {
+    display: none !important;
+}
+
+/* Tres rayas que se convierten en una X al abrir */
+.pub-hamburguesa,
+.pub-hamburguesa span,
+.pub-hamburguesa::before,
+.pub-hamburguesa::after {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform var(--mov-medio) var(--mov-curva), opacity var(--mov-medio) var(--mov-curva);
+}
+
+.pub-hamburguesa {
+    position: relative;
+    background: none;
+}
+
+.pub-hamburguesa span {
+    position: absolute;
+    top: 0;
+}
+
+.pub-hamburguesa::before,
+.pub-hamburguesa::after {
+    content: "";
+    position: absolute;
+}
+
+.pub-hamburguesa::before { top: -6px; }
+.pub-hamburguesa::after  { top: 6px; }
+
+.pub-menu-abierto .pub-hamburguesa span   { opacity: 0; }
+.pub-menu-abierto .pub-hamburguesa::before { transform: translateY(6px) rotate(45deg); }
+.pub-menu-abierto .pub-hamburguesa::after  { transform: translateY(-6px) rotate(-45deg); }
+
+/* Foco con teclado en la cabecera */
+.pub-cabecera a:focus-visible,
+.pub-cabecera button:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* =====================================================================
+   Botones
+   ===================================================================== */
+.pub-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 46px;
+    padding: 0.7rem 1.35rem;
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #FFFFFF;
+    text-decoration: none;
+    background: var(--pub-primario);
+    border: 1px solid var(--pub-primario);
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(8, 124, 148, 0.22);
+    cursor: pointer;
+    transition: background-color var(--pub-transicion), box-shadow var(--pub-transicion),
+                transform var(--pub-transicion), border-color var(--pub-transicion);
+}
+
+.pub-boton:hover {
+    background: var(--pub-primario-hover);
+    box-shadow: 0 10px 22px rgba(8, 124, 148, 0.3);
+    transform: translateY(-1px);
+}
+
+.pub-boton:active {
+    transform: translateY(0);
+}
+
+.pub-boton:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+.pub-boton-chico {
+    min-height: 40px;
+    padding: 0.5rem 1rem;
+    font-size: 0.92rem;
+    box-shadow: none;
+}
+
+.pub-boton-ancho {
+    width: 100%;
+}
+
+/* Blanco sobre fondo de color (carrusel y llamados) */
+.pub-boton-blanco {
+    color: var(--pub-oscuro);
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.pub-boton-blanco:hover {
+    background: #EAF6F8;
+    border-color: #EAF6F8;
+}
+
+.pub-boton-blanco:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+}
+
+/* Secundario: blanco con borde */
+.pub-boton-secundario {
+    color: var(--pub-enlace);
+    background: var(--pub-superficie);
+    border-color: var(--pub-borde-fuerte);
+    box-shadow: none;
+}
+
+.pub-boton-secundario:hover {
+    background: var(--pub-tinte);
+    border-color: var(--pub-primario);
+    box-shadow: none;
+}
+
+/* Deshabilitado y cargando (lo pone publico.js al enviar) */
+.pub-boton:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.pub-boton[aria-busy="true"]::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: pub-girar 700ms linear infinite;
+}
+
+@keyframes pub-girar {
+    to { transform: rotate(360deg); }
+}
+
+/* Enlace con flecha que avanza */
+.pub-enlace-flecha {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.pub-enlace-flecha span {
+    transition: transform var(--pub-transicion);
+}
+
+.pub-enlace-flecha:hover span {
+    transform: translateX(4px);
+}
+
+.pub-enlace-flecha:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* =====================================================================
+   Textos comunes
+   ===================================================================== */
+.pub-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pub-enlace);
+}
+
+/* Rayita verde antes de la etiqueta */
+.pub-etiqueta::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    background: var(--pub-acento);
+    border-radius: 2px;
+}
+
+.pub-bajada {
+    max-width: 44rem;
+    margin: 0;
+    font-size: 1.12rem;
+    color: var(--pub-suave);
+}
+
+.pub-seccion {
+    margin: 0 0 4rem;
+}
+
+.pub-seccion h2 {
+    margin: 0;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+
+.pub-seccion-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+/* Encabezado de las páginas interiores: fondo claro con un círculo decorativo */
+.pub-encabezado {
+    position: relative;
+    overflow: hidden;
+    margin: 0 0 3rem;
+    padding: 3rem 2.5rem;
+    background: linear-gradient(120deg, #FFFFFF 0%, #EAF4F7 100%);
+    border: 1px solid var(--pub-borde);
+    border-radius: 22px;
+}
+
+.pub-encabezado::after {
+    content: "";
+    position: absolute;
+    right: -80px;
+    top: -80px;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(34, 183, 122, 0.18), rgba(8, 124, 148, 0.08) 60%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.pub-encabezado h1 {
+    position: relative;
+    max-width: 40rem;
+    margin: 0 0 0.75rem;
+    font-size: clamp(2rem, 4.4vw, 3rem);
+    line-height: 1.1;
+}
+
+.pub-encabezado .pub-bajada {
+    position: relative;
+}
+
+.pub-nosotros-encabezado {
+    display: grid;
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+    align-items: center;
+    padding: 0;
+}
+
+.pub-nosotros-encabezado::after {
+    content: none;
+}
+
+.pub-nosotros-texto {
+    padding: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.pub-nosotros-foto {
+    align-self: stretch;
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: 85% center;
+    clip-path: ellipse(100% 105% at 100% 50%);
+}
+
+/* =====================================================================
+   Inicio: carrusel (la lógica es de portada.js; aquí solo el aspecto)
+   ===================================================================== */
+.pub-hero {
+    --hero-visual: #0A6479;
+    --hero-luz: #148697;
+    --hero-margen: clamp(2rem, 5vw, 5rem);
+    margin-bottom: 4.5rem;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 26px;
+    box-shadow: var(--pub-sombra);
+}
+
+.pub-hero .carrusel {
+    margin-bottom: 0;
+    border-radius: 25px 25px 0 0;
+}
+
+.pub-hero .diapositiva {
+    position: relative;
+    isolation: isolate;
+    min-width: 0;
+    min-height: 438px;
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+    gap: 0;
+    padding: 0;
+    color: var(--pub-texto);
+    background: linear-gradient(120deg, var(--pub-superficie) 35%, var(--pub-tinte));
+    border-radius: 0;
+    text-align: left;
+}
+
+.pub-hero .diapositiva-pediatria {
+    --hero-visual: #136453;
+    --hero-luz: #218268;
+}
+
+.pub-hero .diapositiva-laboratorio {
+    --hero-visual: #174964;
+    --hero-luz: #246C8B;
+}
+
+.pub-hero .diapositiva-texto {
+    padding: 3.25rem 1rem 5.75rem var(--hero-margen);
+}
+
+.pub-hero .diapositiva h1,
+.pub-hero .diapositiva h2 {
+    max-width: 13ch;
+    margin: 0 0 1rem;
+    color: var(--pub-texto);
+    font-size: clamp(2rem, 4.15vw, 3.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+}
+
+.pub-hero .diapositiva p {
+    max-width: 34ch;
+    margin: 0 0 1.5rem;
+    color: var(--pub-suave);
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    line-height: 1.55;
+    opacity: 1;
+}
+
+.pub-hero .diapositiva .diapositiva-etiqueta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    color: var(--pub-enlace);
+}
+
+.pub-hero .diapositiva-etiqueta::before {
+    content: "";
+    width: 1.15rem;
+    height: 2px;
+    background: var(--pub-acento);
+}
+
+.pub-hero .diapositiva-visual {
+    position: relative;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    background: radial-gradient(ellipse at 63% 38%, var(--hero-luz), var(--hero-visual) 73%);
+    clip-path: ellipse(100% 92% at 100% 50%);
+}
+
+.pub-hero .diapositiva-imagen {
+    display: block;
+    grid-row: auto;
+    width: 89%;
+    max-width: 28rem;
+    height: auto;
+}
+
+.pub-hero .diapositiva-visual-foto .diapositiva-imagen {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    object-fit: cover;
+    object-position: 74% center;
+}
+
+:root[data-tema="oscuro"] .pub-hero .diapositiva-visual {
+    background: radial-gradient(ellipse at 63% 38%, var(--hero-visual), #102c39 82%);
+}
+
+:root[data-tema="oscuro"] .pub-hero .diapositiva-visual-foto::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(14, 26, 32, 0.22), transparent 55%);
+    pointer-events: none;
+}
+
+.pub-hero .carrusel-controles {
+    position: absolute;
+    bottom: 1.35rem;
+    left: var(--hero-margen);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.pub-hero .carrusel-flecha {
+    position: static;
+    display: grid;
+    place-content: center;
+    width: 38px;
+    height: 38px;
+    margin: 0;
+    padding: 0 0 0.18em;
+    color: var(--pub-texto);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde-fuerte);
+    transition: background-color var(--pub-transicion);
+}
+
+.pub-hero .carrusel-flecha:hover {
+    color: var(--pub-enlace);
+    background: var(--pub-tinte);
+}
+
+.pub-hero .carrusel-flecha:focus-visible,
+.pub-hero .carrusel-puntos button:focus-visible {
+    outline: 2px solid var(--pub-enlace);
+    outline-offset: 2px;
+}
+
+.pub-hero .carrusel-puntos {
+    position: static;
+    gap: 0.15rem;
+}
+
+.pub-hero .carrusel-puntos button {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 36px;
+    background: transparent;
+}
+
+.pub-hero .carrusel-puntos button::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--pub-suave);
+    transition: width var(--pub-transicion), background-color var(--pub-transicion);
+}
+
+.pub-hero .carrusel-puntos button.activo::before {
+    width: 19px;
+    background: var(--pub-enlace);
+}
+
+/* Horarios y contacto en el mismo contenedor que el carrusel. */
+.pub-franja {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 0.5rem 0.85rem;
+    background: var(--pub-superficie);
+    border-top: 1px solid var(--pub-borde);
+    border-radius: 0 0 25px 25px;
+}
+
+.pub-franja div {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: center;
+    padding: 0.8rem clamp(0.65rem, 2vw, 1.65rem);
+}
+
+.pub-franja div + div {
+    border-left: 1px solid var(--pub-borde);
+}
+
+.pub-franja .pub-icono {
+    grid-row: span 2;
+    width: 38px;
+    height: 38px;
+    padding: 9px;
+    color: var(--pub-enlace);
+    background: var(--pub-tinte);
+    border-radius: 50%;
+}
+
+.pub-franja span {
+    font-size: 0.82rem;
+    color: var(--pub-suave);
+}
+
+.pub-franja strong {
+    font-size: 1.05rem;
+}
+
+.pub-franja div:last-child strong {
+    white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+    .pub-hero .diapositiva {
+        min-height: 365px;
+    }
+
+    .pub-hero .diapositiva-visual-foto .diapositiva-imagen {
+        object-position: 90% center;
+    }
+}
+
+@media (max-width: 640px) {
+    .pub-hero {
+        --hero-margen: clamp(1rem, 5vw, 1.5rem);
+        border-radius: 20px;
+    }
+
+    .pub-hero .carrusel {
+        border-radius: 19px 19px 0 0;
+    }
+
+    .pub-hero .diapositiva {
+        min-height: 0;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: 1fr auto;
+        padding-bottom: 3.55rem;
+    }
+
+    .pub-hero .diapositiva-texto {
+        align-self: start;
+        padding: 1.5rem var(--hero-margen) 1.3rem;
+    }
+
+    .pub-hero .diapositiva h1,
+    .pub-hero .diapositiva h2 {
+        max-width: 16ch;
+        margin-bottom: 0.75rem;
+    }
+
+    .pub-hero .diapositiva p {
+        margin-bottom: 1rem;
+    }
+
+    .pub-hero .diapositiva-visual {
+        height: clamp(9.5rem, 47vw, 15.5rem);
+        clip-path: ellipse(110% 95% at 50% 95%);
+    }
+
+    .pub-hero .diapositiva-imagen {
+        width: auto;
+        max-width: 100%;
+        height: 100%;
+    }
+
+    .pub-hero .diapositiva-visual-foto .diapositiva-imagen {
+        object-position: center;
+    }
+
+    .pub-hero .carrusel-controles {
+        inset-inline: 0;
+        bottom: 0.55rem;
+        justify-content: center;
+    }
+
+    .pub-franja {
+        padding: 0.35rem;
+        border-radius: 0 0 19px 19px;
+    }
+
+    .pub-franja div {
+        column-gap: 0.4rem;
+        padding: 0.6rem 0.4rem;
+    }
+
+    .pub-franja .pub-icono {
+        width: 28px;
+        height: 28px;
+        padding: 6px;
+    }
+
+    .pub-franja span {
+        font-size: 0.72rem;
+    }
+
+    .pub-franja strong {
+        font-size: 0.85rem;
+    }
+}
+
+/* =====================================================================
+   Sección dividida: título a la izquierda, lista numerada a la derecha
+   ===================================================================== */
+.pub-dividida {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: 3rem;
+    align-items: start;
+}
+
+.pub-dividida-titulo {
+    position: sticky;
+    top: 6rem;
+}
+
+.pub-razones {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: razon;
+}
+
+.pub-razones li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    column-gap: 1rem;
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--pub-borde);
+    counter-increment: razon;
+}
+
+.pub-razones li:last-child {
+    border-bottom: 1px solid var(--pub-borde);
+}
+
+/* Número grande y con degradado */
+.pub-razones li::before {
+    content: "0" counter(razon);
+    grid-row: span 2;
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--pub-primario), var(--pub-acento));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.pub-razones h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.25rem;
+}
+
+.pub-razones p {
+    margin: 0;
+    color: var(--pub-suave);
+}
+
+/* Tarjetas de especialidades en Inicio y Servicios. */
+.pub-tarjetas-servicio {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.9rem, 2vw, 1.4rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-tarjeta-servicio {
+    min-width: 0;
+    overflow: hidden;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 20px;
+    box-shadow: var(--pub-sombra);
+    transition: transform var(--mov-medio) var(--mov-curva),
+                box-shadow var(--mov-medio) var(--mov-curva),
+                border-color var(--mov-rapido) var(--mov-curva);
+}
+
+.pub-tarjeta-servicio:hover {
+    transform: translateY(-2px);
+    border-color: var(--pub-borde-fuerte);
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-servicio-visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1.9;
+    overflow: hidden;
+    color: var(--pub-enlace);
+    background: var(--pub-tinte);
+}
+
+.pub-servicio-visual-pediatria {
+    background: radial-gradient(ellipse at 62% 45%, #26876C, #12584D 92%);
+}
+
+.pub-servicio-visual-laboratorio {
+    background: radial-gradient(ellipse at 62% 45%, #296E8A, #153E56 92%);
+}
+
+.pub-servicio-visual img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.pub-servicio-visual img.pub-servicio-foto {
+    object-fit: cover;
+}
+
+.pub-servicio-visual .pub-icono {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.pub-servicio-texto {
+    padding: clamp(1rem, 2.15vw, 1.6rem);
+}
+
+.pub-servicio-texto h2,
+.pub-servicio-texto h3 {
+    margin: 0 0 0.45rem;
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    line-height: 1.15;
+}
+
+.pub-servicio-texto p {
+    margin: 0;
+    color: var(--pub-suave);
+    line-height: 1.55;
+}
+
+.pub-servicios-encabezado {
+    margin-bottom: clamp(1.25rem, 3vw, 2.25rem);
+}
+
+/* =====================================================================
+   Llamado final: franja oscura con círculos de luz
+   ===================================================================== */
+.pub-llamado {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 0 0 1rem;
+    padding: 3rem 3.25rem;
+    color: #FFFFFF;
+    background: linear-gradient(120deg, var(--pub-noche) 0%, var(--pub-oscuro) 100%);
+    border-radius: 24px;
+}
+
+.pub-llamado::before,
+.pub-llamado::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.pub-llamado::before {
+    right: -60px;
+    top: -90px;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(34, 183, 122, 0.35), transparent 70%);
+}
+
+.pub-llamado::after {
+    left: 30%;
+    bottom: -140px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(8, 124, 148, 0.45), transparent 70%);
+}
+
+.pub-llamado > * {
+    position: relative;
+    z-index: 1;
+}
+
+.pub-llamado h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: #FFFFFF;
+}
+
+.pub-llamado p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* =====================================================================
+   Aviso emergente (<dialog>) de la portada
+   ===================================================================== */
+.publico .aviso-emergente {
+    border-top: none;
+    border-radius: 22px;
+    box-shadow: 0 30px 70px rgba(13, 47, 59, 0.4);
+}
+
+.publico .aviso-emergente[open] {
+    animation: pub-subir var(--mov-medio) var(--mov-curva);
+}
+
+.publico .aviso-emergente::backdrop {
+    background: rgba(13, 47, 59, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.publico .aviso-etiqueta {
+    color: var(--pub-acento-texto);
+}
+
+/* =====================================================================
+   Nosotros: misión y visión en un bloque de dos tonos
+   ===================================================================== */
+.pub-mision {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: hidden;
+    border-radius: 24px;
+    box-shadow: var(--pub-sombra);
+}
+
+.pub-mision article {
+    padding: 2.75rem;
+}
+
+.pub-mision h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.6rem;
+}
+
+.pub-mision p {
+    margin: 0;
+    font-size: 1.08rem;
+}
+
+.pub-mision-mision {
+    color: #FFFFFF;
+    background: linear-gradient(150deg, var(--pub-primario), var(--pub-oscuro));
+}
+
+.pub-mision-mision h2 {
+    color: #FFFFFF;
+}
+
+.pub-mision-mision p {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.pub-mision-vision {
+    background: var(--pub-superficie);
+}
+
+.pub-mision-vision p {
+    color: var(--pub-suave);
+}
+
+/* =====================================================================
+   Contacto
+   ===================================================================== */
+.pub-contacto {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(1rem, 2.2vw, 1.5rem);
+    align-items: start;
+}
+
+.pub-contacto-encabezado {
+    margin-bottom: 1.5rem;
+}
+
+.pub-contacto-detalles {
+    display: grid;
+    gap: clamp(1rem, 2.2vw, 1.5rem);
+}
+
+.pub-contacto h2 {
+    margin: 0 0 0.85rem;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    line-height: 1.2;
+    text-wrap: balance;
+}
+
+.pub-contacto-mapa,
+.pub-contacto-datos {
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 20px;
+    box-shadow: var(--pub-sombra);
+}
+
+.pub-contacto-mapa {
+    overflow: hidden;
+    border-color: var(--pub-borde-fuerte);
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-contacto-mapa-texto,
+.pub-contacto-datos {
+    padding: clamp(1rem, 2.5vw, 1.65rem);
+}
+
+.pub-contacto-mapa-texto p:not(.pub-etiqueta) {
+    margin: 0.35rem 0 0;
+    color: var(--pub-suave);
+}
+
+.pub-contacto-mapa-marco {
+    display: block;
+    width: 100%;
+    height: clamp(15rem, 31vw, 25rem);
+    border: 0;
+    border-block: 1px solid var(--pub-borde);
+    background: var(--pub-tinte);
+}
+
+.pub-mapa-documento,
+.pub-mapa-documento body,
+.pub-mapa-documento iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0;
+}
+
+.pub-contacto-mapa-marco:focus-visible {
+    outline: 3px solid var(--pub-enlace);
+    outline-offset: -3px;
+}
+
+.pub-contacto-mapa-texto .pub-enlace-flecha {
+    display: inline-flex;
+    flex-wrap: wrap;
+}
+
+.pub-lista-datos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-lista-datos li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.65rem;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--pub-fondo);
+    border-radius: 14px;
+    transition: background-color var(--pub-transicion);
+}
+
+.pub-lista-datos li:hover {
+    background: var(--pub-tinte);
+}
+
+.pub-lista-icono {
+    display: grid;
+    grid-row: span 2;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    color: var(--pub-enlace);
+    background: var(--pub-superficie);
+    border-radius: 12px;
+}
+
+.pub-lista-datos span:not(.pub-lista-icono) {
+    font-size: 0.82rem;
+    color: var(--pub-suave);
+}
+
+.pub-lista-datos strong {
+    overflow-wrap: anywhere;
+}
+
+/* Horarios: tarjeta oscura */
+.pub-horario {
+    padding: clamp(1rem, 2.5vw, 1.65rem);
+    color: #FFFFFF;
+    background: linear-gradient(160deg, var(--pub-noche), var(--pub-oscuro));
+    border-radius: 20px;
+}
+
+.pub-horario h2 {
+    color: #FFFFFF;
+}
+
+.pub-horario ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-horario li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.pub-horario li span {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.pub-horario p {
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+@media (min-width: 1001px) {
+    .pub-contacto .pub-lista-datos {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.55rem;
+    }
+}
+
+/* Demostración de WhatsApp en la web pública. */
+.pub-whatsapp {
+    position: fixed;
+    z-index: 35;
+    right: max(0.8rem, env(safe-area-inset-right));
+    bottom: calc(max(0.8rem, env(safe-area-inset-bottom)) + var(--pub-wa-despeje, 0px));
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    padding: 0;
+    border: 1px solid #168347;
+    border-radius: 50%;
+    background: #25D366;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.20);
+    cursor: pointer;
+    transition: transform var(--pub-transicion), box-shadow var(--pub-transicion),
+                opacity var(--pub-transicion);
+}
+
+.pub-whatsapp[inert] {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pub-whatsapp[hidden] {
+    display: none;
+}
+
+.pub-whatsapp img {
+    display: block;
+    width: 30px;
+    height: 30px;
+    filter: brightness(0) invert(1);
+}
+
+.pub-whatsapp:is(:hover, :focus-visible) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.26);
+}
+
+.pub-whatsapp:focus-visible {
+    outline: 3px solid var(--pub-enlace);
+    outline-offset: 3px;
+}
+
+.pub-whatsapp-dialogo {
+    width: min(26rem, calc(100% - 2rem));
+    padding: clamp(1.25rem, 4vw, 2rem);
+    border: 1px solid var(--pub-borde-fuerte);
+    border-radius: 20px;
+    color: var(--pub-texto);
+    background: var(--pub-superficie);
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-whatsapp-dialogo::backdrop {
+    background: rgba(5, 24, 31, 0.62);
+}
+
+.pub-whatsapp-dialogo h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    line-height: 1.2;
+}
+
+.pub-whatsapp-dialogo p {
+    margin: 0.8rem 0 1.25rem;
+    color: var(--pub-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-whatsapp {
+        transition: none;
+    }
+
+    .pub-whatsapp:is(:hover, :focus-visible) {
+        transform: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .pub-whatsapp {
+        width: 52px;
+        height: 52px;
+    }
+}
+
+@media (max-width: 860px) {
+    .pub-menu-abierto ~ .pub-whatsapp {
+        visibility: hidden;
+    }
+}
+
+/* =====================================================================
+   Formularios (Login y Registro)
+   ===================================================================== */
+.pub-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.pub-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.pub-campo label {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--pub-texto);
+}
+
+.pub-campo input,
+.pub-campo select {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 0.9rem;
+    font: inherit;
+    color: var(--pub-texto);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde-fuerte);
+    border-radius: 10px;
+    transition: border-color var(--pub-transicion), box-shadow var(--pub-transicion),
+                background-color var(--pub-transicion);
+}
+
+.pub-campo input:hover,
+.pub-campo select:hover {
+    border-color: var(--pub-borde-hover);
+}
+
+.pub-campo input:focus,
+.pub-campo select:focus {
+    outline: none;
+    border-color: var(--pub-primario);
+    box-shadow: var(--pub-anillo);
+}
+
+/* Error: solo después de que la persona tocó el campo */
+.pub-campo input:user-invalid,
+.pub-campo select:user-invalid {
+    border-color: var(--pub-error);
+    background: var(--pub-error-campo);
+}
+
+.pub-campo input::placeholder {
+    color: #8A9AA6;
+}
+
+.pub-campo-flotante {
+    position: relative;
+}
+
+.pub-campo-flotante input {
+    min-height: 3.75rem;
+    padding-block: 1.75rem 0.55rem;
+}
+
+.pub-campo-flotante label {
+    position: absolute;
+    inset-block-start: 0.52rem;
+    inset-inline-start: calc(0.9rem + 1px);
+    max-inline-size: calc(100% - 1.8rem - 2px);
+    color: var(--pub-suave);
+    line-height: 1.25;
+    cursor: text;
+    transform-origin: left top;
+    transition: transform var(--mov-medio) var(--mov-curva), color var(--mov-medio) var(--mov-curva);
+}
+
+.pub-campo-flotante input:not(:focus)::placeholder {
+    opacity: 0;
+}
+
+.pub-campo-flotante input:is(:focus, :not(:placeholder-shown), :autofill, :user-invalid) + label {
+    transform: translateY(-0.25rem) scale(0.86);
+}
+
+.pub-campo-flotante input:focus + label {
+    color: var(--pub-enlace);
+}
+
+.pub-campo-flotante input:user-invalid + label {
+    color: var(--pub-error);
+}
+
+/* Avisos */
+.pub-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin: 0 0 1.25rem;
+    padding: 0.9rem 1rem;
+    color: var(--pub-texto);
+    background: var(--pub-tinte);
+    border: 1px solid var(--pub-info-borde);
+    border-radius: 12px;
+    animation: pub-subir var(--mov-medio) var(--mov-curva);
+}
+
+.pub-aviso p {
+    margin: 0;
+}
+
+.pub-aviso .pub-icono {
+    margin-top: 2px;
+    color: var(--pub-enlace);
+}
+
+.pub-aviso-exito {
+    color: #14532D;
+    background: #E3F5EC;
+    border-color: #A8DDC1;
+}
+
+.pub-aviso-exito .pub-icono {
+    color: var(--pub-acento-texto);
+}
+
+.pub-aviso-error {
+    color: #7A1A12;
+    background: #FDECEA;
+    border-color: #F5B5AE;
+}
+
+.pub-aviso-error .pub-icono {
+    color: var(--pub-error);
+}
+
+.pub-notificacion {
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.625rem;
+    border-inline-start: 3px solid currentColor;
+    box-shadow: var(--pub-sombra);
+}
+
+.pub-notificacion > .pub-icono {
+    box-sizing: content-box;
+    flex: none;
+    margin: 0.125rem 0 0;
+    padding: 0.375rem;
+    color: inherit;
+    background: color-mix(in srgb, currentColor 10%, transparent);
+    border-radius: 50%;
+}
+
+.pub-notificacion > :is(p, div) {
+    flex: 1;
+    min-width: 0;
+    padding-block: 0.375rem;
+    overflow-wrap: anywhere;
+}
+
+.pub-notificacion p + p {
+    margin-top: 0.35rem;
+}
+
+.pub-notificacion-cerrar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+}
+
+.pub-notificacion-cerrar[hidden] {
+    display: none;
+}
+
+.pub-notificacion-cerrar .pub-icono {
+    margin: 0;
+    color: inherit;
+}
+
+.pub-notificacion-cerrar:hover {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.pub-notificacion-cerrar:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+}
+
+.pub-notificacion.pub-notificacion-cerrando {
+    opacity: 0;
+    transform: translateY(-4px);
+    animation: pub-notificacion-salida var(--mov-rapido) var(--mov-curva);
+}
+
+@keyframes pub-notificacion-salida {
+    from { opacity: 1; transform: none; }
+    to   { opacity: 0; transform: translateY(-4px); }
+}
+
+.pub-aviso-advertencia {
+    color: #5C3D00;
+    background: #FFF6E5;
+    border-color: #F2D49A;
+}
+
+.pub-aviso-advertencia .pub-icono {
+    color: #A86B00;
+}
+
+.pub-alterno {
+    margin: 1.25rem 0 0;
+    text-align: center;
+    color: var(--pub-suave);
+}
+
+.pub-alterno a {
+    font-weight: 700;
+}
+
+/* ---------- Login: pantalla partida ---------- */
+.pub-acceso {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    max-width: 980px;
+    margin: 1rem auto 2rem;
+    overflow: hidden;
+    background: var(--pub-superficie);
+    border-radius: 26px;
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-acceso-marca {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem;
+    color: #FFFFFF;
+    background: linear-gradient(160deg, var(--pub-primario) 0%, var(--pub-oscuro) 70%, var(--pub-noche) 100%);
+    overflow: hidden;
+}
+
+.pub-acceso-marca::after {
+    content: "";
+    position: absolute;
+    right: -90px;
+    bottom: -90px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(34, 183, 122, 0.35), transparent 70%);
+    border-radius: 50%;
+}
+
+.pub-acceso-marca img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    align-self: center;
+}
+
+.pub-acceso-formulario {
+    padding: 2.75rem 2.5rem;
+}
+
+.pub-acceso-formulario h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+}
+
+.pub-acceso-formulario .pub-bajada {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+/* ---------- Registro ---------- */
+.pub-registro {
+    max-width: 860px;
+    margin: 0.5rem auto 2rem;
+    padding: 2.5rem;
+    background: var(--pub-superficie);
+    border-radius: 24px;
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.pub-registro-cabecera {
+    margin-bottom: 1.75rem;
+}
+
+.pub-registro-cabecera h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2.2rem;
+}
+
+.pub-formulario-rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem 1.25rem;
+}
+
+.pub-campo-ancho {
+    grid-column: 1 / -1;
+}
+
+.pub-formulario-rejilla .pub-aviso {
+    margin: 0.25rem 0 0;
+    font-size: 0.92rem;
+    animation: none;
+}
+
+/* Casilla de privacidad: la casilla es grande y fácil de tocar */
+.pub-casilla {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    font-size: 0.93rem;
+    line-height: 1.5;
+    color: var(--pub-texto);
+    background: var(--pub-fondo);
+    border: 1px solid var(--pub-borde);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color var(--pub-transicion), background-color var(--pub-transicion);
+}
+
+.pub-casilla:hover {
+    border-color: var(--pub-borde-fuerte);
+}
+
+.pub-casilla:has(input:checked) {
+    background: #EEF8F3;
+    border-color: #A8DDC1;
+}
+
+.pub-casilla input {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0.1rem 0 0;
+    accent-color: var(--pub-primario);
+}
+
+.pub-casilla input:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* =====================================================================
+   Privacidad: índice fijo + texto cómodo de leer
+   ===================================================================== */
+.pub-legal {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+}
+
+.pub-legal-indice {
+    position: sticky;
+    top: 6rem;
+    padding: 1.25rem;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 16px;
+}
+
+.pub-legal-indice p {
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pub-suave);
+}
+
+.pub-legal-indice ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: indice;
+}
+
+.pub-legal-indice li {
+    counter-increment: indice;
+}
+
+.pub-legal-indice a {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.92rem;
+    color: var(--pub-suave);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color var(--pub-transicion), color var(--pub-transicion);
+}
+
+.pub-legal-indice a::before {
+    content: counter(indice) ".";
+    font-weight: 700;
+    color: var(--pub-enlace);
+}
+
+.pub-legal-indice a:hover {
+    color: var(--pub-texto);
+    background: var(--pub-tinte);
+}
+
+.pub-legal-indice a:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+.pub-legal-texto {
+    max-width: 46rem;
+    padding: 2.5rem;
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 20px;
+}
+
+.pub-legal-texto h2 {
+    margin: 2rem 0 0.75rem;
+    padding-top: 1.5rem;
+    font-size: 1.3rem;
+    border-top: 1px solid var(--pub-borde);
+    scroll-margin-top: 6rem;   /* al saltar desde el índice, que no lo tape la cabecera */
+}
+
+.pub-legal-texto h2:first-of-type {
+    margin-top: 1.5rem;
+}
+
+.pub-legal-texto p,
+.pub-legal-texto li {
+    line-height: 1.75;
+}
+
+.pub-legal-texto ul {
+    padding-left: 1.25rem;
+}
+
+.pub-legal-texto li::marker {
+    color: var(--pub-acento);
+}
+
+/* =====================================================================
+   Páginas de error 403 y 404 (el HTML lo arma app/core/errores.php)
+   ===================================================================== */
+.publico .error-pagina {
+    position: relative;
+    max-width: 640px;
+    margin: 1rem auto 2rem;
+    padding: 3.5rem 2rem;
+    overflow: hidden;
+    background: var(--pub-superficie);
+    border-radius: 26px;
+    box-shadow: var(--pub-sombra-alta);
+    animation: pub-subir var(--mov-medio) var(--mov-curva);
+}
+
+.publico .error-pagina::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -120px;
+    width: 360px;
+    height: 360px;
+    margin-left: -180px;
+    background: radial-gradient(circle, rgba(8, 124, 148, 0.12), transparent 70%);
+    border-radius: 50%;
+}
+
+.publico .error-codigo {
+    position: relative;
+    font-size: clamp(5rem, 18vw, 9rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--pub-primario), var(--pub-acento));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.publico .error-pagina h1 {
+    position: relative;
+    font-size: 1.8rem;
+}
+
+.publico .error-pagina p {
+    position: relative;
+    color: var(--pub-suave);
+}
+
+/* Su botón ".boton" toma el aspecto de .pub-boton */
+.publico .error-pagina .boton {
+    position: relative;
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    padding: 0.7rem 1.35rem;
+    color: #FFFFFF;
+    background: var(--pub-primario);
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(8, 124, 148, 0.22);
+    transition: background-color var(--pub-transicion), transform var(--pub-transicion);
+}
+
+.publico .error-pagina .boton:hover {
+    background: var(--pub-primario-hover);
+    transform: translateY(-1px);
+}
+
+.publico .error-pagina .boton:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* =====================================================================
+   Pie de página
+   ===================================================================== */
+.pub-pie {
+    margin-top: 2rem;
+    color: rgba(255, 255, 255, 0.78);
+    background: var(--pub-noche);
+}
+
+.pub-pie-interior {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: var(--pub-ancho);
+    margin: 0 auto;
+    padding: 2.25rem 1.5rem;
+}
+
+.pub-pie-marca p {
+    margin: 0.6rem 0 0;
+    font-size: 0.9rem;
+}
+
+.pub-marca.pub-marca-clara,
+.pub-marca-clara strong {
+    color: #FFFFFF;
+}
+
+.pub-pie-enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+}
+
+.pub-pie-enlaces a {
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: color var(--pub-transicion);
+}
+
+.pub-pie-enlaces a:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.pub-pie a:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 3px;
+}
+
+/* =====================================================================
+   Aparecer al bajar (lo activa portada.js o publico.js)
+   ===================================================================== */
+@keyframes pub-subir {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.publico.animar .aparecer {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity var(--mov-lento) var(--mov-curva), transform var(--mov-lento) var(--mov-curva);
+}
+
+.publico.animar .aparecer.visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* =====================================================================
+   Tableta
+   ===================================================================== */
+@media (max-width: 1000px) {
+    .pub-franja {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pub-franja div:nth-child(3) {
+        border-left: none;
+    }
+
+    .pub-franja div:nth-child(n + 3) {
+        border-top: 1px solid var(--pub-borde);
+    }
+
+    .pub-dividida {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+
+    .pub-dividida-titulo {
+        position: static;
+    }
+
+    .pub-legal {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pub-legal-indice {
+        position: static;
+    }
+
+    .pub-legal-indice ol {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pub-contacto {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* =====================================================================
+   Celular: menú desplegable
+   ===================================================================== */
+@media (max-width: 860px) {
+    .pub-js .pub-boton-menu {
+        display: inline-flex;
+    }
+
+    .pub-cabecera-interior {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.7rem 1rem;
+    }
+
+    /* El menú se despliega debajo de la cabecera (se abre suave) */
+    .pub-js .pub-menu {
+        flex-direction: column;
+        align-items: stretch;
+        flex-basis: 100%;
+        gap: 0.25rem;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        visibility: hidden;
+        transition: max-height var(--mov-medio) var(--mov-curva), opacity var(--mov-medio) var(--mov-curva), visibility 0s linear var(--mov-medio);
+    }
+
+    .pub-js .pub-menu-abierto .pub-menu {
+        max-height: 26rem;
+        padding: 0.25rem 0 0.5rem;
+        opacity: 1;
+        visibility: visible;
+        transition: max-height var(--mov-medio) var(--mov-curva), opacity var(--mov-medio) var(--mov-curva);
+    }
+
+    .pub-menu a:not(.pub-boton) {
+        padding: 0.75rem 0.85rem;
+        border-radius: 10px;
+    }
+
+    .pub-menu a:not(.pub-boton)::after {
+        display: none;
+    }
+
+    .pub-menu a[aria-current="page"] {
+        color: var(--pub-enlace);
+        background: var(--pub-tinte);
+    }
+
+    .pub-menu .pub-boton {
+        margin: 0.35rem 0 0;
+    }
+
+    /* Sin JavaScript: el menú se ve completo, en filas */
+    .pub-menu {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 640px) {
+    .pub-contenido {
+        padding: 1.25rem 1rem 2.5rem;
+    }
+
+    .pub-seccion {
+        margin-bottom: 3rem;
+    }
+
+    .pub-encabezado {
+        padding: 2rem 1.35rem;
+        border-radius: 18px;
+    }
+
+    .pub-nosotros-encabezado {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 0;
+    }
+
+    .pub-nosotros-foto {
+        height: auto;
+        aspect-ratio: 16 / 9;
+        clip-path: ellipse(115% 95% at 50% 95%);
+    }
+
+    .pub-tarjetas-servicio,
+    .pub-mision,
+    .pub-lista-datos,
+    .pub-formulario-rejilla,
+    .pub-acceso {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pub-razones li {
+        grid-template-columns: 3.25rem 1fr;
+    }
+
+    .pub-razones li::before {
+        font-size: 2rem;
+    }
+
+    .pub-mision article,
+    .pub-contacto-datos,
+    .pub-horario,
+    .pub-registro,
+    .pub-legal-texto {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .pub-llamado {
+        padding: 2rem 1.5rem;
+    }
+
+    .pub-llamado .pub-boton {
+        width: 100%;
+    }
+
+    /* La ilustración decorativa del login solo aparece en pantallas amplias. */
+    .pub-acceso-marca {
+        display: none;
+    }
+
+    .pub-acceso-formulario {
+        padding: 1.75rem 1.4rem;
+    }
+
+    .pub-legal-indice ol {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .publico .error-pagina {
+        padding: 2.5rem 1.25rem;
+    }
+}
+
+/* =====================================================================
+   Menos movimiento: sin animaciones ni desplazamientos
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .publico *,
+    .publico *::before,
+    .publico *::after {
+        transition-duration: 0s !important;
+        animation-duration: 0s !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    .publico.animar .aparecer {
+        opacity: 1;
+        transform: none;
+    }
+
+    .pub-boton:hover,
+    .pub-tarjeta-servicio:hover {
+        transform: none;
+    }
+
+    /* El indicador de "cargando" sigue girando, pero lento (igual que en
+       el panel): avisa que el formulario se está enviando */
+    .pub-boton[aria-busy="true"]::before {
+        animation-duration: 2s !important;
+        animation-iteration-count: infinite !important;
+    }
+}
+
+/* Contacto: el dato queda centrado aunque la casilla vecina sea más alta */
+.pub-lista-datos li {
+    align-content: center;
+}
+
+/* El pie queda siempre abajo, aunque la página sea corta (ej. Login) */
+body.publico {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.pub-contenido {
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+/* Número del error por encima del círculo decorativo, con el degradado visible */
+.publico .error-codigo {
+    z-index: 1;
+    -webkit-text-fill-color: transparent;
+}
+
+.publico .error-pagina::before {
+    z-index: 0;
+}
+
+/* =====================================================================
+   MODO OSCURO (web pública)
+   tema.js pone <html data-tema="oscuro">. Primero cambian las variables;
+   después, las piezas con colores propios. ":root[data-tema="oscuro"]"
+   delante hace que ganen sin tocar las reglas de arriba (el modo claro
+   queda igual). Los llamados, el horario y el pie conservan su fondo oscuro.
+   Contraste: textos >= 4.5:1 sobre --pub-superficie (#15242C).
+   ===================================================================== */
+:root[data-tema="oscuro"] body.publico {
+    --pub-fondo:        #0E1A20;
+    --pub-superficie:   #15242C;
+    --pub-texto:        #E3EDF1;   /* 13:1 */
+    --pub-suave:        #9DB0BA;   /* 7.1:1 */
+    --pub-acento-texto: #5FD39A;   /* 8.4:1 */
+    --pub-borde:        #243A45;
+    --pub-borde-fuerte: #3A5563;
+    --pub-tinte:        #173843;
+    --pub-error:        #F4A199;   /* 7.6:1 */
+    --pub-sombra:       0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    --pub-sombra-alta:  0 4px 10px rgba(0, 0, 0, 0.35), 0 18px 40px rgba(0, 0, 0, 0.35);
+    --pub-anillo:       0 0 0 3px rgba(92, 196, 220, 0.45);
+    --pub-borde-hover:  #557785;
+    --pub-error-campo:  #2A1A1A;
+    --pub-info-borde:   #23566A;
+    --pub-enlace:       #5CC4DC;   /* 7.9:1 */
+}
+
+/* Cabecera translúcida: blanca en claro, oscura en oscuro */
+:root[data-tema="oscuro"] .pub-cabecera {
+    background: rgba(14, 26, 32, 0.9);
+}
+
+/* Encabezado de las páginas interiores (degradado blanco -> celeste) */
+:root[data-tema="oscuro"] .pub-encabezado {
+    background: linear-gradient(120deg, #15242C 0%, #12303A 100%);
+}
+
+/* Números grandes "01, 02, 03" de la portada: el degradado empieza en el
+   turquesa claro (el oscuro casi no se veía sobre el fondo) */
+:root[data-tema="oscuro"] .pub-razones li::before {
+    background-image: linear-gradient(135deg, var(--pub-enlace), var(--pub-acento));
+}
+
+/* Código grande de las páginas de error (403, 404): mismo arreglo */
+:root[data-tema="oscuro"] .publico .error-codigo {
+    background-image: linear-gradient(135deg, var(--pub-enlace), var(--pub-acento));
+}
+
+/* Campos de formulario */
+:root[data-tema="oscuro"] .pub-campo input::placeholder {
+    color: #7F949F;
+}
+
+/* Avisos: el texto oscuro de cada tipo pasa a ser claro */
+:root[data-tema="oscuro"] .pub-aviso-exito {
+    color: #B9EBD1;
+    background: #12342A;
+    border-color: #2B6B4E;
+}
+
+:root[data-tema="oscuro"] .pub-aviso-error {
+    color: #F8C4BE;
+    background: #3A1F1D;
+    border-color: #7A3A33;
+}
+
+:root[data-tema="oscuro"] .pub-aviso-advertencia {
+    color: #F5DDA6;
+    background: #33290F;
+    border-color: #6B5420;
+}
+
+:root[data-tema="oscuro"] .pub-aviso-advertencia .pub-icono {
+    color: #F5C66B;
+}
+
+/* Casilla de aceptación marcada (registro) */
+:root[data-tema="oscuro"] .pub-casilla:has(input:checked) {
+    background: #12342A;
+    border-color: #2B6B4E;
+}
+
+/* =====================================================================
+   SWITCH DE TEMA EN LA CABECERA PÚBLICA
+   Escritorio: a la derecha del menú. Celular: entre la marca y el botón
+   "Menú" (el menú desplegado queda debajo de todo).
+   ===================================================================== */
+.pub-cabecera .switch-tema {
+    flex-shrink: 0;
+}
+
+@media (max-width: 860px) {
+    .pub-cabecera .pub-boton-menu {
+        order: 1;
+    }
+
+    .pub-cabecera .pub-menu {
+        order: 2;
+    }
+}
+
+/* Celulares angostos (menos de 390 px): marca + switch + "Menú" no caben
+   en una fila. El botón "Menú" queda solo con su icono (la palabra sigue
+   ahí para los lectores de pantalla) y el switch se achica un poco. */
+@media (max-width: 389px) {
+    .pub-cabecera-interior {
+        column-gap: 0.5rem;
+    }
+
+    .pub-boton-menu > span:last-child {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .pub-cabecera .switch-tema-pista {
+        width: 46px;
+        height: 28px;
+    }
+
+    .pub-cabecera .switch-tema-perilla {
+        width: 22px;
+        height: 22px;
+    }
+
+    .pub-cabecera .switch-tema[aria-checked="true"] .switch-tema-perilla {
+        transform: translateX(18px);
+    }
+}

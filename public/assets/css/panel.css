@@ -1,77 +1,133 @@
 /* Estilos del panel (zona privada). Usa las variables de base.css. */
 
+/* ---------- Rediseño 2.0: variables del panel ----------
+   Colores y medidas del diseño aprobado (Figma, "Panel administrativo").
+   Solo se cargan en las páginas del panel, así que no cambian el sitio
+   público ni el portal del paciente. */
 .panel-body {
-    background: var(--color-fondo);
+    --panel-primario:     #087C94;
+    --panel-lateral:      #075267;
+    --panel-fondo:        #F2F7F9;
+    --panel-superficie:   #FFFFFF;
+    --panel-texto:        #193847;
+    --panel-texto-suave:  #5B6B79;  /* 5.4:1 sobre el fondo */
+    --panel-acento:       #22B77A;  /* solo rellenos, bordes e iconos */
+    --panel-acento-texto: #1F7A4D;  /* verde para texto (contraste 5.3:1) */
+    --panel-borde:        #E1EAEE;
+    --panel-tinte:        #E6F2F5;  /* fondo claro de botones "pastilla" */
+    --panel-lateral-texto:  #D5E6EC;
+    --panel-lateral-titulo: #9FC3CF;
+    --panel-lateral-activo: #12697D;  /* enlace de la página actual */
+    --panel-ancho-lateral: 254px;
+    --panel-radio:        12px;
+    --panel-sombra:       0 1px 2px rgba(25, 56, 71, 0.04), 0 4px 16px rgba(25, 56, 71, 0.04);
+    --panel-transicion:   var(--mov-rapido) var(--mov-curva);
+
+    background: var(--panel-fondo);
 }
 
 /* Estructura: barra lateral + contenido */
 .panel {
     display: grid;
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: var(--panel-ancho-lateral) 1fr;
     min-height: 100vh;
+}
+
+/* Sin esto, la columna de contenido no se encoge por debajo de su parte más
+   ancha (por ejemplo, una tabla): empujaba toda la página hacia la derecha en
+   el celular. Con min-width: 0 se ajusta a la pantalla y la tabla se desplaza
+   dentro de su propia caja (.tabla-scroll). */
+.panel-principal {
+    min-width: 0;
+}
+
+/* Iconos (public/assets/img/iconos.svg): toman el color del texto */
+.icono {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
 }
 
 /* ---------- Barra lateral ---------- */
 .panel-lateral {
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 1rem;
-    background: var(--color-titulos);
-    color: #C9D6DF;
+    padding: 1.75rem 1.25rem 1.5rem;
+    background: var(--panel-lateral);
+    color: var(--panel-lateral-texto);
     position: sticky;
     top: 0;
     height: 100vh;
+    overflow-y: auto;
 }
 
+/* Marca del panel */
 .panel-marca {
-    padding: 0 0.75rem 1.5rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--color-blanco);
+    display: block;
+    min-width: 0;
+    margin-bottom: 0.5rem;
     text-decoration: none;
 }
 
-.panel-marca span {
-    margin-left: 0.25rem;
-    padding: 0.1rem 0.45rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-titulos);
-    background: var(--color-acento);
-    border-radius: 4px;
-    vertical-align: middle;
+.panel-lateral .panel-marca .logo-oficial,
+.panel-barra-movil .panel-marca .logo-oficial {
+    width: 144px;
+    /* Aclara el azul y el turquesa sobre el fondo de la navegación. */
+    filter: contrast(0.5) brightness(1.6);
+}
+
+.panel-marca .panel-isotipo {
+    display: none;
 }
 
 .panel-menu {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.8rem;
 }
 
+/* Cada enlace: icono + texto (+ globito) */
 .panel-menu a,
-.panel-menu .deshabilitado {
+.panel-menu .deshabilitado,
+.panel-perfil,
+.panel-salir {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 0.65rem 0.75rem;
+    gap: 0.85rem;
+    min-height: 40px;
+    padding: 0.55rem 0.75rem;
     border-radius: 8px;
-    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+    color: var(--panel-lateral-texto);
     text-decoration: none;
-    color: #C9D6DF;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion);
 }
 
-.panel-menu a:hover {
-    background: rgba(255, 255, 255, 0.07);
-    color: var(--color-blanco);
+.panel-menu-texto {
+    flex: 1;
+    min-width: 0;
 }
 
-.panel-menu a.activo {
-    background: rgba(43, 182, 115, 0.15);
-    border-left-color: var(--color-acento);
-    color: var(--color-blanco);
+.panel-menu a:hover,
+.panel-perfil:hover,
+.panel-salir:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+}
+
+/* Página actual: fondo un poco más claro y texto en negrita */
+.panel-menu a.activo,
+.panel-perfil.activo {
+    background: var(--panel-lateral-activo);
+    color: #FFFFFF;
     font-weight: 600;
+}
+
+/* Foco con teclado: anillo bien visible sobre el fondo oscuro */
+.panel-lateral a:focus-visible,
+.panel-salir:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
 }
 
 .panel-menu .deshabilitado {
@@ -85,150 +141,48 @@
     letter-spacing: 0.05em;
 }
 
-/* Usuario abajo de la barra lateral */
+/* Usuario y cerrar sesión: debajo del menú, separados por una línea */
 .panel-usuario {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.75rem;
-    align-items: center;
-    margin-top: auto;
-    padding: 1rem 0.75rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-.panel-usuario strong {
+/* "Mi perfil" debajo del nombre, en pequeño */
+.panel-perfil small {
     display: block;
-    color: var(--color-blanco);
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+    color: var(--panel-lateral-titulo);
 }
 
-.panel-usuario small {
-    text-transform: capitalize;
-}
-
-.panel-avatar {
-    display: grid;
-    place-items: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--color-principal);
-    color: var(--color-blanco);
-    font-weight: 700;
-    font-size: 0.85rem;
+/* En "Mi perfil" activo, el fondo es más claro: la letra pequeña usa el
+   color del menú para leerse bien (5:1) */
+.panel-perfil.activo small {
+    color: var(--panel-lateral-texto);
 }
 
 .panel-usuario form {
-    grid-column: 1 / -1;
+    margin: 0;
 }
 
+/* El botón "Cerrar sesión" se ve igual que un enlace del menú */
 .panel-salir {
     width: 100%;
-    padding: 0.5rem;
     font: inherit;
-    font-size: 0.9rem;
-    color: #C9D6DF;
+    font-size: 0.95rem;
+    text-align: left;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 8px;
+    border: none;
     cursor: pointer;
-}
-
-.panel-salir:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--color-blanco);
 }
 
 /* ---------- Contenido ---------- */
 .panel-contenido {
     max-width: 1100px;
     padding: 2rem;
-}
-
-.panel-titulo {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.panel-titulo h1 {
-    margin: 0;
-    font-size: 1.8rem;
-}
-
-.panel-titulo p {
-    margin: 0.25rem 0 0;
-}
-
-.panel-titulo time {
-    padding: 0.35rem 0.8rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-principal);
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 999px;
-}
-
-/* Tarjetas de números */
-.tarjetas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.dato {
-    display: flex;
-    flex-direction: column;
-    padding: 1.25rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-top: 4px solid var(--color-principal);
-    border-radius: 12px;
-}
-
-.dato-alerta {
-    border-top-color: var(--color-acento);
-}
-
-.dato-numero {
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1.1;
-    color: var(--color-titulos);
-}
-
-.dato-texto {
-    margin-top: 0.25rem;
-    font-size: 0.9rem;
-}
-
-/* Cajas con listas */
-.panel-columnas {
-    display: grid;
-    grid-template-columns: 3fr 2fr;
-    gap: 1.25rem;
-    align-items: start;
-}
-
-.caja {
-    padding: 1.25rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 12px;
-}
-
-.caja h2 {
-    margin: 0 0 0.75rem;
-    font-size: 1.1rem;
-}
-
-.vacio {
-    margin: 0;
-    color: var(--color-texto-suave);
 }
 
 .agenda {
@@ -242,38 +196,11 @@
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 0;
-    border-bottom: 1px solid #EDF1F4;
+    border-bottom: 1px solid var(--color-separador);
 }
 
 .agenda li:last-child {
     border-bottom: none;
-}
-
-.agenda-hora {
-    display: flex;
-    flex-direction: column;
-    min-width: 3.2rem;
-    text-align: center;
-}
-
-.agenda-hora strong {
-    font-size: 1.05rem;
-    color: var(--color-principal);
-}
-
-.agenda-hora small {
-    color: var(--color-texto-suave);
-}
-
-.agenda-detalle {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-}
-
-.agenda-detalle small {
-    color: var(--color-texto-suave);
 }
 
 /* Etiquetas de estado */
@@ -292,58 +219,8 @@
 .estado-cancelada  { background: #FDECEA; color: #8A1F14; }
 .estado-nueva      { background: #D9EEF4; color: #0B6E8A; }
 
-/* ---------- Tablas, avisos y formularios del panel ---------- */
-.panel-columnas-usuarios {
-    grid-template-columns: 3fr 2fr;
-}
-
 .tabla-scroll {
     overflow-x: auto;
-}
-
-.tabla {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tabla th {
-    padding: 0.5rem 0.6rem;
-    text-align: left;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--color-texto-suave);
-    border-bottom: 2px solid #EDF1F4;
-}
-
-.tabla td {
-    padding: 0.7rem 0.6rem;
-    border-bottom: 1px solid #EDF1F4;
-    vertical-align: middle;
-}
-
-.tabla tr:last-child td {
-    border-bottom: none;
-}
-
-.tabla small {
-    color: var(--color-texto-suave);
-}
-
-.boton-tabla {
-    padding: 0.3rem 0.7rem;
-    font: inherit;
-    font-size: 0.85rem;
-    color: var(--color-principal);
-    background: transparent;
-    border: 1px solid var(--color-principal);
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.boton-tabla:hover {
-    background: var(--color-principal);
-    color: var(--color-blanco);
 }
 
 .aviso {
@@ -352,76 +229,11 @@
     border-radius: 8px;
 }
 
-.aviso-ok {
-    background: #DDF3E8;
-    border: 1px solid #A9DEC3;
-    color: #17744A;
-}
-
-.aviso-error {
-    background: #FDECEA;
-    border: 1px solid #F5B5AE;
-    color: #8A1F14;
-}
-
-.form-panel .campo {
-    margin-bottom: 0.9rem;
-}
-
-.form-panel .campo label {
-    display: block;
-    margin-bottom: 0.3rem;
-    font-weight: 600;
-    color: var(--color-titulos);
-}
-
-.form-panel .campo input,
-.form-panel .campo select {
-    width: 100%;
-    padding: 0.6rem 0.7rem;
-    font: inherit;
-    background: var(--color-blanco);
-    border: 1px solid #C5D0D8;
-    border-radius: 8px;
-}
-
-.form-panel .campo input:focus,
-.form-panel .campo select:focus {
-    outline: 2px solid var(--color-principal);
-    outline-offset: 1px;
-}
-
-.form-panel .boton {
-    width: 100%;
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 600;
-}
-
-/* ---------- Páginas del panel hechas con HTML simple ----------
-   Pacientes, citas y solicitudes usan etiquetas básicas (table, label,
-   input, etc.). Estas reglas les dan el estilo del panel sin cambiar
-   su HTML. Solo afectan lo que está dentro de .panel-contenido. */
-.panel-contenido .seccion {
-    padding: 0;
-}
-
-.panel-contenido .seccion > h1 {
-    margin: 0 0 1rem;
-    font-size: 1.8rem;
-}
-
-.panel-contenido .seccion > h2 {
-    margin: 1.5rem 0 0.75rem;
-    font-size: 1.2rem;
-}
-
 .panel-contenido table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -441,12 +253,12 @@
     text-transform: uppercase;
     color: var(--color-texto-suave);
     background: #F8FAFB;
-    border-bottom: 2px solid #EDF1F4;
+    border-bottom: 2px solid var(--color-separador);
 }
 
 .panel-contenido td {
     padding: 0.7rem 0.8rem;
-    border-bottom: 1px solid #EDF1F4;
+    border-bottom: 1px solid var(--color-separador);
 }
 
 .panel-contenido tr:last-child td {
@@ -465,15 +277,15 @@
     max-width: 30rem;
     padding: 0.55rem 0.7rem;
     font: inherit;
-    background: var(--color-blanco);
-    border: 1px solid #C5D0D8;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde-fuerte);
     border-radius: 8px;
 }
 
 .panel-contenido input:focus,
 .panel-contenido select:focus,
 .panel-contenido textarea:focus {
-    outline: 2px solid var(--color-principal);
+    outline: 2px solid var(--color-enlace);
     outline-offset: 1px;
 }
 
@@ -482,10 +294,6 @@
     cursor: pointer;
     font: inherit;
     font-weight: 600;
-}
-
-.panel-contenido button.boton-claro {
-    border: 1px solid var(--color-principal);
 }
 
 /* Avisos: sus páginas marcan errores con role="alert" y éxitos con role="status" */
@@ -520,10 +328,6 @@
         padding: 1rem;
     }
 
-    .panel-marca {
-        padding-bottom: 0.75rem;
-    }
-
     .panel-menu {
         flex-direction: row;
         flex-wrap: wrap;
@@ -537,23 +341,20 @@
         padding: 1.25rem 1rem;
     }
 
-    .panel-columnas,
-    .panel-columnas-usuarios {
-        grid-template-columns: 1fr;
-    }
+    
 }
 
 /* ---------- Menú lateral agrupado y globito de pendientes ---------- */
 .panel-menu-titulo {
-    margin: 1.1rem 0 0.25rem;
-    padding: 0 0.75rem;
+    margin: 0.4rem 0 0;
     font-size: 0.7rem;
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #7F95A5;
+    color: var(--panel-lateral-titulo);
 }
 
+/* Número verde junto a "Solicitudes" y "Cuentas" (texto oscuro: 6:1) */
 .panel-menu .globito {
     margin-left: auto;
     min-width: 1.4rem;
@@ -561,41 +362,9 @@
     font-size: 0.75rem;
     font-weight: 700;
     text-align: center;
-    color: var(--color-titulos);
-    background: var(--color-acento);
+    color: var(--panel-texto);
+    background: var(--panel-acento);
     border-radius: 999px;
-}
-
-/* Tarjeta de número que también es un enlace */
-a.dato-enlace {
-    text-decoration: none;
-    color: inherit;
-}
-
-a.dato-enlace:hover {
-    background: #FAFCFD;
-}
-
-/* ---------- Pestañas (filtros de una lista) ---------- */
-.pestanas {
-    display: flex;
-    gap: 0.25rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #DDE5EA;
-}
-
-.pestanas a {
-    margin-bottom: -2px;
-    padding: 0.5rem 1rem;
-    text-decoration: none;
-    color: #5A6B7A;
-    border-bottom: 2px solid transparent;
-}
-
-.pestanas a.activo {
-    font-weight: 600;
-    color: var(--color-titulos);
-    border-bottom-color: var(--color-acento);
 }
 
 /* ---------- Tarjeta de una cuenta por verificar ---------- */
@@ -609,13 +378,6 @@ a.dato-enlace:hover {
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--color-texto-suave);
-}
-
-.cuenta-comparacion {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
 }
 
 .datos {
@@ -634,114 +396,7 @@ a.dato-enlace:hover {
     color: var(--color-titulos);
 }
 
-.cuenta-pie {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid #EDF1F4;
-}
-
-.cuenta-acciones {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.cuenta-acciones .boton {
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 600;
-}
-
-.cuenta-acciones .boton-claro {
-    border: 1px solid var(--color-principal);
-}
-
-@media (max-width: 700px) {
-    .cuenta-comparacion {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ---------- Botones dentro de una fila de tabla ---------- */
-/* Varios botones juntos en la última columna (ej. "Programar" y "Descartar") */
-.acciones-fila {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-
-.acciones-fila form {
-    margin: 0;
-}
-
-/* El "botón" también puede ser un enlace <a>: que se vea igual */
-a.boton-tabla {
-    display: inline-block;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-/* Versión gris, para la acción secundaria (ej. "Descartar") */
-.boton-tabla-claro {
-    color: #5A6B7A;
-    border-color: #C5D0D8;
-}
-
-.boton-tabla-claro:hover {
-    color: var(--color-blanco);
-    background: #5A6B7A;
-    border-color: #5A6B7A;
-}
-
-/* ---------- "Mi día" del médico ---------- */
-
-/* Siguiente paciente: franja destacada con el color principal */
-.siguiente-paciente {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 1.4rem 1.75rem;
-    color: var(--color-blanco);
-    background: linear-gradient(135deg, var(--color-principal), #0F5D75);
-    border-radius: 14px;
-}
-
-.siguiente-paciente p {
-    margin: 0 0 0.25rem;
-}
-
-.siguiente-etiqueta {
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.85;
-}
-
-.siguiente-nombre {
-    font-size: 1.6rem;
-    font-weight: 700;
-}
-
-/* Sin pacientes en espera: versión clara */
-.siguiente-libre {
-    color: var(--color-texto);
-    background: var(--color-blanco);
-    border: 2px dashed #C5D0D8;
-}
-
-.siguiente-libre .siguiente-nombre {
-    color: var(--color-titulos);
-}
-
 /* Botones de la agenda de hoy, alineados a la derecha */
-.agenda li .boton-tabla,
 .agenda li .estado {
     margin-left: auto;
 }
@@ -755,7 +410,7 @@ a.boton-tabla {
 }
 
 .grafico-base {
-    stroke: #DDE5EA;
+    stroke: var(--color-borde);
     stroke-width: 1;
 }
 
@@ -776,7 +431,7 @@ a.boton-tabla {
 .barra-mes {
     font-size: 12px;
     text-anchor: middle;
-    fill: #5A6B7A;
+    fill: var(--color-icono-suave);
 }
 
 /* El número de cada barra solo aparece al pasar el ratón */
@@ -790,144 +445,10 @@ a.boton-tabla {
     opacity: 1;
 }
 
-/* ---------- Agenda semanal (calendario) ---------- */
-.agenda-controles {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.agenda-navegacion,
-.agenda-filtro {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.panel-contenido .agenda-filtro select {
-    width: auto;
-}
-
-/* 7 columnas (lunes a domingo). En pantallas chicas se desliza de lado. */
-.calendario {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(130px, 1fr));
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-}
-
-.calendario-dia {
-    min-height: 220px;
-    padding: 0.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 10px;
-}
-
-/* Hoy: borde con el color de acento */
-.calendario-dia.es-hoy {
-    border: 2px solid var(--color-acento);
-}
-
-/* Días pasados: un poco apagados */
-.calendario-dia.es-pasado {
-    background: #F8FAFB;
-}
-
-.calendario-cabecera {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.4rem;
-    border-bottom: 1px solid #EDF1F4;
-    color: var(--color-texto-suave);
-}
-
-.calendario-cabecera strong {
-    font-size: 1.3rem;
-    color: var(--color-titulos);
-}
-
-.calendario-vacio {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--color-texto-suave);
-}
-
-/* Cada cita: tarjetita con una franja de color a la izquierda según el estado */
-.calendario-cita {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0.4rem;
-    padding: 0.4rem 0.5rem;
-    font-size: 0.85rem;
-    line-height: 1.3;
-    color: var(--color-texto);
-    text-decoration: none;
-    background: #F3F6F8;
-    border-left: 4px solid #9AA8B4;
-    border-radius: 6px;
-}
-
-a.calendario-cita:hover {
-    background: #E6EEF2;
-}
-
-.calendario-cita strong {
-    color: var(--color-titulos);
-}
-
-.calendario-cita small {
-    color: var(--color-texto-suave);
-}
-
 /* Colores por estado (los mismos tonos que las etiquetas de estado) */
 .cita-pendiente  { border-left-color: #E0A526; }
 .cita-confirmada { border-left-color: var(--color-acento); }
 .cita-atendida   { border-left-color: #6B8599; }
-
-/* Leyenda de colores */
-.calendario-leyenda {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-size: 0.85rem;
-}
-
-.leyenda {
-    padding-left: 0.5rem;
-    border-left-width: 4px;
-    border-left-style: solid;
-}
-
-/* ---------- Enlace "Mi perfil" en el recuadro del usuario ---------- */
-.panel-perfil {
-    grid-column: 1 / -1;
-    padding: 0.45rem;
-    font-size: 0.9rem;
-    text-align: center;
-    color: #C9D6DF;
-    text-decoration: none;
-    border-radius: 8px;
-}
-
-.panel-perfil:hover,
-.panel-perfil.activo {
-    color: var(--color-blanco);
-    background: rgba(255, 255, 255, 0.1);
-}
-
-/* Formulario de contraseña dentro de una caja del panel: sin doble borde */
-.caja .form-password {
-    padding: 0;
-    border: none;
-}
 
 .form-password small {
     display: block;
@@ -935,11 +456,2467 @@ a.calendario-cita:hover {
     color: var(--color-texto-suave);
 }
 
-/* Filtros de la auditoría: separados de la tabla */
-.filtro-auditoria {
-    margin-bottom: 0.75rem;
-}
-
 /* Estado "no asistió" (etiqueta y franja del calendario) */
 .estado-no_asistio { background: #EDE7F6; color: #4A2F7A; }
 .cita-no_asistio   { border-left-color: #7E57C2; }
+
+/* =====================================================================
+   Rediseño 2.0 — Resumen administrativo (panel/index.php)
+   Todo va dentro de .resumen-admin: no cambia ninguna otra página.
+   ===================================================================== */
+.resumen-admin {
+    max-width: 1440px;
+    color: var(--panel-texto);
+}
+
+/* En esta página el contenido usa todo el ancho, con 36 px de margen
+   (las demás páginas del panel siguen con su ancho de 1100 px). */
+.panel-contenido:has(.resumen-admin) {
+    max-width: none;
+    padding: 2.25rem;
+}
+
+.resumen-admin h1,
+.resumen-admin h2 {
+    color: var(--panel-texto);
+}
+
+/* Cabecera: título, fecha y el rol a la derecha */
+.resumen-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.resumen-cabecera h1 {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.resumen-cabecera p {
+    margin: 0.35rem 0 0;
+    font-size: 0.9rem;
+    color: var(--panel-texto-suave);
+}
+
+/* "Pastilla": etiqueta del rol, "Ver todas" y accesos rápidos */
+.resumen-pastilla {
+    display: inline-block;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--panel-enlace);
+    background: var(--panel-tinte);
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion);
+}
+
+a.resumen-pastilla:hover {
+    color: #FFFFFF;
+    background: var(--panel-primario);
+}
+
+/* Indicadores: cinco tarjetas en fila */
+.resumen-indicadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.resumen-indicador {
+    display: flex;
+    flex-direction: column;
+    padding: 1.35rem 1.35rem 1.25rem;
+    background: var(--panel-superficie);
+    border-radius: var(--panel-radio);
+    box-shadow: var(--panel-sombra);
+    color: inherit;
+    text-decoration: none;
+    transition: transform var(--mov-medio) var(--mov-curva), box-shadow var(--mov-medio) var(--mov-curva);
+}
+
+.resumen-indicador h2 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--panel-texto-suave);
+}
+
+.resumen-numero {
+    margin: 0.6rem 0 0.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--panel-texto);
+    font-variant-numeric: tabular-nums;
+}
+
+.resumen-nota {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--panel-acento-texto);
+}
+
+/* Las tarjetas que llevan a otra página se elevan un poco */
+.resumen-indicador-enlace:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(25, 56, 71, 0.06), 0 8px 24px rgba(25, 56, 71, 0.08);
+}
+
+/* Cajas blancas: próximas citas, solicitudes, accesos rápidos */
+.resumen-caja {
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    background: var(--panel-superficie);
+    border-radius: var(--panel-radio);
+    box-shadow: var(--panel-sombra);
+}
+
+.resumen-caja h2 {
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.resumen-caja-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.resumen-caja-cabecera h2 {
+    margin: 0;
+}
+
+.resumen-vacio {
+    margin: 0;
+    color: var(--panel-texto-suave);
+}
+
+/* Tabla de próximas citas: sin rayas, filas con aire.
+   ".resumen-admin" delante para ganarle a ".panel-contenido table". */
+.resumen-admin .resumen-tabla {
+    width: auto;  /* columnas al ancho de su contenido, como en Figma */
+    border-collapse: collapse;
+    background: none;
+    border: none;
+    border-radius: 0;
+}
+
+.resumen-tabla th {
+    padding: 0 2.25rem 0.5rem 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--panel-texto-suave);
+    background: none;
+    border: none;
+}
+
+.resumen-tabla td {
+    padding: 1.1rem 2.25rem 1.1rem 0;
+    vertical-align: middle;
+    border: none;
+}
+
+.resumen-tabla tbody tr {
+    transition: background-color var(--panel-transicion);
+}
+
+.resumen-tabla tbody tr:hover {
+    background: var(--panel-sutil);
+}
+
+.resumen-paciente {
+    font-weight: 600;
+}
+
+/* Motivo de la cita, debajo de la especialidad */
+.resumen-tabla td small {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--panel-texto-suave);
+}
+
+.resumen-fecha {
+    white-space: nowrap;
+    color: var(--panel-texto-suave);
+}
+
+/* Etiquetas de estado de la tabla */
+.resumen-estado {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.resumen-estado-confirmada { background: #E3F5EC; color: var(--panel-acento-texto); }
+.resumen-estado-pendiente  { background: #FDF0D9; color: #8A5A00; }
+
+/* Abajo: solicitudes y accesos rápidos, en dos columnas */
+.resumen-columnas {
+    display: grid;
+    /* minmax(0, 1fr): cada columna puede encogerse (no la empuja su contenido) */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+/* Dentro de la rejilla, el espacio entre cajas lo pone "gap" (sin doble margen) */
+.resumen-columnas .resumen-caja {
+    margin-bottom: 0;
+}
+
+/* Lista de solicitudes: punto + nombre, y debajo área y teléfono */
+.resumen-lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.resumen-lista li {
+    position: relative;
+    padding: 0.45rem 0 0.45rem 1.4rem;
+}
+
+.resumen-lista li::before {
+    content: "";
+    position: absolute;
+    left: 0.15rem;
+    top: 0.85rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    background: var(--panel-texto);
+    border-radius: 50%;
+}
+
+.resumen-lista strong {
+    font-weight: 500;
+}
+
+.resumen-lista small {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--panel-texto-suave);
+}
+
+/* Accesos rápidos: pastillas una debajo de otra */
+.resumen-accesos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Foco con teclado en todo el resumen */
+.resumen-admin a:focus-visible {
+    outline: 2px solid var(--panel-primario);
+    outline-offset: 2px;
+}
+
+/* Pantallas medianas: las dos cajas de abajo, una debajo de otra */
+@media (max-width: 1000px) {
+    .resumen-columnas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Celular: menos margen, título más chico y todo se acomoda a lo angosto */
+@media (max-width: 600px) {
+    .panel-contenido:has(.resumen-admin) {
+        padding: 1.25rem 1rem;
+    }
+
+    /* El rol baja debajo del título si no cabe al lado */
+    .resumen-cabecera {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 0;
+    }
+
+    .resumen-cabecera h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Tarjetas: dos por fila, y una sola en pantallas muy angostas */
+    .resumen-indicadores {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .resumen-indicador {
+        padding: 1rem;
+    }
+
+    .resumen-numero {
+        font-size: 1.7rem;
+    }
+
+    .resumen-caja {
+        padding: 1.1rem 1rem;
+    }
+
+    .resumen-caja-cabecera {
+        flex-wrap: wrap;
+    }
+
+    .resumen-caja h2 {
+        font-size: 1.1rem;
+    }
+
+    /* Tabla: columnas más juntas; si aun así no cabe, se desplaza
+       de lado solo dentro de su caja (.tabla-scroll), no toda la página */
+    .resumen-tabla th,
+    .resumen-tabla td {
+        padding-right: 1.25rem;
+    }
+}
+
+/* Menos movimiento: sin transiciones ni elevación */
+@media (prefers-reduced-motion: reduce) {
+    .panel-body *,
+    .panel-body *::before,
+    .panel-body *::after {
+        transition: none !important;
+    }
+
+    .resumen-indicador-enlace:hover {
+        transform: none;
+    }
+}
+
+/* =====================================================================
+   Rediseño 2.0 — Etapa 2: menú contraíble (escritorio) y menú del celular
+   Lo maneja public/assets/js/panel.js, que pone estas clases en <html>:
+     .js                -> hay JavaScript (sin él, todo queda como antes)
+     .lateral-contraida -> escritorio: menú angosto, solo iconos
+     .lateral-animada   -> ya se puede animar (no se anima al cargar)
+     .menu-abierto      -> celular: menú desplegado
+   ===================================================================== */
+
+/* "hidden" siempre gana, aunque otra regla diga display: flex */
+.panel-body [hidden] {
+    display: none !important;
+}
+
+/* Fila de arriba del menú: marca + botón */
+.panel-cabecera-lateral {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Botones redondos de la barra lateral (contraer, cerrar) */
+.panel-boton-lateral {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    color: var(--panel-lateral-texto);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion);
+}
+
+.panel-boton-lateral:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.panel-boton-lateral:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+.panel-boton-lateral .icono {
+    width: 18px;
+    height: 18px;
+}
+
+/* El de cerrar solo existe en el celular */
+.panel-cerrar-menu {
+    display: none;
+}
+
+/* La barra superior solo existe en el celular */
+.panel-barra-movil,
+.panel-velo {
+    display: none;
+}
+
+/* Textos largos del menú: una sola línea, con "…" si no caben */
+.panel-menu-texto {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Escritorio: menú contraído ---------- */
+@media (min-width: 901px) {
+    /* La animación de ancho (unos 300 ms), solo después de cargar */
+    .lateral-animada .panel {
+        transition: grid-template-columns var(--mov-medio) var(--mov-curva);
+    }
+
+    .lateral-contraida .panel {
+        grid-template-columns: 76px 1fr;
+    }
+
+    .lateral-contraida .panel-lateral {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        /* Las etiquetas flotantes salen hacia la derecha: que no se recorten */
+        overflow: visible;
+    }
+
+    /* Arriba: la cruz y debajo el botón, centrados */
+    .lateral-contraida .panel-cabecera-lateral {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .lateral-contraida .panel-marca {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0;
+    }
+
+    .lateral-contraida .panel-marca .logo-oficial {
+        display: none;
+    }
+
+    .lateral-contraida .panel-marca .panel-isotipo {
+        display: block;
+        width: 36px;
+    }
+
+    /* La flecha mira hacia el otro lado: "expandir" */
+    .lateral-contraida .panel-contraer .icono {
+        transform: rotate(180deg);
+    }
+
+    /* Títulos de grupo: se vuelven una línea fina (el texto sigue ahí) */
+    .lateral-contraida .panel-menu-titulo {
+        height: 1px;
+        margin: 0.4rem 0.4rem 0;
+        overflow: hidden;
+        color: transparent;
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Enlaces: solo el icono, centrado */
+    .lateral-contraida .panel-menu a,
+    .lateral-contraida .panel-menu .deshabilitado,
+    .lateral-contraida .panel-perfil,
+    .lateral-contraida .panel-salir {
+        position: relative;
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* El texto pasa a ser una etiqueta que aparece al lado, al pasar el
+       ratón o al llegar con el teclado. Los lectores de pantalla lo leen
+       siempre (opacity no lo oculta para ellos). */
+    .lateral-contraida .panel-menu-texto {
+        position: absolute;
+        left: calc(100% + 12px);
+        top: 50%;
+        z-index: 10;
+        padding: 0.35rem 0.65rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        background: var(--panel-texto);
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(25, 56, 71, 0.2);
+        overflow: visible;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-4px, -50%);
+        transition: opacity var(--mov-rapido) var(--mov-curva), transform var(--mov-rapido) var(--mov-curva);
+    }
+
+    .lateral-contraida .panel-menu-texto small {
+        display: none;
+    }
+
+    .lateral-contraida .panel-menu a:hover .panel-menu-texto,
+    .lateral-contraida .panel-menu a:focus-visible .panel-menu-texto,
+    .lateral-contraida .panel-perfil:hover .panel-menu-texto,
+    .lateral-contraida .panel-perfil:focus-visible .panel-menu-texto,
+    .lateral-contraida .panel-salir:hover .panel-menu-texto,
+    .lateral-contraida .panel-salir:focus-visible .panel-menu-texto {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+
+    /* El globito se monta sobre la esquina del icono */
+    .lateral-contraida .panel-menu .globito {
+        position: absolute;
+        top: 2px;
+        right: 6px;
+        min-width: 1.1rem;
+        padding: 0 0.25rem;
+        font-size: 0.65rem;
+        line-height: 1.1rem;
+    }
+
+    .lateral-contraida .panel-menu small {
+        display: none;
+    }
+}
+
+@media (min-width: 901px) and (max-height: 900px) {
+    :root:not(.lateral-contraida) .panel-lateral {
+        padding-block: 1rem;
+    }
+
+    :root:not(.lateral-contraida) .panel-menu {
+        gap: 0.3rem;
+    }
+
+    :root:not(.lateral-contraida) .panel-usuario {
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+    }
+}
+
+/* ---------- Celular: barra arriba y menú que se desliza ---------- */
+@media (max-width: 900px) {
+    /* Barra superior fija: marca + botón "Menú" */
+    .js .panel-barra-movil {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        padding: 0.7rem 1rem;
+        background: var(--panel-lateral);
+    }
+
+    .js .panel-barra-movil .panel-marca {
+        margin: 0;
+    }
+
+    .panel-boton-menu {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 40px;
+        padding: 0.45rem 0.85rem;
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .panel-boton-menu:hover {
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    .panel-boton-menu:focus-visible {
+        outline: 2px solid #FFFFFF;
+        outline-offset: 2px;
+    }
+
+    /* El menú: un panel fijo a la izquierda, escondido fuera de la pantalla.
+       "visibility: hidden" hace que, cerrado, no reciba el foco. */
+    .js .panel-lateral {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 40;
+        width: min(300px, 85vw);
+        height: auto;
+        padding: 1.25rem 1rem 1.5rem;
+        overflow-y: auto;
+        visibility: hidden;
+        transform: translateX(-100%);
+        transition: transform var(--mov-medio) var(--mov-curva), visibility 0s linear var(--mov-medio);
+    }
+
+    .js.menu-abierto .panel-lateral {
+        visibility: visible;
+        transform: none;
+        transition: transform var(--mov-medio) var(--mov-curva);
+        box-shadow: 8px 0 24px rgba(7, 30, 40, 0.25);
+    }
+
+    /* Dentro del panel, el menú vuelve a ir en columna */
+    .js .panel-menu {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+
+    .js .panel-cerrar-menu {
+        display: grid;
+    }
+
+    .js .panel-contraer {
+        display: none;
+    }
+
+    /* Fondo oscuro detrás del menú abierto */
+    .js .panel-velo {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        background: rgba(7, 30, 40, 0.5);
+    }
+
+    /* Con el menú abierto, la página de atrás no se desplaza */
+    .menu-abierto body {
+        overflow: hidden;
+    }
+}
+
+/* =====================================================================
+   Rediseño 2.0 — Etapa 3: componentes reutilizables (clases "ui-")
+   Se usan página por página: solo cambian las pantallas que ya tienen
+   estas clases (por ahora Pacientes y Registrar paciente).
+   ===================================================================== */
+.panel-body {
+    --panel-borde-fuerte: #C5D3DA;   /* borde de campos y botón secundario */
+    --panel-primario-hover: #066A7F;
+    --panel-error:        #B42318;   /* 6.0:1 sobre blanco */
+    --panel-error-fondo:  #FDECEA;
+    --panel-error-borde:  #F5B5AE;
+    --panel-exito-fondo:  #E3F5EC;
+    --panel-exito-borde:  #A8DDC1;
+    --panel-info-borde:   #BFE0E8;
+    --panel-anillo:       0 0 0 3px rgba(8, 124, 148, 0.22);  /* foco */
+    /* Colores que antes estaban escritos a mano (mismo valor en modo claro;
+       el modo oscuro los cambia al final de este archivo). */
+    --panel-sutil:        #F7FAFB;   /* filas al pasar el ratón, cabeceras de tabla */
+    --panel-error-campo:  #FFF8F7;   /* fondo de un campo mal llenado */
+    --panel-borde-hover:  #9FB4BE;   /* borde de un campo al pasar el ratón */
+    /* Turquesa como TEXTO (enlaces, botones secundarios). Como fondo se sigue
+       usando --panel-primario; en oscuro el texto necesita un tono más claro. */
+    /* Un poco más oscuro que el de los botones: 5.1:1 sobre las pastillas
+       celestes (--panel-tinte) y 5.8:1 sobre blanco. */
+    --panel-enlace:       #076F85;
+}
+
+/* ---------- Página ---------- */
+.panel-contenido:has(.ui-pagina) {
+    max-width: none;
+    padding: 2.25rem;
+}
+
+.ui-pagina {
+    max-width: 1200px;
+    color: var(--panel-texto);
+}
+
+.ui-pagina h1,
+.ui-pagina h2 {
+    color: var(--panel-texto);
+}
+
+/* Enlace "Volver" pequeño, arriba del título */
+.ui-migas {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--panel-enlace);
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.ui-migas:hover {
+    text-decoration: underline;
+}
+
+.ui-migas .icono {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--panel-transicion);
+}
+
+.ui-migas:hover .icono {
+    transform: translateX(-2px);
+}
+
+/* Cabecera: título y descripción a la izquierda, acciones a la derecha */
+.ui-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.ui-cabecera h1 {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.ui-cabecera p {
+    margin: 0.35rem 0 0;
+    color: var(--panel-texto-suave);
+}
+
+/* ---------- Botones ---------- */
+.ui-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 42px;
+    padding: 0.6rem 1.15rem;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #FFFFFF;
+    text-decoration: none;
+    white-space: nowrap;
+    background: var(--panel-primario);
+    border: 1px solid var(--panel-primario);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--panel-transicion), border-color var(--panel-transicion),
+                box-shadow var(--panel-transicion), transform var(--panel-transicion);
+}
+
+.ui-boton:hover {
+    color: #FFFFFF;
+    background: var(--panel-primario-hover);
+    border-color: var(--panel-primario-hover);
+}
+
+.ui-boton:active {
+    transform: translateY(1px);
+}
+
+.ui-boton:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+.ui-boton .icono {
+    width: 18px;
+    height: 18px;
+}
+
+/* Secundario: blanco con borde (acciones menos importantes) */
+.ui-boton-secundario {
+    color: var(--panel-enlace);
+    background: var(--panel-superficie);
+    border-color: var(--panel-borde-fuerte);
+}
+
+.ui-boton-secundario:hover {
+    color: var(--panel-primario-hover);
+    background: var(--panel-tinte);
+    border-color: var(--panel-primario);
+}
+
+/* Deshabilitado (y mientras se envía el formulario) */
+.ui-boton:disabled,
+.ui-boton[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Cargando: un círculo que gira antes del texto (lo pone panel.js) */
+.ui-boton[aria-busy="true"]::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: ui-girar 700ms linear infinite;
+}
+
+@keyframes ui-girar {
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- Tarjeta ---------- */
+.ui-tarjeta {
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    background: var(--panel-superficie);
+    border-radius: var(--panel-radio);
+    box-shadow: var(--panel-sombra);
+}
+
+.ui-tarjeta-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.ui-tarjeta-cabecera h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.ui-nota {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+/* Etiqueta pequeña con un número (ej. "3 resultados") */
+.ui-insignia {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--panel-enlace);
+    background: var(--panel-tinte);
+    border-radius: 999px;
+}
+
+/* ---------- Campos de formulario ---------- */
+.ui-campo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.panel-contenido .ui-campo label {
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--panel-texto);
+}
+
+/* El asterisco de "obligatorio": rojo, y los lectores lo saltan
+   (el campo ya dice "required") */
+.ui-obligatorio {
+    color: var(--panel-error);
+}
+
+/* Las reglas generales del panel para "input" son muy específicas
+   (".panel-contenido input:not(...):not(...):not(...)"); por eso este
+   selector repite los :not(), para poder ganarles. */
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.panel-contenido select.ui-entrada {
+    width: 100%;
+    max-width: none;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+    font: inherit;
+    color: var(--panel-texto);
+    background: var(--panel-superficie);
+    border: 1px solid var(--panel-borde-fuerte);
+    border-radius: 8px;
+    transition: border-color var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):hover,
+.panel-contenido select.ui-entrada:hover {
+    border-color: var(--panel-borde-hover);
+}
+
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):focus,
+.panel-contenido select.ui-entrada:focus {
+    outline: none;
+    border-color: var(--panel-primario);
+    box-shadow: var(--panel-anillo);
+}
+
+/* Validación: el navegador marca en rojo un campo mal llenado, pero solo
+   después de que el usuario lo tocó (:user-invalid), no al abrir la página. */
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid {
+    border-color: var(--panel-error);
+    background: var(--panel-error-campo);
+}
+
+.panel-contenido input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.18);
+}
+
+/* Texto de ayuda debajo del campo; se pone rojo si el campo es inválido */
+.ui-ayuda {
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--panel-texto-suave);
+}
+
+.ui-campo:has(.ui-entrada:user-invalid) .ui-ayuda {
+    color: var(--panel-error);
+}
+
+/* Formulario en dos columnas (una en el celular) */
+.ui-rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem 1.25rem;
+}
+
+.ui-rejilla .ui-campo-ancho {
+    grid-column: 1 / -1;
+}
+
+/* Fila de botones al final de un formulario */
+.ui-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--panel-borde);
+}
+
+/* ---------- Buscador ---------- */
+.ui-buscador {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.ui-buscador .ui-campo {
+    flex: 1 1 280px;
+}
+
+/* La lupa va dentro del campo, a la izquierda */
+.ui-con-icono {
+    position: relative;
+}
+
+.ui-con-icono .icono {
+    position: absolute;
+    left: 0.8rem;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    color: var(--panel-texto-suave);
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.panel-contenido .ui-con-icono input.ui-entrada:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) {
+    padding-left: 2.5rem;
+}
+
+/* ---------- Avisos ---------- */
+/* ".panel-contenido" delante: así gana a las reglas viejas de role="alert" */
+.panel-contenido .ui-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin: 0 0 1.25rem;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    color: var(--panel-texto);
+    background: var(--panel-tinte);
+    border: 1px solid var(--panel-info-borde);
+    border-radius: 10px;
+    animation: ui-aparecer var(--mov-medio) var(--mov-curva);
+}
+
+.ui-aviso .icono {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--panel-enlace);
+}
+
+.ui-aviso p {
+    margin: 0;
+}
+
+.panel-contenido .ui-aviso-exito {
+    color: #14532D;
+    background: var(--panel-exito-fondo);
+    border-color: var(--panel-exito-borde);
+}
+
+.ui-aviso-exito .icono {
+    color: var(--panel-acento-texto);
+}
+
+.panel-contenido .ui-aviso-error {
+    color: #7A1A12;
+    background: var(--panel-error-fondo);
+    border-color: var(--panel-error-borde);
+}
+
+.ui-aviso-error .icono {
+    color: var(--panel-error);
+}
+
+@keyframes ui-aparecer {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Tabla ---------- */
+/* Contenedor: si la tabla no cabe (celular), se desliza solo aquí dentro */
+.ui-tabla-contenedor {
+    overflow-x: auto;
+    border: 1px solid var(--panel-borde);
+    border-radius: 10px;
+}
+
+.panel-contenido .ui-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel-superficie);
+    border: none;
+    border-radius: 0;
+}
+
+.panel-contenido .ui-tabla th {
+    padding: 0.7rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--panel-texto-suave);
+    background: var(--panel-sutil);
+    border-bottom: 1px solid var(--panel-borde);
+}
+
+.panel-contenido .ui-tabla td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--panel-borde);
+}
+
+.panel-contenido .ui-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ui-tabla tbody tr {
+    transition: background-color var(--panel-transicion);
+}
+
+.ui-tabla tbody tr:hover {
+    background: var(--panel-sutil);
+}
+
+.ui-celda-fuerte {
+    font-weight: 600;
+}
+
+.ui-celda-suave {
+    color: var(--panel-texto-suave);
+    white-space: nowrap;
+}
+
+/* ---------- Estado vacío ---------- */
+.ui-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.ui-vacio-icono {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 0.4rem;
+    color: var(--panel-enlace);
+    background: var(--panel-tinte);
+    border-radius: 50%;
+}
+
+.ui-vacio-icono .icono {
+    width: 24px;
+    height: 24px;
+}
+
+.ui-vacio strong {
+    font-size: 1.05rem;
+}
+
+.ui-vacio p {
+    max-width: 32rem;
+    margin: 0 0 0.6rem;
+    color: var(--panel-texto-suave);
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 640px) {
+    .panel-contenido:has(.ui-pagina) {
+        padding: 1.25rem 1rem;
+    }
+
+    .ui-cabecera h1 {
+        font-size: 1.5rem;
+    }
+
+    .ui-tarjeta {
+        padding: 1.1rem 1rem;
+    }
+
+    .ui-rejilla {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Botones de la cabecera y del formulario: ancho completo */
+    .ui-cabecera .ui-boton,
+    .ui-acciones .ui-boton,
+    .ui-buscador .ui-boton {
+        flex: 1 1 100%;
+    }
+}
+
+/* Menos movimiento: el círculo de carga gira lento y sin aparecer animado */
+@media (prefers-reduced-motion: reduce) {
+    .ui-boton[aria-busy="true"]::before {
+        animation-duration: 2s;
+    }
+
+    .panel-contenido .ui-aviso {
+        animation: none;
+    }
+
+    .ui-migas:hover .icono,
+    .ui-boton:active {
+        transform: none;
+    }
+}
+
+/* Nota debajo de una tabla (ej. "Se muestran hasta 50") */
+.ui-tabla-contenedor + .ui-nota {
+    margin-top: 0.75rem;
+}
+
+/* ---------- Tabla apilable: en el celular, cada fila es una tarjeta ----------
+   Los roles ARIA del HTML (table, row, cell...) mantienen la tabla para los
+   lectores de pantalla aunque aquí cambie su "display". La etiqueta de cada
+   dato sale de data-etiqueta y se oculta a los lectores (/ ""), porque ellos
+   ya leen el encabezado de la columna. */
+@media (max-width: 640px) {
+    .ui-tabla-contenedor:has(.ui-tabla-apilable) {
+        overflow: visible;
+        border: none;
+        border-radius: 0;
+    }
+
+    .ui-tabla-apilable thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .panel-contenido .ui-tabla-apilable,
+    .ui-tabla-apilable tbody,
+    .ui-tabla-apilable tr,
+    .ui-tabla-apilable td {
+        display: block;
+    }
+
+    .ui-tabla-apilable tbody tr {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--panel-borde);
+        border-radius: 10px;
+    }
+
+    .ui-tabla-apilable tbody tr:hover {
+        background: none;
+    }
+
+    .panel-contenido .ui-tabla-apilable td,
+    .panel-contenido .ui-tabla-apilable tbody tr:last-child td {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.3rem 0;
+        text-align: right;
+        border: none;
+    }
+
+    .ui-tabla-apilable td::before {
+        content: attr(data-etiqueta) / "";
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-align: left;
+        text-transform: uppercase;
+        color: var(--panel-texto-suave);
+    }
+}
+
+/* ---------- Componentes ui-: añadidos para el módulo Citas ---------- */
+
+/* Cuadros de texto largos (motivo, diagnóstico): mismo aspecto que .ui-entrada */
+.panel-contenido textarea.ui-entrada {
+    width: 100%;
+    max-width: none;
+    min-height: 6rem;
+    padding: 0.6rem 0.8rem;
+    font: inherit;
+    line-height: 1.5;
+    color: var(--panel-texto);
+    background: var(--panel-superficie);
+    border: 1px solid var(--panel-borde-fuerte);
+    border-radius: 8px;
+    resize: vertical;
+    transition: border-color var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.panel-contenido textarea.ui-entrada:hover {
+    border-color: var(--panel-borde-hover);
+}
+
+.panel-contenido textarea.ui-entrada:focus {
+    outline: none;
+    border-color: var(--panel-primario);
+    box-shadow: var(--panel-anillo);
+}
+
+.panel-contenido textarea.ui-entrada:user-invalid,
+.panel-contenido select.ui-entrada:user-invalid {
+    border-color: var(--panel-error);
+    background: var(--panel-error-campo);
+}
+
+/* Botón destructivo (ej. "Cancelar cita"): rojo con borde, no relleno */
+.ui-boton-peligro {
+    color: var(--panel-error);
+    background: var(--panel-superficie);
+    border-color: var(--panel-error-borde);
+}
+
+.ui-boton-peligro:hover {
+    color: #FFFFFF;
+    background: var(--panel-error);
+    border-color: var(--panel-error);
+}
+
+.ui-boton-peligro:focus-visible {
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.22);
+}
+
+/* Fila de botones sin la línea de arriba (dentro de una tarjeta) */
+.ui-acciones-simple {
+    margin-top: 1rem;
+    padding-top: 0;
+    border-top: none;
+}
+
+/* Dos columnas: datos a la izquierda, acciones o formulario a la derecha */
+.ui-columnas {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.ui-columnas > * {
+    margin-bottom: 0;
+}
+
+.ui-columnas-pila {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.ui-columnas-pila > * {
+    margin-bottom: 0;
+}
+
+/* Lista de datos (.datos, la de siempre) en dos columnas dentro de una tarjeta */
+.ui-tarjeta .datos-rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1.25rem;
+}
+
+.ui-tarjeta .datos-rejilla > div {
+    min-width: 0;
+}
+
+.ui-tarjeta .datos-rejilla .datos-ancho {
+    grid-column: 1 / -1;
+}
+
+.ui-tarjeta .datos dt {
+    margin-top: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--panel-texto-suave);
+}
+
+.ui-tarjeta .datos dd {
+    margin: 0.2rem 0 0;
+    color: var(--panel-texto);
+    overflow-wrap: anywhere;
+}
+
+/* Texto pequeño debajo del dato principal de una celda (ej. el documento) */
+.ui-tabla td small {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--panel-texto-suave);
+}
+
+/* La etiqueta de estado (.estado, la de siempre) un poco más grande aquí */
+.ui-pagina .estado {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 1000px) {
+    .ui-columnas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .ui-tarjeta .datos-rejilla {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ui-acciones-simple .ui-boton {
+        flex: 1 1 100%;
+    }
+
+    /* En la tarjeta del celular, dato y subtexto van juntos a la derecha */
+    .ui-tabla-apilable .ui-celda-valor {
+        display: block;
+        text-align: right;
+    }
+}
+
+/* Aviso dentro de un formulario, debajo de los campos */
+.panel-contenido .ui-rejilla + .ui-aviso {
+    margin: 1.25rem 0 0;
+}
+
+/* Nota separada del contenido de arriba */
+.ui-nota-separada {
+    margin-top: 1rem;
+}
+
+/* Título suelto de una tarjeta (sin .ui-tarjeta-cabecera): mismo tamaño */
+.ui-tarjeta > h2 {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+/* =====================================================================
+   Rediseño 2.0 — Módulo Agenda y Solicitudes
+   ===================================================================== */
+
+/* ---------- Animación de entrada ----------
+   Solo en páginas con .ui-animada (Agenda, Solicitudes, Programar):
+   las tarjetas suben 8 px y aparecen, una tras otra (240 ms cada una).
+   "backwards": al terminar, la tarjeta vuelve a sus estilos normales (así
+   funciona su efecto al pasar el ratón).
+   No cambia las pantallas que ya estaban rediseñadas. */
+@keyframes ui-subir {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.ui-animada .ui-cabecera,
+.ui-animada .ui-tarjeta,
+.ui-animada .ui-dia {
+    animation: ui-subir var(--mov-medio) var(--mov-curva) backwards;
+}
+
+/* Un pequeño retraso escalonado (máximo ~200 ms en total) */
+/* Escalonado: cada pieza entra un paso (--mov-paso) después de la
+   anterior, hasta un máximo de 5 pasos (150 ms): lo último no espera de más */
+.ui-animada > :nth-child(2) { animation-delay: calc(var(--mov-paso) * 1); }
+.ui-animada > :nth-child(3) { animation-delay: calc(var(--mov-paso) * 2); }
+.ui-animada > :nth-child(4) { animation-delay: calc(var(--mov-paso) * 3); }
+.ui-animada > :nth-child(5) { animation-delay: calc(var(--mov-paso) * 4); }
+.ui-animada .ui-dia:nth-child(2) { animation-delay: calc(var(--mov-paso) * 1); }
+.ui-animada .ui-dia:nth-child(3) { animation-delay: calc(var(--mov-paso) * 2); }
+.ui-animada .ui-dia:nth-child(4) { animation-delay: calc(var(--mov-paso) * 3); }
+.ui-animada .ui-dia:nth-child(5) { animation-delay: calc(var(--mov-paso) * 4); }
+.ui-animada .ui-dia:nth-child(n+6) { animation-delay: calc(var(--mov-paso) * 5); }
+
+/* ---------- Botón pequeño (dentro de tablas y barras) ---------- */
+.ui-boton-chico {
+    min-height: 36px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+}
+
+.ui-boton-chico .icono {
+    width: 16px;
+    height: 16px;
+}
+
+/* ---------- Barra de herramientas (navegación + filtro) ---------- */
+.ui-barra {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+/* Botones pegados en grupo: Anterior | Esta semana | Siguiente */
+.ui-grupo {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ui-barra .ui-buscador {
+    flex: 0 1 26rem;
+}
+
+/* ---------- Pestañas (filtros de una lista) ---------- */
+.ui-pestanas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.3rem;
+    margin-bottom: 1.25rem;
+    background: #E8EFF2;
+    border-radius: 10px;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.ui-pestanas a {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--panel-texto-suave);
+    text-decoration: none;
+    border-radius: 7px;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion),
+                box-shadow var(--panel-transicion);
+}
+
+.ui-pestanas a:hover {
+    color: var(--panel-texto);
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* La pestaña elegida: blanca y con sombra suave */
+.ui-pestanas a[aria-current="page"] {
+    color: var(--panel-enlace);
+    background: var(--panel-superficie);
+    box-shadow: 0 1px 3px rgba(25, 56, 71, 0.12);
+}
+
+.ui-pestanas a:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+/* Varios botones juntos en una celda (Programar / Descartar) */
+.ui-acciones-fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ui-acciones-fila form {
+    margin: 0;
+}
+
+/* Enlace de texto dentro de una tabla (ej. "Ver cita del 18/11") */
+.ui-enlace {
+    font-weight: 600;
+    color: var(--panel-enlace);
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.ui-enlace:hover {
+    text-decoration: underline;
+}
+
+.ui-enlace:focus-visible {
+    outline: 2px solid var(--panel-primario);
+    outline-offset: 2px;
+}
+
+/* ---------- Calendario semanal ---------- */
+.ui-calendario {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.ui-dia {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+    min-height: 11rem;
+    padding: 0.75rem;
+    background: var(--panel-superficie);
+    border: 1px solid transparent;
+    border-radius: var(--panel-radio);
+    box-shadow: var(--panel-sombra);
+}
+
+/* Cabecera del día: "Lun" y el número */
+.ui-dia-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--panel-borde);
+}
+
+.ui-dia-cabecera span {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--panel-texto-suave);
+}
+
+.ui-dia-cabecera strong {
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--panel-texto);
+}
+
+/* Hoy: borde y número con el color principal, y la etiqueta "Hoy" */
+.ui-dia-hoy {
+    border-color: var(--panel-primario);
+}
+
+.ui-dia-hoy .ui-dia-cabecera strong {
+    color: var(--panel-enlace);
+}
+
+/* ".ui-dia-cabecera" delante: así gana a la regla de los span de la cabecera */
+.ui-dia-cabecera .ui-hoy {
+    margin-left: auto;
+    letter-spacing: 0.02em;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: var(--panel-primario);
+    border-radius: 999px;
+}
+
+/* Días que ya pasaron: más apagados */
+.ui-dia-pasado {
+    background: #F8FBFC;
+    box-shadow: none;
+    border-color: var(--panel-borde);
+}
+
+.ui-dia-vacio {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+/* Cada cita: tarjeta con una franja de color según el estado
+   (los colores son los de .cita-pendiente, .cita-confirmada, etc.) */
+.ui-cita {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.85rem;
+    color: var(--panel-texto);
+    text-decoration: none;
+    background: var(--panel-sutil);
+    border-top: 1px solid var(--panel-borde);
+    border-right: 1px solid var(--panel-borde);
+    border-bottom: 1px solid var(--panel-borde);
+    /* Solo ancho y estilo: el color lo pone .cita-pendiente, .cita-confirmada, etc. */
+    border-left-width: 4px;
+    border-left-style: solid;
+    border-radius: 8px;
+    transition: background-color var(--panel-transicion), box-shadow var(--panel-transicion),
+                transform var(--mov-medio) var(--mov-curva);
+}
+
+.ui-cita strong {
+    font-size: 0.95rem;
+}
+
+.ui-cita span {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.ui-cita small {
+    color: var(--panel-texto-suave);
+    overflow-wrap: anywhere;
+}
+
+/* Las citas que son enlace: se elevan un poco al pasar el ratón */
+a.ui-cita:hover {
+    background: var(--panel-superficie);
+    box-shadow: 0 4px 12px rgba(25, 56, 71, 0.1);
+    transform: translateY(-1px);
+}
+
+a.ui-cita:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+.ui-cita.cita-cancelada { border-left-color: #C2453A; }
+
+/* Leyenda de colores */
+.ui-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+.ui-leyenda span {
+    padding-left: 0.5rem;
+    border-left-width: 4px;
+    border-left-style: solid;
+}
+
+/* ---------- Pantallas medianas y chicas: un día debajo de otro ---------- */
+@media (max-width: 1100px) {
+    .ui-calendario {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ui-dia {
+        min-height: 0;
+    }
+
+    /* Las citas del día, en rejilla cuando hay espacio */
+    .ui-dia-citas {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+        gap: 0.5rem;
+    }
+}
+
+@media (min-width: 1101px) {
+    .ui-dia-citas {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .ui-barra,
+    .ui-barra .ui-buscador {
+        flex: 1 1 100%;
+    }
+
+    .ui-grupo {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .ui-grupo .ui-boton {
+        padding-left: 0.4rem;
+        padding-right: 0.4rem;
+        white-space: normal;
+    }
+
+    .ui-pestanas {
+        width: 100%;
+    }
+
+    .ui-pestanas a {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    .ui-acciones-fila,
+    .ui-acciones-fila form,
+    .ui-acciones-fila .ui-boton {
+        flex: 1 1 auto;
+    }
+
+    .ui-acciones-fila .ui-boton {
+        width: 100%;
+    }
+}
+
+/* ---------- Menos movimiento: sin entradas animadas ni elevación ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .ui-animada .ui-cabecera,
+    .ui-animada .ui-tarjeta,
+    .ui-animada .ui-dia {
+        animation: none;
+    }
+
+    a.ui-cita:hover {
+        transform: none;
+    }
+}
+
+/* Estado "descartada" de las solicitudes: gris neutro (no tenía color) */
+.estado-descartada { background: #EEF1F3; color: #4A5A66; }
+
+/* ---------- Tabla apilable "ancha" ----------
+   Para tablas con muchas columnas o textos largos (Solicitudes): pasa a
+   tarjetas desde 1000 px, no desde 640 px. Las demás tablas no cambian. */
+@media (max-width: 1000px) {
+    .ui-tabla-contenedor:has(.ui-tabla-apilable-ancha) {
+        overflow: visible;
+        border: none;
+        border-radius: 0;
+    }
+
+    .ui-tabla-apilable-ancha thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .panel-contenido .ui-tabla-apilable-ancha,
+    .ui-tabla-apilable-ancha tbody,
+    .ui-tabla-apilable-ancha tr,
+    .ui-tabla-apilable-ancha td {
+        display: block;
+    }
+
+    .ui-tabla-apilable-ancha tbody tr {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--panel-borde);
+        border-radius: 10px;
+    }
+
+    .ui-tabla-apilable-ancha tbody tr:hover {
+        background: none;
+    }
+
+    .panel-contenido .ui-tabla-apilable-ancha td,
+    .panel-contenido .ui-tabla-apilable-ancha tbody tr:last-child td {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.35rem 0;
+        text-align: right;
+        border: none;
+    }
+
+    .ui-tabla-apilable-ancha td::before {
+        content: attr(data-etiqueta) / "";
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-align: left;
+        text-transform: uppercase;
+        color: var(--panel-texto-suave);
+    }
+
+    .ui-tabla-apilable-ancha .ui-celda-valor {
+        display: block;
+        text-align: right;
+    }
+
+    /* En la tarjeta, un dato largo (fecha y hora) baja de línea en vez de cortarse */
+    .ui-tabla-apilable-ancha .ui-celda-suave {
+        white-space: normal;
+    }
+
+    /* Botones de la fila: a la derecha, juntos */
+    .ui-tabla-apilable-ancha .ui-acciones-fila {
+        justify-content: flex-end;
+    }
+}
+
+/* =====================================================================
+   Rediseño 2.0 — Cuentas, Usuarios, Horarios, Auditoría y Mi perfil
+   ===================================================================== */
+
+/* Aviso de advertencia (ámbar): algo a revisar antes de actuar */
+.panel-contenido .ui-aviso-advertencia {
+    color: #5C3D00;
+    background: #FFF6E5;
+    border-color: #F2D49A;
+}
+
+.ui-aviso-advertencia .icono {
+    color: #A86B00;
+}
+
+/* Las tarjetas animadas también incluyen la comparación de cuentas */
+.ui-animada .ui-cuenta:nth-of-type(2) { animation-delay: calc(var(--mov-paso) * 1); }
+.ui-animada .ui-cuenta:nth-of-type(3) { animation-delay: calc(var(--mov-paso) * 2); }
+
+/* Lista ancha a la izquierda y formulario de ancho fijo (~340 px) a la derecha */
+.ui-columnas-anchas {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 21rem);
+}
+
+/* Los botones de una celda no se parten en dos líneas */
+.ui-tabla td .ui-boton {
+    white-space: nowrap;
+}
+
+/* ---------- Cuenta por verificar: lo escrito vs. la ficha ---------- */
+.ui-comparacion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.ui-comparacion > div {
+    min-width: 0;
+    padding: 1rem;
+    background: var(--panel-sutil);
+    border: 1px solid var(--panel-borde);
+    border-radius: 10px;
+}
+
+.ui-comparacion h3 {
+    margin: 0 0 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--panel-enlace);
+}
+
+.ui-comparacion .datos {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.ui-comparacion + .ui-aviso,
+.ui-comparacion ~ .ui-aviso {
+    margin: 1rem 0 0;
+}
+
+/* Pie de una tarjeta: estado a la izquierda, botones a la derecha */
+.ui-pie {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--panel-borde);
+}
+
+.ui-pie-estado {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+/* ---------- Filtros en rejilla (Auditoría) ---------- */
+.ui-filtros {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 0.75rem 1rem;
+}
+
+.ui-filtros .ui-grupo {
+    flex-wrap: nowrap;
+}
+
+/* Etiqueta pequeña "dato clínico" encima de la acción, en la auditoría */
+.ui-dato-clinico {
+    display: block;
+    width: fit-content;
+    margin-bottom: 0.25rem;
+}
+
+/* ---------- "Cambiar contraseña" (app/layout/form_password.php) ----------
+   Ese formulario también lo usa el portal del paciente, así que no se
+   cambia su HTML: aquí solo se ajusta su aspecto dentro del panel nuevo. */
+.ui-pagina .form-password {
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+}
+
+.ui-pagina .form-password .campo {
+    margin-bottom: 1.1rem;
+}
+
+.panel-contenido .ui-pagina .form-password label {
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--panel-texto);
+}
+
+.panel-contenido .ui-pagina .form-password input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) {
+    max-width: none;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+    color: var(--panel-texto);
+    border: 1px solid var(--panel-borde-fuerte);
+    border-radius: 8px;
+    transition: border-color var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.panel-contenido .ui-pagina .form-password input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):focus {
+    outline: none;
+    border-color: var(--panel-primario);
+    box-shadow: var(--panel-anillo);
+}
+
+.panel-contenido .ui-pagina .form-password input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):user-invalid {
+    border-color: var(--panel-error);
+    background: var(--panel-error-campo);
+}
+
+.ui-pagina .form-password small {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--panel-texto-suave);
+}
+
+/* Su botón ".boton" toma el aspecto de .ui-boton */
+.panel-contenido .ui-pagina .form-password button.boton {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    min-height: 42px;
+    padding: 0.6rem 1.15rem;
+    font-size: 0.95rem;
+    color: #FFFFFF;
+    background: var(--panel-primario);
+    border: 1px solid var(--panel-primario);
+    border-radius: 8px;
+    transition: background-color var(--panel-transicion), box-shadow var(--panel-transicion);
+}
+
+.panel-contenido .ui-pagina .form-password button.boton:hover {
+    background: var(--panel-primario-hover);
+}
+
+.panel-contenido .ui-pagina .form-password button.boton:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+@media (max-width: 1000px) {
+    .ui-columnas-anchas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .ui-filtros {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ui-comparacion {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .ui-pie,
+    .ui-pie .ui-acciones-fila {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ui-filtros .ui-grupo {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Si solo está "Filtrar" (sin "Quitar filtros"), ocupa todo el ancho,
+       igual que el botón "Consultar" de Citas */
+    .ui-filtros .ui-grupo > .ui-boton:only-child {
+        grid-column: 1 / -1;
+    }
+
+    .panel-contenido .ui-pagina .form-password button.boton {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-animada .ui-cuenta {
+        animation: none;
+    }
+}
+
+/* En la columna estrecha del formulario, un campo debajo de otro */
+.ui-columnas-anchas > .ui-tarjeta:last-child .ui-rejilla {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+/* Tabla compacta (listas largas como la auditoría): filas más bajas */
+@media (min-width: 1001px) {
+    .panel-contenido .ui-tabla-compacta td {
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+    }
+}
+
+/* =====================================================================
+   Tarjeta destacada (.ui-destacado): lo más importante de una pantalla,
+   con el color principal. La usan "Mi día" del médico (siguiente
+   paciente) y el inicio del Portal del paciente (próxima cita).
+   ===================================================================== */
+.ui-destacado {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.25rem;
+    padding: 1.6rem 1.75rem;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, var(--panel-primario) 0%, var(--panel-lateral) 100%);
+    border-radius: var(--panel-radio);
+    box-shadow: 0 8px 24px rgba(8, 124, 148, 0.22);
+}
+
+.ui-destacado p {
+    margin: 0;
+}
+
+.ui-destacado-etiqueta {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+/* ".ui-destacado" delante: gana a ".ui-destacado p" (margin: 0) */
+.ui-destacado .ui-destacado-titulo {
+    margin: 0.35rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.ui-destacado-titulo span {
+    font-weight: 400;
+}
+
+.ui-destacado-detalle {
+    opacity: 0.9;
+}
+
+.ui-destacado .estado {
+    background: #FFFFFF;
+}
+
+/* Versión tranquila (sin nada urgente): fondo claro y borde punteado */
+.ui-destacado-tranquilo {
+    color: var(--panel-texto);
+    background: var(--panel-superficie);
+    border: 1px dashed var(--panel-borde-fuerte);
+    box-shadow: none;
+}
+
+.ui-animada .ui-destacado {
+    animation: ui-subir var(--mov-medio) var(--mov-curva) backwards;
+}
+
+@media (max-width: 760px) {
+    .ui-destacado {
+        padding: 1.25rem;
+    }
+
+    .ui-destacado .ui-destacado-titulo {
+        font-size: 1.45rem;
+    }
+
+    .ui-destacado .ui-boton {
+        flex: 1 1 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-animada .ui-destacado {
+        animation: none;
+    }
+}
+
+/* Botón blanco (sobre la tarjeta destacada de color) */
+.ui-boton-blanco {
+    color: var(--panel-lateral);
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+}
+
+.ui-boton-blanco:hover {
+    color: var(--panel-lateral);
+    background: #EAF6F8;
+    border-color: #EAF6F8;
+}
+
+.ui-boton-blanco:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+}
+
+/* La tabla para lectores de pantalla de "Mi día" ahora va en una .ui-tarjeta:
+   la tarjeta la recorta, igual que hacía .caja (sin desbordar la página). */
+.ui-tarjeta:has(> table.solo-lectores) {
+    position: relative;
+    overflow: hidden;
+}
+
+/* =====================================================================
+   Auditoría visual: piezas que faltaban
+   ===================================================================== */
+
+/* Entrada animada también para el Resumen y "Mi día" (mismas 220 ms) */
+.ui-animada .resumen-cabecera,
+.ui-animada .resumen-indicador,
+.ui-animada .resumen-caja {
+    animation: ui-subir var(--mov-medio) var(--mov-curva) backwards;
+}
+
+.ui-animada .resumen-indicador:nth-child(2) { animation-delay: calc(var(--mov-paso) * 1); }
+.ui-animada .resumen-indicador:nth-child(3) { animation-delay: calc(var(--mov-paso) * 2); }
+.ui-animada .resumen-indicador:nth-child(4) { animation-delay: calc(var(--mov-paso) * 3); }
+.ui-animada .resumen-indicador:nth-child(5) { animation-delay: calc(var(--mov-paso) * 4); }
+
+/* Página de error dentro del panel (403 y 404 del personal; el HTML lo
+   arma app/core/errores.php). Mismo aspecto que la de la web pública. */
+.panel-contenido .error-pagina {
+    position: relative;
+    max-width: 640px;
+    margin: 1rem auto;
+    padding: 3.5rem 2rem;
+    overflow: hidden;
+    text-align: center;
+    background: var(--panel-superficie);
+    border-radius: 20px;
+    box-shadow: var(--panel-sombra);
+    animation: ui-subir var(--mov-medio) var(--mov-curva) backwards;
+}
+
+.panel-contenido .error-codigo {
+    margin: 0;
+    font-size: clamp(4.5rem, 14vw, 7.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--panel-primario), var(--panel-acento));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.panel-contenido .error-pagina h1 {
+    margin: 0.5rem 0;
+    font-size: 1.6rem;
+    color: var(--panel-texto);
+}
+
+.panel-contenido .error-pagina p {
+    color: var(--panel-texto-suave);
+}
+
+/* Su botón ".boton" toma el aspecto de .ui-boton */
+.panel-contenido .error-pagina .boton {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    margin-top: 0.75rem;
+    padding: 0.6rem 1.15rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: var(--panel-primario);
+    border-radius: 8px;
+    transition: background-color var(--panel-transicion);
+}
+
+.panel-contenido .error-pagina .boton:hover {
+    background: var(--panel-primario-hover);
+}
+
+.panel-contenido .error-pagina .boton:focus-visible {
+    outline: none;
+    box-shadow: var(--panel-anillo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-animada .resumen-cabecera,
+    .ui-animada .resumen-indicador,
+    .ui-animada .resumen-caja,
+    .panel-contenido .error-pagina {
+        animation: none;
+    }
+}
+
+/* Celular: la barra superior mide lo suyo y el contenido ocupa el resto.
+   Sin esto, en páginas cortas la barra se estiraba hasta media pantalla
+   (el grid de 100vh repartía el espacio sobrante entre sus filas). */
+@media (max-width: 900px) {
+    .js .panel {
+        grid-template-rows: auto 1fr;
+    }
+}
+
+/* =====================================================================
+   MODO OSCURO (panel y portal del paciente)
+   tema.js pone <html data-tema="oscuro">. Primero cambian las variables;
+   después, las pocas piezas que tienen colores propios.
+   ":root[data-tema="oscuro"]" delante hace que estas reglas ganen a las
+   de arriba sin tocarlas: el modo claro queda exactamente igual.
+   Contraste: textos >= 4.5:1 sobre --panel-superficie (#15242C).
+   ===================================================================== */
+:root[data-tema="oscuro"] .panel-body {
+    --panel-lateral:        #0B2731;
+    --panel-fondo:          #0E1A20;
+    --panel-superficie:     #15242C;
+    --panel-texto:          #E3EDF1;   /* 13:1 */
+    --panel-texto-suave:    #9DB0BA;   /* 7.1:1 */
+    --panel-acento-texto:   #5FD39A;   /* 8.4:1 */
+    --panel-borde:          #243A45;
+    --panel-tinte:          #173843;
+    --panel-lateral-texto:  #C9DCE3;
+    --panel-lateral-titulo: #8FB3BF;
+    --panel-lateral-activo: #103F4C;   /* "Mi perfil" encima: 5.0:1 */
+    --panel-sombra:         0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.2);
+    --panel-borde-fuerte:   #3A5563;
+    --panel-error:          #F4A199;   /* 7.6:1 (rojo claro para texto) */
+    --panel-error-fondo:    #3A1F1D;
+    --panel-error-borde:    #7A3A33;
+    --panel-exito-fondo:    #12342A;
+    --panel-exito-borde:    #2B6B4E;
+    --panel-info-borde:     #23566A;
+    --panel-anillo:         0 0 0 3px rgba(92, 196, 220, 0.45);
+    --panel-sutil:          #1A2C35;
+    --panel-error-campo:    #2A1A1A;
+    --panel-borde-hover:    #557785;
+    --panel-enlace:         #5CC4DC;   /* 7.9:1 */
+}
+
+/* Etiquetas de estado: fondo oscuro del mismo tono y letra clara */
+:root[data-tema="oscuro"] .estado-pendiente   { background: #3B2E14; color: #F5C66B; }
+:root[data-tema="oscuro"] .estado-confirmada  { background: #12352A; color: #6FD8A5; }
+:root[data-tema="oscuro"] .estado-atendida    { background: #263640; color: #B9CAD5; }
+:root[data-tema="oscuro"] .estado-cancelada   { background: #3D1E1B; color: #F4A199; }
+:root[data-tema="oscuro"] .estado-nueva       { background: #123B47; color: #7FD3E6; }
+:root[data-tema="oscuro"] .estado-no_asistio  { background: #2D2540; color: #C9B5EE; }
+:root[data-tema="oscuro"] .estado-descartada  { background: #283238; color: #B0BDC5; }
+:root[data-tema="oscuro"] .resumen-estado-confirmada { background: #12352A; }
+:root[data-tema="oscuro"] .resumen-estado-pendiente  { background: #3B2E14; color: #F5C66B; }
+
+/* Globito verde del menú (pendientes): la letra sigue siendo oscura,
+   como en modo claro (6:1). Con la letra clara del tema no se leía. */
+:root[data-tema="oscuro"] .panel-menu .globito {
+    color: #0B2731;
+}
+
+/* Sobre la tarjeta destacada (turquesa), la etiqueta es blanca translúcida */
+:root[data-tema="oscuro"] .ui-destacado .estado {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.16);
+}
+
+/* Avisos: el texto oscuro de cada tipo pasa a ser claro */
+:root[data-tema="oscuro"] .panel-contenido .ui-aviso-exito {
+    color: #B9EBD1;
+}
+
+:root[data-tema="oscuro"] .panel-contenido .ui-aviso-error {
+    color: #F8C4BE;
+}
+
+:root[data-tema="oscuro"] .panel-contenido .ui-aviso-advertencia {
+    color: #F5DDA6;
+    background: #33290F;
+    border-color: #6B5420;
+}
+
+:root[data-tema="oscuro"] .ui-aviso-advertencia .icono {
+    color: #F5C66B;
+}
+
+/* Botón de peligro: al pasar el ratón, rojo intenso con letra blanca */
+:root[data-tema="oscuro"] .ui-boton-peligro:hover {
+    background: #B42318;
+    border-color: #B42318;
+}
+
+/* Pestañas (Solicitudes, Cuentas...): el riel gris claro pasa a oscuro */
+:root[data-tema="oscuro"] .ui-pestanas {
+    background: #0E1A20;
+    box-shadow: inset 0 0 0 1px var(--panel-borde);
+}
+
+:root[data-tema="oscuro"] .ui-pestanas a:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+:root[data-tema="oscuro"] .ui-pestanas a[aria-current="page"] {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Código grande del 403/404 del panel: el degradado empieza en el
+   turquesa claro (el oscuro casi no se veía sobre el fondo) */
+:root[data-tema="oscuro"] .panel-contenido .error-codigo {
+    background-image: linear-gradient(135deg, var(--panel-enlace), var(--panel-acento));
+}
+
+/* Agenda: días pasados un poco más apagados que los demás */
+:root[data-tema="oscuro"] .ui-dia-pasado {
+    background: #122027;
+}
+
+/* Menú contraído: la etiqueta que aparece al lado usa el color del texto
+   como fondo; en oscuro ese fondo es claro, así que la letra va oscura */
+@media (min-width: 901px) {
+    :root[data-tema="oscuro"] .lateral-contraida .panel-menu-texto {
+        color: #0E1A20;
+    }
+}
+
+/* =====================================================================
+   SWITCH DE TEMA EN EL MENÚ LATERAL DEL PANEL
+   Se ve como una fila más del menú (igual que "Cerrar sesión").
+   ===================================================================== */
+.panel-usuario .switch-tema {
+    --switch-pista:        rgba(255, 255, 255, 0.12);
+    --switch-pista-borde:  rgba(255, 255, 255, 0.28);
+    --switch-pista-activa: #22B77A;
+    --switch-foco:         #FFFFFF;
+
+    width: 100%;
+    min-height: 40px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.95rem;
+    color: var(--panel-lateral-texto);
+    text-align: left;
+    border-radius: 8px;
+    transition: background-color var(--panel-transicion), color var(--panel-transicion);
+}
+
+.panel-usuario .switch-tema:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.panel-usuario .switch-tema:hover .switch-tema-pista {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* La pista ocupa el lugar de los iconos del menú (que miden 20 px) */
+.panel-usuario .switch-tema-pista {
+    width: 40px;
+    height: 24px;
+    margin-left: -6px;
+}
+
+.panel-usuario .switch-tema-perilla {
+    width: 18px;
+    height: 18px;
+}
+
+.panel-usuario .switch-tema-icono {
+    width: 12px;
+    height: 12px;
+}
+
+.panel-usuario .switch-tema[aria-checked="true"] .switch-tema-perilla {
+    transform: translateX(16px);
+}
+
+/* Menú contraído (escritorio): solo la pista, centrada. El texto se oculta
+   a la vista, pero los lectores de pantalla lo siguen leyendo (es el
+   nombre del switch). */
+@media (min-width: 901px) {
+    .lateral-contraida .panel-usuario .switch-tema {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .lateral-contraida .panel-usuario .switch-tema-pista {
+        margin-left: 0;
+    }
+
+    .lateral-contraida .switch-tema-texto {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+}

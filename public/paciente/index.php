@@ -58,114 +58,141 @@ require __DIR__ . '/../../app/layout/paciente_header.php';
 $primer_nombre = explode(' ', trim($usuario['nombre']))[0];
 ?>
 
-<section class="seccion">
-    <p class="etiqueta">Portal del paciente</p>
-    <h1>Hola, <?= e($primer_nombre) ?></h1>
-    <p class="vacio"><?= e(ucfirst(fecha_larga(date('Y-m-d')))) ?></p>
-</section>
+<div class="ui-pagina ui-animada">
 
-<?php if (!$es_verificada): ?>
-    <!-- Cuenta pendiente: qué tiene que hacer -->
-    <section class="seccion">
-        <p class="aviso aviso-pendiente" role="status">
-            Tu cuenta está <strong>pendiente de verificación</strong>.
-        </p>
-        <div class="tarjeta-paciente">
+    <header class="ui-cabecera">
+        <div>
+            <h1>Hola, <?= e($primer_nombre) ?></h1>
+            <p><?= e(ucfirst(fecha_larga(date('Y-m-d')))) ?></p>
+        </div>
+    </header>
+
+    <?php if (!$es_verificada): ?>
+        <!-- Cuenta pendiente: qué tiene que hacer -->
+        <div class="ui-aviso ui-aviso-advertencia" role="status">
+            <?= $icono_panel('i-reloj') ?>
+            <p>Tu cuenta está <strong>pendiente de verificación</strong>.</p>
+        </div>
+
+        <section class="ui-tarjeta">
             <h2>¿Qué tengo que hacer?</h2>
-            <ol class="pasos">
+            <ol class="portal-pasos">
                 <li>Acércate a <strong>admisión</strong> con tu documento de identidad.</li>
                 <li>Comprobarán que tus datos coinciden con los de tu registro.</li>
                 <li>Cuando lo hagan, podrás pedir citas y ver tu historia clínica aquí.</li>
             </ol>
-        </div>
-    </section>
-<?php else: ?>
+        </section>
+    <?php else: ?>
 
-    <!-- Próxima cita: lo más importante, en grande -->
-    <section class="seccion">
+        <!-- Próxima cita: lo más importante, en grande -->
         <?php if ($proxima): ?>
-            <article class="proxima-cita">
-                <p class="proxima-etiqueta">Tu próxima cita</p>
-                <p class="proxima-fecha">
-                    <?= e(fecha_relativa($proxima['fecha'])) ?>
-                    <span>a las <?= e(substr($proxima['hora'], 0, 5)) ?></span>
-                </p>
-                <p>
-                    <?= e($proxima['area']) ?> &middot;
-                    <?= e($proxima['medico'] ?? 'Médico por asignar') ?>
-                </p>
+            <section class="ui-destacado" aria-label="Tu próxima cita">
+                <div>
+                    <p class="ui-destacado-etiqueta">Tu próxima cita</p>
+                    <p class="ui-destacado-titulo">
+                        <?= e(fecha_relativa($proxima['fecha'])) ?>
+                        <span>a las <?= e(substr($proxima['hora'], 0, 5)) ?></span>
+                    </p>
+                    <p class="ui-destacado-detalle">
+                        <?= e($proxima['area']) ?> &middot;
+                        <?= e($proxima['medico'] ?? 'Médico por asignar') ?>
+                    </p>
+                </div>
                 <span class="estado estado-<?= e($proxima['estado']) ?>"><?= e($proxima['estado']) ?></span>
-            </article>
+            </section>
         <?php else: ?>
-            <article class="proxima-cita proxima-vacia">
-                <p class="proxima-etiqueta">Tu próxima cita</p>
-                <p>No tienes citas programadas.</p>
-                <a class="boton" href="<?= e(url('/paciente/pedir-cita.php')) ?>">Pedir una cita</a>
-            </article>
+            <section class="ui-tarjeta">
+                <div class="ui-vacio">
+                    <span class="ui-vacio-icono"><?= $icono_panel('i-calendario') ?></span>
+                    <strong>Tu próxima cita</strong>
+                    <p>No tienes citas programadas.</p>
+                    <a class="ui-boton" href="<?= e(url('/paciente/pedir-cita.php')) ?>">
+                        <?= $icono_panel('i-agregar') ?>
+                        Pedir una cita
+                    </a>
+                </div>
+            </section>
         <?php endif; ?>
-    </section>
 
-    <!-- Resumen en números -->
-    <section class="seccion resumen-paciente">
-        <a class="numero-paciente" href="<?= e(url('/paciente/citas.php')) ?>">
-            <strong><?= $total_proximas ?></strong>
-            <span>Citas próximas</span>
-        </a>
-        <a class="numero-paciente" href="<?= e(url('/paciente/citas.php')) ?>">
-            <strong><?= $en_revision ?></strong>
-            <span>Solicitudes en revisión</span>
-        </a>
-        <a class="numero-paciente" href="<?= e(url('/paciente/historia.php')) ?>">
-            <strong><?= count($atenciones) ?></strong>
-            <span>Atenciones en tu historia</span>
-        </a>
-    </section>
+        <!-- Resumen en números -->
+        <section class="portal-numeros" aria-label="Resumen">
+            <a class="ui-tarjeta portal-numero" href="<?= e(url('/paciente/citas.php')) ?>">
+                <strong><?= $total_proximas ?></strong>
+                <span>Citas próximas</span>
+            </a>
+            <a class="ui-tarjeta portal-numero" href="<?= e(url('/paciente/citas.php')) ?>">
+                <strong><?= $en_revision ?></strong>
+                <span>Solicitudes en revisión</span>
+            </a>
+            <a class="ui-tarjeta portal-numero" href="<?= e(url('/paciente/historia.php')) ?>">
+                <strong><?= count($atenciones) ?></strong>
+                <span>Atenciones en tu historia</span>
+            </a>
+        </section>
 
-    <div class="rejilla-2">
-        <!-- Última atención -->
-        <section class="tarjeta-paciente">
-            <h2>Tu última atención</h2>
-            <?php if ($ultima_atencion): ?>
-                <p class="vacio">
-                    <?= e(date('d/m/Y', strtotime($ultima_atencion['fecha']))) ?> &middot;
-                    <?= e($ultima_atencion['area']) ?> &middot;
-                    <?= e($ultima_atencion['medico']) ?>
-                </p>
-                <p><strong>Diagnóstico:</strong> <?= e($ultima_atencion['diagnostico']) ?></p>
-                <?php if ($ultima_atencion['tratamiento']): ?>
-                    <p><strong>Tratamiento:</strong> <?= e($ultima_atencion['tratamiento']) ?></p>
+        <div class="ui-columnas portal-columnas">
+            <!-- Última atención -->
+            <section class="ui-tarjeta">
+                <h2>Tu última atención</h2>
+                <?php if ($ultima_atencion): ?>
+                    <p class="ui-nota">
+                        <?= e(date('d/m/Y', strtotime($ultima_atencion['fecha']))) ?> &middot;
+                        <?= e($ultima_atencion['area']) ?> &middot;
+                        <?= e($ultima_atencion['medico']) ?>
+                    </p>
+                    <dl class="datos portal-datos">
+                        <div>
+                            <dt>Diagnóstico</dt>
+                            <dd><?= e($ultima_atencion['diagnostico']) ?></dd>
+                        </div>
+                        <?php if ($ultima_atencion['tratamiento']): ?>
+                            <div>
+                                <dt>Tratamiento</dt>
+                                <dd><?= e($ultima_atencion['tratamiento']) ?></dd>
+                            </div>
+                        <?php endif; ?>
+                    </dl>
+                    <a class="ui-enlace" href="<?= e(url('/paciente/historia.php')) ?>">Ver toda mi historia clínica <span aria-hidden="true">&rarr;</span></a>
+                <?php else: ?>
+                    <p class="ui-nota">Aún no tienes atenciones registradas.</p>
                 <?php endif; ?>
-                <a href="<?= e(url('/paciente/historia.php')) ?>">Ver toda mi historia clínica &rarr;</a>
-            <?php else: ?>
-                <p class="vacio">Aún no tienes atenciones registradas.</p>
-            <?php endif; ?>
-        </section>
+            </section>
 
-        <!-- Accesos rápidos -->
-        <section class="tarjeta-paciente">
-            <h2>¿Qué quieres hacer?</h2>
-            <ul class="accesos">
-                <li>
-                    <a href="<?= e(url('/paciente/pedir-cita.php')) ?>">
-                        <strong>Pedir una cita</strong>
-                        <span>Elige el área y cuéntanos el motivo.</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= e(url('/paciente/citas.php')) ?>">
-                        <strong>Ver mis citas</strong>
-                        <span>Próximas, anteriores y el estado de tus solicitudes.</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= e(url('/paciente/historia.php')) ?>">
-                        <strong>Mi historia clínica</strong>
-                        <span>Diagnósticos y tratamientos de tus atenciones.</span>
-                    </a>
-                </li>
-            </ul>
-        </section>
-    </div>
-<?php endif; ?>
+            <!-- Accesos rápidos -->
+            <section class="ui-tarjeta">
+                <h2>¿Qué quieres hacer?</h2>
+                <ul class="portal-accesos">
+                    <li>
+                        <a href="<?= e(url('/paciente/pedir-cita.php')) ?>">
+                            <span class="portal-accesos-icono"><?= $icono_panel('i-agregar') ?></span>
+                            <span>
+                                <strong>Pedir una cita</strong>
+                                <small>Elige el área y cuéntanos el motivo.</small>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?= e(url('/paciente/citas.php')) ?>">
+                            <span class="portal-accesos-icono"><?= $icono_panel('i-calendario') ?></span>
+                            <span>
+                                <strong>Ver mis citas</strong>
+                                <small>Próximas, anteriores y el estado de tus solicitudes.</small>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?= e(url('/paciente/historia.php')) ?>">
+                            <span class="portal-accesos-icono"><?= $icono_panel('i-documento') ?></span>
+                            <span>
+                                <strong>Mi historia clínica</strong>
+                                <small>Diagnósticos y tratamientos de tus atenciones.</small>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    <?php endif; ?>
+</div>
 
 <?php require __DIR__ . '/../../app/layout/paciente_footer.php'; ?>

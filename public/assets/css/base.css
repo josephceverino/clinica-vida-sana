@@ -16,8 +16,36 @@
     /* Gris para textos secundarios (notas, "sin datos", cabeceras de tabla). */
     --color-texto-suave:  #5B6B79;
 
+    /* Superficies, bordes y enlaces. En modo claro valen lo mismo que los
+       colores que antes estaban escritos a mano; el modo oscuro los cambia
+       (ver "MODO OSCURO" al final de este archivo). */
+    --color-superficie:   #FFFFFF;   /* fondo de cajas y formularios */
+    --color-separador:    #EDF1F4;   /* líneas suaves entre filas */
+    --color-borde:        #DDE5EA;
+    --color-borde-fuerte: #C5D0D8;   /* borde de campos */
+    --color-icono-suave:  #5A6B7A;
+    /* El color principal sirve de fondo (botones) y de texto (enlaces).
+       Se separan porque en modo oscuro el texto necesita un tono más claro. */
+    --color-enlace:       var(--color-principal);
+
     --fuente-texto: system-ui, -apple-system, "Segoe UI", sans-serif;
     --ancho-maximo: 1100px;
+
+    /* Movimiento: los mismos tiempos y la misma curva en toda la web.
+       - rápido: colores, bordes y sombras (pasar el ratón, foco)
+       - medio:  desplazamientos (menús, switch, tarjetas, entradas)
+       - lento:  recorridos largos (carrusel, aparecer al bajar)
+       La curva arranca rápido y frena suave: se siente ágil sin brusquedad.
+       Con "reducir movimiento" cada zona los desactiva (ver sus bloques). */
+    --mov-rapido: 160ms;
+    --mov-medio:  240ms;
+    --mov-lento:  480ms;
+    --mov-curva:  cubic-bezier(0.2, 0, 0, 1);
+    --mov-paso:   30ms;    /* escalonado entre tarjetas que entran */
+
+    /* Le dice al navegador que dibuje sus controles (barras de
+       desplazamiento, calendario de las fechas...) en claro */
+    color-scheme: light;
 }
 
 * {
@@ -38,29 +66,7 @@ h1, h2, h3 {
 }
 
 a {
-    color: var(--color-principal);
-}
-
-/* Cabecera */
-.cabecera {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background: var(--color-blanco);
-    border-bottom: 1px solid #DDE5EA;
-}
-
-.marca {
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--color-titulos);
-    text-decoration: none;
-}
-
-.menu a {
-    margin-left: 1rem;
-    text-decoration: none;
+    color: var(--color-enlace);
 }
 
 /* Contenido */
@@ -77,23 +83,6 @@ a {
     font-size: 0.9rem;
 }
 
-/* ---------- Menú: que no se rompa en pantallas chicas ---------- */
-.cabecera {
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-}
-
-.menu {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem 1rem;
-}
-
-.menu a {
-    margin-left: 0;
-}
-
 /* ---------- Botones ---------- */
 .boton {
     display: inline-block;
@@ -107,22 +96,6 @@ a {
 
 .boton:hover {
     background: var(--color-titulos);
-}
-
-.boton-claro {
-    background: var(--color-blanco);
-    color: var(--color-principal);
-    border: 1px solid var(--color-principal);
-}
-
-.boton-claro:hover {
-    background: var(--color-principal);
-    color: var(--color-blanco);
-}
-
-.boton-chico {
-    padding: 0.45rem 1rem;
-    font-size: 0.95rem;
 }
 
 /* ---------- Portada ---------- */
@@ -148,119 +121,6 @@ a {
     font-size: clamp(2.2rem, 5vw, 3.4rem);
 }
 
-.portada-bajada {
-    max-width: 34rem;
-    font-size: 1.15rem;
-}
-
-.portada-botones {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-}
-
-/* Tarjeta de horarios */
-.tarjeta-horario {
-    padding: 1.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-top: 4px solid var(--color-acento);
-    border-radius: 12px;
-}
-
-.tarjeta-horario h2 {
-    margin: 0 0 1rem;
-    font-size: 1.15rem;
-}
-
-.tarjeta-horario ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.tarjeta-horario li {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid #EDF1F4;
-}
-
-.tarjeta-nota {
-    margin: 1rem 0 0;
-    font-size: 0.95rem;
-}
-
-/* ---------- Secciones ---------- */
-.seccion {
-    padding: 2rem 0;
-}
-
-.seccion > h2 {
-    margin: 0 0 1.5rem;
-    font-size: 1.8rem;
-}
-
-.rejilla-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
-}
-
-.punto,
-.servicio {
-    padding: 1.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 12px;
-}
-
-.punto h3,
-.servicio h3 {
-    margin: 0.25rem 0 0.5rem;
-}
-
-.punto p,
-.servicio p {
-    margin: 0;
-}
-
-.punto-numero {
-    color: var(--color-principal);
-    font-weight: 700;
-    font-size: 1.4rem;
-}
-
-.servicio {
-    border-left: 4px solid var(--color-principal);
-}
-
-/* ---------- Llamado final ---------- */
-.llamado {
-    margin: 2rem 0;
-    padding: 2.5rem 1.5rem;
-    text-align: center;
-    background: var(--color-principal);
-    color: var(--color-blanco);
-    border-radius: 12px;
-}
-
-.llamado h2 {
-    margin: 0 0 0.5rem;
-    color: var(--color-blanco);
-}
-
-.llamado p {
-    margin: 0 0 1.25rem;
-}
-
-.llamado .boton-claro:hover {
-    background: var(--color-titulos);
-    border-color: var(--color-titulos);
-}
-
 /* ---------- Páginas de error (403, 404, 500) ---------- */
 .error-pagina {
     padding: 3rem 1rem;
@@ -272,7 +132,7 @@ a {
     font-size: clamp(4.5rem, 14vw, 8rem);
     font-weight: 700;
     line-height: 1;
-    color: var(--color-principal);
+    color: var(--color-enlace);
 }
 
 .error-pagina h1 {
@@ -291,8 +151,8 @@ a {
 
 .formulario {
     padding: 1.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
     border-radius: 12px;
 }
 
@@ -314,13 +174,13 @@ a {
     width: 100%;
     padding: 0.7rem 0.8rem;
     font: inherit;
-    border: 1px solid #C5D0D8;
+    border: 1px solid var(--color-borde-fuerte);
     border-radius: 8px;
 }
 
 .campo input:focus,
 .campo textarea:focus {
-    outline: 2px solid var(--color-principal);
+    outline: 2px solid var(--color-enlace);
     outline-offset: 1px;
 }
 
@@ -332,48 +192,9 @@ a {
     font-weight: 600;
 }
 
-.aviso-error {
-    padding: 0.8rem 1rem;
-    background: #FDECEA;
-    border: 1px solid #F5B5AE;
-    border-radius: 8px;
-    color: #8A1F14;
-}
-
-/* Lista de datos de contacto (etiqueta arriba, dato abajo) */
-.lista-datos {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.lista-datos li {
-    display: flex;
-    flex-direction: column;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid #EDF1F4;
-}
-
-.lista-datos li:last-child {
-    border-bottom: none;
-}
-
-.lista-datos span {
-    font-size: 0.85rem;
-}
-
-/* Rejilla de 2 columnas (misión y visión, contacto) */
-.rejilla-2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-}
-
 /* ---------- Pantallas chicas (celular) ---------- */
 @media (max-width: 800px) {
-    .portada,
-    .rejilla-2,
-    .rejilla-3 {
+    .portada {
         grid-template-columns: 1fr;
     }
 }
@@ -383,18 +204,6 @@ a {
     margin: 0 0 1rem;
     padding: 0.8rem 1rem;
     border-radius: 8px;
-}
-
-.aviso-ok {
-    background: #DDF3E8;
-    border: 1px solid #A9DEC3;
-    color: #17744A;
-}
-
-.aviso-pendiente {
-    background: #FFF1D6;
-    border: 1px solid #F0D395;
-    color: #7A5200;
 }
 
 /* ---------- Casillas de texto: tamaño fijo ---------- */
@@ -408,8 +217,8 @@ select {
     width: 100%;
     padding: 0.7rem 0.8rem;
     font: inherit;
-    background: var(--color-blanco);
-    border: 1px solid #C5D0D8;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde-fuerte);
     border-radius: 8px;
 }
 
@@ -417,38 +226,6 @@ select {
 .registro {
     max-width: 760px;
     margin: 1rem auto;
-}
-
-.formulario-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 1.5rem;
-}
-
-.formulario-grid .campo {
-    margin-bottom: 1rem;
-}
-
-.formulario-grid .formulario-nota,
-.formulario-grid .boton {
-    grid-column: 1 / -1;
-}
-
-.formulario-nota {
-    margin: 0 0 1rem;
-    font-size: 0.9rem;
-    color: #5A6B7A;
-}
-
-.login-alterno {
-    margin-top: 1.25rem;
-    text-align: center;
-}
-
-@media (max-width: 640px) {
-    .formulario-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* ---------- Accesibilidad ---------- */
@@ -490,17 +267,6 @@ select {
     white-space: nowrap;
 }
 
-/* Botón blanco sobre fondo de color (carrusel, franjas destacadas) */
-.boton-blanco {
-    color: var(--color-principal);
-    background: var(--color-blanco);
-}
-
-.boton-blanco:hover {
-    color: var(--color-blanco);
-    background: var(--color-titulos);
-}
-
 /* =====================================================================
    PORTADA ANIMADA (index.php + assets/js/portada.js)
    ===================================================================== */
@@ -524,7 +290,7 @@ select {
 .carrusel-activo .carrusel-pista {
     flex-direction: row;
     gap: 0;
-    transition: transform 0.6s ease;
+    transition: transform var(--mov-lento) var(--mov-curva);
 }
 
 .diapositiva {
@@ -619,7 +385,7 @@ select {
     border: none;
     border-radius: 999px;
     cursor: pointer;
-    transition: width 0.3s ease, background 0.3s ease;
+    transition: width var(--mov-medio) var(--mov-curva), background-color var(--mov-rapido) var(--mov-curva);
 }
 
 .carrusel-puntos button.activo {
@@ -627,54 +393,13 @@ select {
     background: var(--color-acento);
 }
 
-/* ---------- Franja de horarios ---------- */
-.franja-horario {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
-    padding: 1.25rem 1.5rem;
-    background: var(--color-blanco);
-    border: 1px solid #DDE5EA;
-    border-radius: 14px;
-}
-
-.franja-horario div {
-    display: flex;
-    flex-direction: column;
-    padding-left: 0.9rem;
-    border-left: 3px solid var(--color-acento);
-}
-
-.franja-horario span {
-    font-size: 0.85rem;
-    color: #5A6B7A;
-}
-
-.franja-horario strong {
-    font-size: 1.1rem;
-    color: var(--color-titulos);
-}
-
-/* ---------- Tarjetas que se levantan al pasar el ratón ---------- */
-.punto,
-.servicio {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.punto:hover,
-.servicio:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(15, 42, 61, 0.10);
-}
-
 /* ---------- Aparecer al bajar ---------- */
 /* Solo se esconden si portada.js puso la clase "animar" en <body>:
    sin JavaScript, todo se ve normal. */
 .animar .aparecer {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    transform: translateY(16px);
+    transition: opacity var(--mov-lento) var(--mov-curva), transform var(--mov-lento) var(--mov-curva);
 }
 
 .animar .aparecer.visible {
@@ -689,7 +414,7 @@ select {
     padding: 2rem 1.75rem 1.25rem;
     text-align: center;
     color: var(--color-texto);
-    background: var(--color-blanco);
+    background: var(--color-superficie);
     border: none;
     border-top: 6px solid var(--color-acento);
     border-radius: 16px;
@@ -702,11 +427,11 @@ select {
 }
 
 .aviso-emergente[open] {
-    animation: aviso-entrar 0.35s ease;
+    animation: aviso-entrar var(--mov-medio) var(--mov-curva);
 }
 
 @keyframes aviso-entrar {
-    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
     to   { opacity: 1; transform: none; }
 }
 
@@ -742,7 +467,7 @@ select {
     height: 36px;
     font-size: 1.6rem;
     line-height: 1;
-    color: #5A6B7A;
+    color: var(--color-icono-suave);
     background: transparent;
     border: none;
     border-radius: 50%;
@@ -752,7 +477,7 @@ select {
 .aviso-cerrar:hover,
 .aviso-cerrar:focus-visible {
     color: var(--color-titulos);
-    background: #EDF1F4;
+    background: var(--color-separador);
 }
 
 .aviso-botones {
@@ -797,16 +522,12 @@ select {
         display: none;   /* en el celular se desliza con el dedo */
     }
 
-    .franja-horario {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    
 }
 
 /* ---------- Menos movimiento (accesibilidad) ---------- */
 @media (prefers-reduced-motion: reduce) {
     .carrusel-activo .carrusel-pista,
-    .punto,
-    .servicio,
     .carrusel-puntos button {
         transition: none;
     }
@@ -843,43 +564,231 @@ select {
     }
 }
 
-/* ---------- Política de privacidad y registro ---------- */
-/* Texto largo: líneas más cortas para leer cómodo */
-.texto-legal {
-    max-width: 760px;
+.pie p {
+    margin: 0.25rem 0;
 }
 
-.texto-legal h2 {
-    margin-top: 2rem;
-    font-size: 1.3rem;
+/* =====================================================================
+   MODO OSCURO
+   tema.js pone <html data-tema="oscuro"> cuando corresponde. Aquí solo
+   cambian las variables de color; cada zona (publico.css, panel.css,
+   paciente.css) tiene su propio bloque "MODO OSCURO" al final.
+   Contraste comprobado: textos >= 4.5:1 y bordes de foco >= 3:1.
+   ===================================================================== */
+:root[data-tema="oscuro"] {
+    --color-titulos:      #E6EEF2;
+    --color-fondo:        #0E1A20;
+    --color-texto:        #C9D6DD;
+    --color-acento-texto: #5FD39A;
+    --color-texto-suave:  #9AAEB9;
+    --color-superficie:   #15242C;
+    --color-separador:    #22363F;
+    --color-borde:        #2A404B;
+    --color-borde-fuerte: #3A5563;
+    --color-icono-suave:  #9AAEB9;
+    --color-enlace:       #5CC4DC;   /* 7.9:1 sobre las superficies */
+
+    color-scheme: dark;
 }
 
-.texto-legal li {
-    margin-bottom: 0.4rem;
+/* Estos dos usaban el color de los títulos como fondo, que en oscuro es
+   claro: se les da un fondo propio para que el texto blanco se lea. */
+:root[data-tema="oscuro"] .boton:hover {
+    background: #0A90AB;
 }
 
-/* Casilla "Acepto la política de privacidad" del registro */
-.casilla-privacidad {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: 0.6rem;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-    padding: 0.8rem 1rem;
-    font-size: 0.9rem;
-    background: #F3F6F8;
-    border-radius: 8px;
+:root[data-tema="oscuro"] .saltar-contenido {
+    color: #0E1A20;
+}
+
+/* El cambio de tema con el switch: solo los COLORES pasan suavemente
+   (nada se mueve ni cambia de tamaño). tema.js pone "tema-cambiando" solo
+   un momento (y nunca con "reducir movimiento"), así no retrasa los
+   efectos normales de la página. El switch queda fuera: tiene su propia
+   transición de la pista, la perilla y el paisaje. */
+.tema-cambiando,
+.tema-cambiando *:not(.switch-tema-pista, .switch-tema-pista *),
+.tema-cambiando *::before,
+.tema-cambiando *::after {
+    transition: background-color var(--mov-medio) var(--mov-curva), color var(--mov-medio) var(--mov-curva), border-color var(--mov-medio) var(--mov-curva),
+                outline-color var(--mov-medio) var(--mov-curva), fill var(--mov-medio) var(--mov-curva), stroke var(--mov-medio) var(--mov-curva),
+                box-shadow var(--mov-medio) var(--mov-curva) !important;
+}
+
+/* =====================================================================
+   SWITCH DE MODO CLARO / OSCURO (app/layout/switch_tema.php)
+   Es igual en las tres zonas; cada una solo ajusta sus colores con las
+   variables --switch-*. La perilla se desliza y el sol se cambia por la luna.
+   ===================================================================== */
+.switch-tema {
+    --switch-pista:        #BEE4EC;
+    --switch-pista-borde:  #8CBAC8;
+    --switch-pista-activa: #087C94;
+    --switch-foco:         #087C94;
+    --switch-transicion:   400ms cubic-bezier(0.45, 0, 0.25, 1);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 44px;   /* área cómoda para el dedo */
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    border-radius: 999px;
     cursor: pointer;
 }
 
-.casilla-privacidad input {
-    width: 18px;
-    height: 18px;
-    margin-top: 0.15rem;
-    flex-shrink: 0;
-    accent-color: var(--color-principal);
+/* Sin JavaScript el switch no serviría: "hidden" lo oculta siempre */
+.switch-tema[hidden] {
+    display: none !important;
 }
 
-.pie p {
-    margin: 0.25rem 0;
+.switch-tema-pista {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    width: 52px;
+    height: 30px;
+    background-color: var(--switch-pista);
+    background-image: linear-gradient(180deg, transparent 30%, rgba(11, 110, 138, 0.16));
+    border: 1px solid var(--switch-pista-borde);
+    border-radius: 999px;
+    transition: background-color var(--switch-transicion), border-color var(--switch-transicion);
+}
+
+.switch-tema-nubes,
+.switch-tema-estrellas {
+    position: absolute;
+    width: 43%;
+    height: 86%;
+    pointer-events: none;
+    transition: opacity var(--switch-transicion), transform var(--switch-transicion);
+}
+
+.switch-tema-nubes {
+    right: 1px;
+    bottom: 0;
+    fill: #F1FAFC;
+    opacity: 1;
+    transform: none;
+}
+
+.switch-tema-nube-lejana {
+    opacity: 0.55;
+}
+
+.switch-tema-estrellas {
+    top: 7%;
+    left: 1px;
+    fill: #D1F1F2;
+    opacity: 0;
+    transform: translate(-3px, 5px) scale(0.7);
+}
+
+.switch-tema-perilla {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    color: #925A13;
+    background: #FFF8E7;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(15, 42, 61, 0.35);
+    transition: transform var(--switch-transicion), background-color var(--switch-transicion), color var(--switch-transicion);
+}
+
+/* Sol y luna en el mismo sitio: uno aparece mientras el otro gira y se va */
+.switch-tema-icono {
+    grid-area: 1 / 1;
+    width: 16px;
+    height: 16px;
+    transition: opacity var(--switch-transicion), transform var(--switch-transicion);
+}
+
+.switch-tema-icono:last-child {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+}
+
+/* Encendido (modo oscuro): la perilla se va a la derecha y muestra la luna */
+.switch-tema[aria-checked="true"] .switch-tema-pista {
+    background-color: color-mix(in srgb, #153C4B 82%, var(--switch-pista-activa));
+    border-color: var(--switch-pista-activa);
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-nubes {
+    opacity: 0;
+    transform: translate(5px, 4px);
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-estrellas {
+    opacity: 1;
+    transform: none;
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-perilla {
+    color: #15566A;
+    background: #D8F1EE;
+    transform: translateX(22px);
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-icono:first-child {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+}
+
+.switch-tema[aria-checked="true"] .switch-tema-icono:last-child {
+    opacity: 1;
+    transform: none;
+}
+
+.switch-tema:hover .switch-tema-pista {
+    border-color: var(--switch-pista-activa);
+}
+
+/* Foco con teclado: anillo alrededor de la pista */
+.switch-tema:focus-visible {
+    outline: none;
+}
+
+.switch-tema:focus-visible .switch-tema-pista {
+    outline: 2px solid var(--switch-foco);
+    outline-offset: 3px;
+}
+
+/* En oscuro, la pista apagada y el anillo de foco se aclaran */
+:root[data-tema="oscuro"] .switch-tema {
+    --switch-pista:        #22363F;
+    --switch-pista-borde:  #3A5563;
+    --switch-foco:         #5CC4DC;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .switch-tema-pista,
+    .switch-tema-perilla,
+    .switch-tema-icono,
+    .switch-tema-nubes,
+    .switch-tema-estrellas {
+        transition: none;
+    }
+}
+
+/* En las cabeceras de la web pública y del portal, el switch no debe
+   estirarlas: mide lo que su pista (30 px de alto, más que el mínimo de
+   24 px para tocar con el dedo). */
+.pub-cabecera .switch-tema,
+.portal-sesion .switch-tema {
+    min-height: 0;
+}
+
+/* Marca oficial: conservar la proporción y los colores del PNG. */
+.logo-oficial {
+    display: block;
+    max-width: 100%;
+    height: auto;
 }

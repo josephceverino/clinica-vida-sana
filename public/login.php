@@ -58,39 +58,59 @@ $mensaje = mensaje_tomar();
 require __DIR__ . '/../app/layout/publico_header.php';
 ?>
 
-<section class="login">
-    <h1>Portal del paciente</h1>
-    <p>Ingresa para ver tus citas y tu historial. El personal de la clínica entra por aquí también.</p>
+<!-- Pantalla partida: marca a la izquierda, formulario a la derecha -->
+<section class="pub-acceso aparecer">
+    <div class="pub-acceso-marca" aria-hidden="true">
+        <img src="<?= e(url('/assets/img/slide-citas.svg')) ?>" alt="" width="320" height="240">
+    </div>
 
-    <?php if ($mensaje !== null): ?>
-        <p class="aviso aviso-<?= e($mensaje['tipo']) ?>" role="status"><?= e($mensaje['texto']) ?></p>
-    <?php endif; ?>
+    <div class="pub-acceso-formulario">
+        <h1>Portal del paciente</h1>
+        <p class="pub-bajada">Ingresa para ver tus citas y tu historial. El personal de la clínica entra por aquí también.</p>
 
-    <?php if ($error !== ''): ?>
-        <p class="aviso-error" role="alert"><?= e($error) ?></p>
-    <?php endif; ?>
+        <?php if ($mensaje !== null): ?>
+            <div class="pub-aviso pub-notificacion <?= $mensaje['tipo'] === 'error' ? 'pub-aviso-error' : 'pub-aviso-exito' ?>" role="status">
+                <?= $icono_publico($mensaje['tipo'] === 'error' ? 'i-alerta' : 'i-visto') ?>
+                <p><?= e($mensaje['texto']) ?></p>
+                <button class="pub-notificacion-cerrar" type="button" aria-label="Cerrar notificación" hidden>
+                    <?= $icono_publico('i-cerrar') ?>
+                </button>
+            </div>
+        <?php endif; ?>
 
-    <form class="formulario" method="post" action="<?= e(url('/login.php')) ?>">
-        <?= csrf_campo() ?>
+        <?php if ($error !== ''): ?>
+            <div class="pub-aviso pub-aviso-error pub-notificacion" role="alert">
+                <?= $icono_publico('i-alerta') ?>
+                <p><?= e($error) ?></p>
+                <button class="pub-notificacion-cerrar" type="button" aria-label="Cerrar notificación" hidden>
+                    <?= $icono_publico('i-cerrar') ?>
+                </button>
+            </div>
+        <?php endif; ?>
 
-        <div class="campo">
-            <label for="identificador">Usuario o correo</label>
-            <input type="text" id="identificador" name="identificador" maxlength="120"
-                   value="<?= e($identificador) ?>" autocomplete="username" required autofocus>
-        </div>
+        <!-- data-cargando: al enviar, el botón muestra "Ingresando…" y evita el doble envío -->
+        <form class="pub-formulario" method="post" action="<?= e(url('/login.php')) ?>" data-cargando>
+            <?= csrf_campo() ?>
 
-        <div class="campo">
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password"
-                   autocomplete="current-password" required>
-        </div>
+            <div class="pub-campo pub-campo-flotante">
+                <input type="text" id="identificador" name="identificador" maxlength="120"
+                       value="<?= e($identificador) ?>" placeholder=" " autocomplete="username" required autofocus>
+                <label for="identificador">Usuario o correo</label>
+            </div>
 
-        <button class="boton" type="submit">Ingresar</button>
-    </form>
+            <div class="pub-campo pub-campo-flotante">
+                <input type="password" id="password" name="password"
+                       placeholder=" " autocomplete="current-password" required>
+                <label for="password">Contraseña</label>
+            </div>
 
-    <p class="login-alterno">
-        ¿No tienes cuenta? <a href="<?= e(url('/registro.php')) ?>">Regístrate</a>
-    </p>
+            <button class="pub-boton pub-boton-ancho" type="submit" data-texto-cargando="Ingresando…">Ingresar</button>
+        </form>
+
+        <p class="pub-alterno">
+            ¿No tienes cuenta? <a href="<?= e(url('/registro.php')) ?>">Regístrate</a>
+        </p>
+    </div>
 </section>
 
 <?php require __DIR__ . '/../app/layout/publico_footer.php'; ?>
