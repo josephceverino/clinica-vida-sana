@@ -59,6 +59,15 @@
     top: 0;
     height: 100vh;
     overflow-y: auto;
+    /* La barra de desplazamiento no se ve, pero el menú se sigue moviendo
+       con la rueda, el touchpad, el dedo y el teclado (Tab lleva hasta
+       "Mi perfil" y "Cerrar sesión"). Firefox y Chromium 121+: */
+    scrollbar-width: none;
+}
+
+/* Lo mismo para Chromium antiguo y Safari */
+.panel-lateral::-webkit-scrollbar {
+    display: none;
 }
 
 /* Marca del panel */
@@ -889,8 +898,12 @@ a.resumen-pastilla:hover {
     .lateral-contraida .panel-lateral {
         padding-left: 0.75rem;
         padding-right: 0.75rem;
-        /* Las etiquetas flotantes salen hacia la derecha: que no se recorten */
-        overflow: visible;
+        /* Se puede desplazar (pantallas bajas: así se llega a "Mi perfil" y
+           "Cerrar sesión"). La barra sigue oculta (scrollbar-width arriba).
+           Las etiquetas flotantes ya no salen desde aquí dentro: panel.js
+           las dibuja fuera del menú (.panel-etiqueta-flotante), sin recorte. */
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
     /* Arriba: la cruz y debajo el botón, centrados */
@@ -989,6 +1002,43 @@ a.resumen-pastilla:hover {
     }
 
     .lateral-contraida .panel-menu small {
+        display: none;
+    }
+}
+
+/* Etiqueta flotante del menú contraído (la crea panel.js en <body>).
+   Mismo aspecto que la etiqueta anterior (.lateral-contraida .panel-menu-texto). */
+.panel-etiqueta-flotante {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    color: #FFFFFF;
+    background: var(--panel-texto);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(25, 56, 71, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate(-4px, -50%);
+    transition: opacity var(--mov-rapido) var(--mov-curva), transform var(--mov-rapido) var(--mov-curva),
+                visibility 0s linear var(--mov-rapido);
+}
+
+.panel-etiqueta-flotante.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(0, -50%);
+    transition: opacity var(--mov-rapido) var(--mov-curva), transform var(--mov-rapido) var(--mov-curva);
+}
+
+@media (max-width: 900px) {
+    .panel-etiqueta-flotante {
         display: none;
     }
 }
@@ -2842,7 +2892,8 @@ a.ui-cita:focus-visible {
 /* Menú contraído: la etiqueta que aparece al lado usa el color del texto
    como fondo; en oscuro ese fondo es claro, así que la letra va oscura */
 @media (min-width: 901px) {
-    :root[data-tema="oscuro"] .lateral-contraida .panel-menu-texto {
+    :root[data-tema="oscuro"] .lateral-contraida .panel-menu-texto,
+    :root[data-tema="oscuro"] .panel-etiqueta-flotante {
         color: #0E1A20;
     }
 }
@@ -2918,5 +2969,327 @@ a.ui-cita:focus-visible {
         overflow: hidden;
         clip: rect(0 0 0 0);
         white-space: nowrap;
+    }
+}
+
+/* =====================================================================
+   Indicadores (panel/indicadores.php)
+   Todo va dentro de .indicadores. Reutiliza las tarjetas y cajas del
+   resumen (.resumen-*). Los gráficos son SVG del servidor: aquí solo van
+   sus colores (la CSP no permite style="..." en el HTML).
+   Paleta de series validada para daltonismo (protan/deutan/tritan) sobre
+   la superficie clara y la oscura: azul #2A78D6 / naranja #EB6834 y, en
+   oscuro, #3987E5 / #D95926. Una sola serie usa el azul.
+   ===================================================================== */
+.indicadores {
+    --ind-serie-1: #2A78D6;
+    --ind-serie-2: #EB6834;
+    --ind-rejilla: #E6EDF0;
+    --ind-fondo-barra: #EEF3F5;
+}
+
+:root[data-tema="oscuro"] .indicadores {
+    --ind-serie-1: #3987E5;
+    --ind-serie-2: #D95926;
+    --ind-rejilla: #243A45;
+    --ind-fondo-barra: #1C303A;
+}
+
+/* Las tarjetas: seis en fila en escritorio */
+.indicadores .resumen-indicadores {
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+}
+
+/* Aviso de origen de los datos */
+.ind-origen {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.88rem;
+    color: var(--panel-texto);
+    background: var(--panel-tinte);
+    border-radius: var(--panel-radio);
+}
+
+.ind-origen p {
+    margin: 0;
+}
+
+.ind-origen .icono {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: var(--panel-enlace);
+}
+
+.ind-origen code,
+.ind-formulas code {
+    font-size: 0.85em;
+    padding: 0.05rem 0.3rem;
+    background: var(--panel-sutil);
+    border-radius: 4px;
+}
+
+/* Filtros: botones de período y rango de fechas, en una fila */
+.ind-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.ind-filtros .ui-aviso {
+    flex-basis: 100%;
+    margin: 0;
+}
+
+.ind-periodos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.ind-periodo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 0.9rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--panel-enlace);
+    background: var(--panel-tinte);
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+.ind-periodo:hover {
+    color: #FFFFFF;
+    background: var(--panel-primario);
+}
+
+.ind-periodo.activo {
+    color: #FFFFFF;
+    background: var(--panel-primario);
+}
+
+.ind-periodo:focus-visible {
+    outline: 2px solid var(--panel-enlace);
+    outline-offset: 2px;
+}
+
+.ind-rango {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.6rem;
+}
+
+.ind-rango .ui-campo {
+    margin: 0;
+}
+
+/* Leyenda del gráfico mensual */
+.ind-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+    color: var(--panel-texto-suave);
+}
+
+.ind-leyenda li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ind-muestra {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+span.ind-muestra.ind-serie-1 { background: var(--ind-serie-1); }
+span.ind-muestra.ind-serie-2 { background: var(--ind-serie-2); }
+
+/* Colores de las series dentro del SVG */
+.indicadores rect.ind-serie-1 { fill: var(--ind-serie-1); }
+.indicadores rect.ind-serie-2 { fill: var(--ind-serie-2); }
+
+/* Gráfico mensual: en pantallas angostas se desplaza dentro de su caja
+   (así el texto no se achica hasta volverse ilegible). */
+.ind-desplazable {
+    overflow-x: auto;
+    border-radius: 8px;
+}
+
+.ind-desplazable:focus-visible {
+    outline: 2px solid var(--panel-enlace);
+    outline-offset: 2px;
+}
+
+.ind-columnas-svg {
+    display: block;
+    width: 100%;
+    min-width: 540px;
+    height: auto;
+}
+
+.ind-rejilla {
+    stroke: var(--ind-rejilla);
+    stroke-width: 1;
+}
+
+.ind-base {
+    stroke: var(--panel-borde-fuerte);
+    stroke-width: 1;
+}
+
+.ind-eje-texto {
+    font-size: 12px;
+    fill: var(--panel-texto-suave);
+    font-variant-numeric: tabular-nums;
+}
+
+.ind-eje-anio {
+    font-size: 10px;
+}
+
+.ind-valor-texto {
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--panel-texto);
+    font-variant-numeric: tabular-nums;
+}
+
+.ind-zona {
+    fill: transparent;
+}
+
+.ind-columna:hover .ind-zona {
+    fill: var(--panel-sutil);
+}
+
+/* Barras horizontales: etiqueta | barra | valor */
+.ind-barras {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ind-barra-fila {
+    display: grid;
+    grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0;
+}
+
+.ind-barra-etiqueta {
+    font-size: 0.9rem;
+    color: var(--panel-texto);
+}
+
+.ind-barra-svg {
+    display: block;
+    width: 100%;
+    height: 12px;
+}
+
+.ind-barra-fondo {
+    fill: var(--ind-fondo-barra);
+}
+
+.ind-barra-valor {
+    min-width: 5.5rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: right;
+    color: var(--panel-texto);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.ind-vacio {
+    padding: 1.5rem 0;
+    text-align: center;
+}
+
+.ind-tabla-datos {
+    margin-top: 1rem;
+}
+
+.ind-tabla-datos summary,
+.ind-formulas summary {
+    cursor: pointer;
+    color: var(--panel-enlace);
+    font-weight: 600;
+}
+
+.ind-formulas summary h2 {
+    display: inline;
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.ind-formulas dl {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0 0;
+}
+
+.ind-formulas dt {
+    font-weight: 700;
+    color: var(--panel-texto);
+}
+
+.ind-formulas dd {
+    margin: 0.15rem 0 0;
+    color: var(--panel-texto-suave);
+    font-size: 0.9rem;
+}
+
+/* Celular */
+@media (max-width: 600px) {
+    .ind-filtros {
+        align-items: stretch;
+    }
+
+    .ind-rango {
+        width: 100%;
+    }
+
+    .ind-rango .ui-campo {
+        flex: 1 1 8rem;
+    }
+
+    .ind-rango .ui-boton {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+
+    .ind-barra-fila {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.3rem 0.75rem;
+    }
+
+    /* La barra pasa a su propia línea, debajo de etiqueta y valor */
+    .ind-barra-svg {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+}
+
+/* Modo de alto contraste de Windows: las barras se ven con el color del sistema */
+@media (forced-colors: active) {
+    .indicadores rect.ind-serie-1,
+    .indicadores rect.ind-serie-2 {
+        fill: CanvasText;
     }
 }

@@ -2300,3 +2300,40 @@ body.publico {
 .pub-ayuda .pub-ayuda-accion {
     margin-top: 0.75rem;
 }
+
+/* =====================================================================
+   CARRUSEL: encuadre de las fotografías de Pediatría y Laboratorio
+   Usan el mismo diseño que la foto de la primera diapositiva
+   (.diapositiva-visual-foto: foto a la derecha con borde curvo). Aquí
+   solo se elige qué parte de cada foto queda a la vista en cada tamaño.
+   Van al final para ganar a las reglas generales de arriba.
+   ===================================================================== */
+.pub-hero .diapositiva-foto-pediatria .diapositiva-imagen {
+    object-position: 66% center;   /* la pediatra y el niño */
+}
+
+.pub-hero .diapositiva-foto-laboratorio .diapositiva-imagen {
+    object-position: 50% center;   /* las dos personas */
+}
+
+@media (max-width: 800px) {
+    .pub-hero .diapositiva-foto-pediatria .diapositiva-imagen {
+        object-position: 70% center;
+    }
+
+    /* Caja casi vertical: las dos personas no caben sin que la curva corte
+       una cara. Se encuadra a la persona de la derecha con los equipos. */
+    .pub-hero .diapositiva-foto-laboratorio .diapositiva-imagen {
+        object-position: 90% center;
+    }
+}
+
+@media (max-width: 640px) {
+    .pub-hero .diapositiva-foto-pediatria .diapositiva-imagen {
+        object-position: 62% 30%;
+    }
+
+    .pub-hero .diapositiva-foto-laboratorio .diapositiva-imagen {
+        object-position: center 30%;
+    }
+}
