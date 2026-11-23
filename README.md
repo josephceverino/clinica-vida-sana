@@ -11,6 +11,7 @@ El curso evalúa la infraestructura (Fedora Linux + Windows Server). Esta web es
 - **Zona pública:** inicio, servicios, nosotros, contacto y el botón **Portal del paciente**, que lleva al login.
 - **Portal del paciente:** el paciente se registra (`/registro.php`) y entra con su correo. La cuenta nace **pendiente** hasta que admisión comprueba su identidad. Ya verificado, su inicio muestra su próxima cita, un resumen y su última atención; puede **reservar un horario libre**, cancelar sus citas (hasta 2 horas antes), ver su historia clínica y cambiar su contraseña.
 - **Zona privada (con login):** panel, pacientes, citas, **agenda semanal** (calendario), **horarios de los médicos**, solicitudes de cita, cuentas por verificar, gestión de usuarios, **auditoría** (quién vio datos clínicos) y **Mi perfil** (cambio de contraseña).
+- **Indicadores (solo admin):** citas, solicitudes y atenciones del período, con gráficos y filtros. Solo lectura y solo cantidades. Fórmulas en [`docs/indicadores.md`](docs/indicadores.md).
 - **Recorrido de una cita:** el paciente elige área y día → ve los horarios libres de los médicos → reserva y la cita queda **confirmada** al momento → aparece en la agenda del médico y en "Mis citas" del paciente → el médico la atiende y queda en la historia clínica. Si no hay horarios, el paciente puede enviar una **solicitud** y admisión la programa.
 - **Roles:** `admin` (todo), `admision` (pacientes, citas, solicitudes, verificar cuentas y marcar "no asistió") y `medico` ("Mi día" con su siguiente paciente y un gráfico de sus atenciones, su agenda y la historia clínica).
 
@@ -69,6 +70,12 @@ Cuentas de **paciente** (entran con su correo):
 | `pendiente@example.test` | pendiente de verificación | `Clinica2026!` |
 
 Estas contraseñas son **solo para desarrollo**. En el servidor deben cambiarse.
+
+### Pruebas automáticas (terminal)
+
+```bash
+php app/pruebas/indicadores_prueba.php   # indicadores: crea y BORRA su propia base de pruebas
+```
 
 ## Publicar en el servidor (Fedora)
 
