@@ -22,7 +22,12 @@ $diapositivas = [
         'titulo'   => 'Cuidamos su crecimiento.',
         'texto'    => 'Controles, vacunas y seguimiento para los más pequeños de la casa.',
         'boton'    => ['Ver servicios', '/servicios.php'],
-        'imagen'   => 'slide-pediatria.svg',
+        // Fotografía (la ilustración slide-pediatria.svg se conserva en assets).
+        'imagen'   => 'clinica/pediatria.webp',
+        'foto'     => 'diapositiva-foto-pediatria',
+        'alt'      => 'Una pediatra escucha con el estetoscopio a un niño sentado en la camilla.',
+        'ancho'    => 1200,
+        'alto'     => 600,
         'tono'     => 'diapositiva-pediatria',
     ],
     [
@@ -30,7 +35,12 @@ $diapositivas = [
         'titulo'   => 'Resultados claros y a tiempo.',
         'texto'    => 'Análisis clínicos en el mismo lugar donde te atiende tu médico.',
         'boton'    => ['Ver servicios', '/servicios.php'],
-        'imagen'   => 'slide-laboratorio.svg',
+        // Fotografía (la ilustración slide-laboratorio.svg se conserva en assets).
+        'imagen'   => 'clinica/laboratorio.webp',
+        'foto'     => 'diapositiva-foto-laboratorio',
+        'alt'      => 'Dos profesionales con bata blanca en un laboratorio clínico con microscopios y equipos de análisis.',
+        'ancho'    => 1080,
+        'alto'     => 607,
         'tono'     => 'diapositiva-laboratorio',
     ],
     [
@@ -61,7 +71,8 @@ $diapositivas = [
                         <p><?= e($d['texto']) ?></p>
                         <a class="pub-boton" href="<?= e(url($d['boton'][1])) ?>"><?= e($d['boton'][0]) ?></a>
                     </div>
-                    <div class="diapositiva-visual<?= $i === 0 ? ' diapositiva-visual-foto' : '' ?>">
+                    <?php // Diapositivas con fotografía: mismo diseño que la primera, con su propio encuadre. ?>
+                    <div class="diapositiva-visual<?= $i === 0 || isset($d['foto']) ? ' diapositiva-visual-foto' : '' ?><?= isset($d['foto']) ? ' ' . e($d['foto']) : '' ?>">
                         <img class="diapositiva-imagen" src="<?= e(recurso('/assets/img/' . $d['imagen'])) ?>"
                              alt="<?= e($d['alt'] ?? '') ?>" width="<?= $d['ancho'] ?? 480 ?>"
                              height="<?= $d['alto'] ?? 360 ?>" <?= $i === 0 ? 'fetchpriority="high"' : 'loading="lazy"' ?>>

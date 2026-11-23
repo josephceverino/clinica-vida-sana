@@ -16,3 +16,11 @@ Thumbs.db
 
 # Referencias de diseño (capturas de Figma): solo para el equipo, no se suben
 docs/referencias-figma/
+
+# Capturas de pantalla de pruebas y demostraciones: no se suben
+docs/capturas-*/
+
+# Originales PNG de las fotos del carrusel: se publican en WebP
+# (pediatria.webp, laboratorio.webp). Los PNG quedan solo en el equipo.
+public/assets/img/clinica/pediatria.png
+public/assets/img/clinica/laboratorio.png

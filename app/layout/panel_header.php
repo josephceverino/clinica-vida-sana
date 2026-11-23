@@ -21,6 +21,8 @@ $menu_panel = [
         'titulo'  => 'Resumen',
         'enlaces' => [
             'index.php' => ['Panel general', ['admin', 'admision', 'medico'], 'i-resumen'],
+            // Indicadores del período (solo lectura, solo cantidades).
+            'indicadores.php' => ['Indicadores', ['admin'], 'i-documento'],
         ],
     ],
     [

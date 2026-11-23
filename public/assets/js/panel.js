@@ -131,6 +131,125 @@
         });
     });
 
+    // --- Menú contraído: etiqueta flotante fuera del menú ----------------
+    // Con el menú contraído solo se ven los iconos; al pasar el ratón o al
+    // llegar con el teclado aparece el nombre al lado. Como el menú se puede
+    // desplazar (pantallas bajas), una etiqueta DENTRO de él quedaría
+    // recortada. Por eso se dibuja UNA sola etiqueta en <body>, con
+    // position: fixed, junto al enlace activo. No se duplican enlaces: el
+    // texto se copia del propio enlace (que sigue leyéndolo el lector de
+    // pantalla) y la etiqueta es aria-hidden. La posición se pone con
+    // element.style (CSSOM), que la CSP sí permite.
+    document.addEventListener('DOMContentLoaded', function () {
+        var lateral = document.getElementById('panel-lateral');
+        if (!lateral) {
+            return;
+        }
+
+        var etiqueta = document.createElement('div');
+        etiqueta.className = 'panel-etiqueta-flotante';
+        etiqueta.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(etiqueta);
+
+        var SELECTOR = '.panel-menu a, .panel-perfil, .panel-salir';
+        var actual = null;
+
+        // Solo en escritorio y con el menú contraído.
+        function activa() {
+            return html.classList.contains('lateral-contraida')
+                && window.matchMedia('(min-width: 901px)').matches;
+        }
+
+        // Nombre visible del enlace (sin el <small> "Mi perfil", que en el
+        // menú contraído no se muestra).
+        function texto_de(enlace) {
+            var fuente = enlace.querySelector('.panel-menu-texto');
+            if (!fuente) {
+                return '';
+            }
+            var copia = fuente.cloneNode(true);
+            copia.querySelectorAll('small').forEach(function (s) { s.remove(); });
+            return copia.textContent.replace(/\s+/g, ' ').trim();
+        }
+
+        function colocar() {
+            if (!actual) {
+                return;
+            }
+            var caja = actual.getBoundingClientRect();
+            var borde = lateral.getBoundingClientRect();
+            // Si el enlace salió de la parte visible del menú, se oculta.
+            if (caja.bottom < borde.top || caja.top > borde.bottom) {
+                ocultar();
+                return;
+            }
+            etiqueta.style.left = Math.round(caja.right + 12) + 'px';
+            etiqueta.style.top = Math.round(caja.top + caja.height / 2) + 'px';
+        }
+
+        function mostrar(enlace) {
+            var texto = texto_de(enlace);
+            if (!activa() || texto === '') {
+                return;
+            }
+            actual = enlace;
+            etiqueta.textContent = texto;
+            colocar();
+            if (actual) {
+                etiqueta.classList.add('visible');
+            }
+        }
+
+        function ocultar() {
+            actual = null;
+            etiqueta.classList.remove('visible');
+        }
+
+        // Ratón: al pasar por encima.
+        lateral.addEventListener('mouseover', function (evento) {
+            var enlace = evento.target.closest(SELECTOR);
+            if (enlace && enlace !== actual) {
+                mostrar(enlace);
+            }
+        });
+        lateral.addEventListener('mouseleave', function () {
+            if (!actual || !actual.matches(':focus-visible')) {
+                ocultar();
+            }
+        });
+
+        // Teclado: al llegar con Tab (igual que antes, solo con :focus-visible).
+        lateral.addEventListener('focusin', function (evento) {
+            var enlace = evento.target.closest(SELECTOR);
+            if (enlace && enlace.matches(':focus-visible')) {
+                mostrar(enlace);
+            } else {
+                ocultar();
+            }
+        });
+        lateral.addEventListener('focusout', function (evento) {
+            if (!lateral.contains(evento.relatedTarget)) {
+                ocultar();
+            }
+        });
+
+        // Al desplazar el menú o cambiar el tamaño, la etiqueta sigue al enlace.
+        lateral.addEventListener('scroll', colocar, { passive: true });
+        window.addEventListener('resize', function () {
+            if (!activa()) {
+                ocultar();
+            } else {
+                colocar();
+            }
+        });
+
+        // Al expandir el menú desaparece (ahí los nombres ya se ven).
+        var boton_contraer = document.querySelector('[data-contraer-lateral]');
+        if (boton_contraer) {
+            boton_contraer.addEventListener('click', ocultar);
+        }
+    });
+
     // --- Formularios que tardan: indicador "cargando" ------------------
     // Solo en formularios con el atributo data-cargando. El evento "submit"
     // llega cuando el navegador ya validó los campos. El botón muestra un
