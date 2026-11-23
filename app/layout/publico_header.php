@@ -23,6 +23,10 @@ if ($pagina_actual === '/index.php') {
     $pagina_actual = '/';
 }
 
+// Vita, el asistente guiado: en todas las páginas públicas menos Login y
+// Registro (allí estorbaría el formulario). publico_footer.php lo dibuja.
+$vita_visible = !in_array($pagina_actual, ['/login.php', '/registro.php'], true);
+
 // Dibuja un icono de public/assets/img/iconos.svg (decorativo).
 $icono_publico = fn (string $id): string =>
     '<svg class="pub-icono" aria-hidden="true" focusable="false"><use href="'
@@ -48,6 +52,11 @@ $icono_publico = fn (string $id): string =>
     <?php endif; ?>
     <!-- Menú del celular, aparición al bajar y "cargando" de los formularios -->
     <script src="<?= e(recurso('/assets/js/publico.js')) ?>" defer></script>
+    <?php if ($vita_visible): ?>
+        <!-- Vita, el asistente guiado (estilos y comportamiento propios) -->
+        <link rel="stylesheet" href="<?= e(recurso('/assets/css/vita.css')) ?>">
+        <script src="<?= e(recurso('/assets/js/vita.js')) ?>" defer></script>
+    <?php endif; ?>
 </head>
 <body class="publico">
 <!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->

@@ -2266,3 +2266,37 @@ body.publico {
         transform: translateX(18px);
     }
 }
+
+/* =====================================================================
+   Ayuda / preguntas frecuentes (public/ayuda.php)
+   Reutiliza el diseño de la política de privacidad (.pub-legal). Aquí
+   solo se agrega el espacio entre preguntas. Usa las variables del tema,
+   así funciona igual en modo claro y oscuro.
+   ===================================================================== */
+.pub-ayuda-item {
+    padding: 1rem 0;
+    scroll-margin-top: 6rem;   /* al saltar a #pregunta, que no la tape la cabecera */
+}
+
+.pub-ayuda-item + .pub-ayuda-item {
+    border-top: 1px dashed var(--pub-borde);
+}
+
+.pub-ayuda-item h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+    line-height: 1.4;
+}
+
+.pub-ayuda-item p {
+    margin: 0;
+}
+
+.pub-ayuda-nota {
+    font-size: 0.9rem;
+    color: var(--pub-suave);
+}
+
+.pub-ayuda .pub-ayuda-accion {
+    margin-top: 0.75rem;
+}

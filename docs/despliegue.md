@@ -284,6 +284,50 @@ sudo mariadb < /var/www/clinica/sql/migracion-2026-11.sql
 - `ls -lZ /var/www/clinica/public` muestra `httpd_sys_content_t`.
 - `ls -l /var/www/clinica/config/config.php` muestra `-rw-r-----  root apache`.
 
+### 7.2 Vita: base de conocimientos y límite de mensajes
+
+**Base de datos.** Vita necesita sus dos tablas. La migración solo **agrega** tablas (no toca las existentes) y se puede ejecutar varias veces. Haz antes una copia:
+
+```bash
+sudo mariadb-dump clinica_vida_sana > ~/respaldo-antes-de-vita.sql
+sudo mariadb clinica_vida_sana < /var/www/clinica/sql/migracion-2026-11-vita.sql
+```
+
+**Límite de mensajes.** Vita cuenta cuántos mensajes llegan por minuto (20 por IP, 600 en total) en archivos pequeños. **Si no puede escribirlos, Vita responde "no disponible" (503)**: nunca atiende sin control. Por defecto usa la carpeta temporal de PHP-FPM, que en Fedora funciona **sin cambiar SELinux**:
+
+- `php-fpm` tiene `PrivateTmp=yes`: su `/tmp` es privado y se vacía al reiniciar (no importa, son contadores de un minuto).
+- SELinux permite a Apache/PHP (`httpd_t`) crear archivos en su `/tmp` (quedan como `httpd_tmp_t`).
+
+✅ **Comprobar** (después del `deploy.sh` y la migración):
+
+```bash
+systemctl show php-fpm -p PrivateTmp          # PrivateTmp=yes
+curl -s -X POST https://www.clinica.lan/vita/responder.php \
+     -H 'Content-Type: application/json' -H 'Origin: https://www.clinica.lan' \
+     -d '{"mensaje":"hola"}'                   # debe traer "ok":true
+sudo sh -c 'ls -lZ /tmp/systemd-private-*-php-fpm.service-*/tmp/vita-limite'   # archivos httpd_tmp_t
+```
+
+Si responde `servicio_no_disponible` y la base funciona, mira el motivo:
+
+```bash
+sudo grep "Vita:" /var/log/php-fpm/www-error.log | tail -n 5
+sudo ausearch -m avc -ts recent | grep -i vita
+```
+
+**Opcional: carpeta propia** (si la carpeta temporal da problemas). Se etiqueta para que Apache pueda escribir, **sin desactivar SELinux**. Está fuera de `/var/www`, así que `deploy.sh` no la toca:
+
+```bash
+sudo dnf install -y policycoreutils-python-utils      # trae "semanage"
+sudo mkdir -p /var/lib/clinica/vita-limite
+sudo chown apache:apache /var/lib/clinica/vita-limite
+sudo chmod 700 /var/lib/clinica/vita-limite
+sudo semanage fcontext -a -t httpd_sys_rw_content_t '/var/lib/clinica/vita-limite(/.*)?'
+sudo restorecon -Rv /var/lib/clinica
+```
+
+y en `config/config.php`: `'vita_limite_carpeta' => '/var/lib/clinica/vita-limite',`
+
 ---
 
 ## 8. Acceso desde otro equipo (ítem 3.9)

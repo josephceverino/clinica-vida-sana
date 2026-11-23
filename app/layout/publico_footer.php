@@ -11,10 +11,14 @@
             <a href="<?= e(url('/servicios.php')) ?>">Servicios</a>
             <a href="<?= e(url('/nosotros.php')) ?>">Nosotros</a>
             <a href="<?= e(url('/contacto.php')) ?>">Contacto</a>
+            <a href="<?= e(url('/ayuda.php')) ?>">Ayuda</a>
             <a href="<?= e(url('/privacidad.php')) ?>">Política de privacidad</a>
         </nav>
     </div>
 </footer>
+<?php if ($vita_visible ?? false): ?>
+    <?php require __DIR__ . '/vita_widget.php'; ?>
+<?php endif; ?>
 <?php
 $whatsapp = (require __DIR__ . '/../../config/contacto_publico.php')['whatsapp'];
 $numero_whatsapp = ltrim(trim($whatsapp['numero']), '+');
