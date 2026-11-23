@@ -1,0 +1,763 @@
+/* =====================================================================
+   Vita — asistente guiado de la web pública
+   HTML: app/layout/vita_widget.php · Comportamiento: assets/js/vita.js
+   Usa las variables de publico.css (--pub-*): así el modo oscuro y los
+   colores de la clínica se aplican solos. Botón abajo a la IZQUIERDA para
+   no chocar con WhatsApp (abajo a la derecha).
+   ===================================================================== */
+
+.vita {
+    --vita-azul:       #1F6FB8;   /* cruz del logo */
+    --vita-turquesa:   #14B8A6;   /* hoja del logo */
+    --vita-ojos:       #46E0CF;
+    --vita-visor:      #0D2F3B;
+    --vita-cabeza:     #FFFFFF;
+    --vita-separacion: max(0.8rem, env(safe-area-inset-left));
+    --vita-abajo:      max(0.8rem, env(safe-area-inset-bottom));
+    --vita-urgente-fondo: #FDECEA;
+    --vita-urgente-borde: #B42318;
+    --vita-urgente-texto: #7A1A12;
+}
+
+.vita[hidden],
+.vita [hidden] {
+    display: none !important;
+}
+
+/* ---------------------------------------------------------------------
+   La mascota (SVG). Colores por clase: no hay estilos dentro del SVG,
+   así lo permite la política de seguridad (CSP).
+   --------------------------------------------------------------------- */
+.vita-mascota {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.vita-mascota .vm-cruz   { fill: var(--vita-azul); }
+.vita-mascota .vm-cabeza { fill: var(--vita-cabeza); stroke: var(--vita-azul); stroke-width: 2.5; }
+.vita-mascota .vm-visor  { fill: var(--vita-visor); }
+.vita-mascota .vm-ojo    { fill: var(--vita-ojos); transform-box: fill-box; transform-origin: center; }
+.vita-mascota .vm-boca   { fill: none; stroke: var(--vita-ojos); stroke-width: 2.2; stroke-linecap: round; }
+.vita-mascota .vm-luz    { fill: var(--vita-turquesa); }
+.vita-mascota .vm-hoja   { fill: var(--vita-turquesa); }
+.vita-mascota .vm-tallo  { fill: none; stroke: var(--vita-azul); stroke-width: 2; stroke-linecap: round; }
+.vita-mascota .vm-nervio { fill: none; stroke: #FFFFFF; stroke-width: 1; stroke-linecap: round; opacity: 0.8; }
+
+/* ---------------------------------------------------------------------
+   Botón flotante
+   --------------------------------------------------------------------- */
+.vita-lanzador {
+    position: fixed;
+    z-index: 36;               /* sobre el contenido; WhatsApp usa 35 */
+    left: var(--vita-separacion);
+    bottom: var(--vita-abajo);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 58px;
+    padding: 0.35rem 1.1rem 0.35rem 0.35rem;
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.15;
+    text-align: left;
+    color: #FFFFFF;
+    background: var(--pub-primario);
+    border: 1px solid var(--pub-oscuro);
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(8, 72, 92, 0.32);
+    cursor: pointer;
+    transition: transform var(--pub-transicion), box-shadow var(--pub-transicion),
+                background-color var(--pub-transicion);
+}
+
+.vita-lanzador:hover {
+    background: var(--pub-primario-hover);
+    box-shadow: 0 10px 24px rgba(8, 72, 92, 0.38);
+    transform: translateY(-2px);
+}
+
+.vita-lanzador:focus-visible {
+    outline: 3px solid var(--pub-enlace);
+    outline-offset: 3px;
+}
+
+.vita-lanzador-avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    padding: 5px;
+    background: #FFFFFF;
+    border-radius: 50%;
+}
+
+.vita-lanzador-texto {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.95rem;
+}
+
+.vita-lanzador-pregunta {
+    font-size: 0.78rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+/* Abierto: el botón queda marcado (en escritorio sigue visible) */
+.vita-lanzador[aria-expanded="true"] {
+    background: var(--pub-oscuro);
+}
+
+/* ---------------------------------------------------------------------
+   Panel
+   --------------------------------------------------------------------- */
+/* El panel crece según su contenido (corto al empezar) hasta un máximo:
+   así tapa lo menos posible de la página. Cuando la conversación pasa
+   ese máximo, solo la zona de mensajes hace scroll: la cabecera, el
+   botón de cerrar y el campo de texto quedan siempre a la vista. */
+.vita-panel {
+    position: fixed;
+    z-index: 50;               /* sobre la cabecera (40) */
+    left: var(--vita-separacion);
+    bottom: calc(var(--vita-abajo) + 58px + 0.75rem);
+    display: flex;
+    flex-direction: column;
+    width: min(360px, calc(100vw - 2 * var(--vita-separacion)));
+    height: auto;
+    max-height: min(510px, calc(100dvh - 58px - 2.5rem - var(--vita-abajo)));
+    overflow: hidden;
+    color: var(--pub-texto);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-radius: 20px;
+    box-shadow: var(--pub-sombra-alta);
+}
+
+.vita-panel:not([hidden]) {
+    animation: vita-aparecer var(--mov-medio, 220ms) var(--mov-curva, ease-out);
+}
+
+/* Al abrir, el foco llega al panel (sin borde: es un contenedor, no un
+   control; los controles de dentro sí muestran su foco). */
+.vita-panel:focus {
+    outline: none;
+}
+
+/* Partes fijas: nunca se encogen ni salen de la vista */
+.vita-cabecera,
+.vita-nota,
+.vita-sugerencias,
+.vita-formulario,
+.vita-estado,
+.vita-pie {
+    flex-shrink: 0;
+}
+
+/* Poco alto disponible (teclado abierto o ventana baja): se ocultan la
+   nota, las sugerencias y el enlace del pie para dejar sitio a la
+   conversación. Lo activa vita.js. */
+.vita-panel.vita-compacto .vita-nota,
+.vita-panel.vita-compacto .vita-sugerencias,
+.vita-panel.vita-compacto .vita-pie {
+    display: none;
+}
+
+.vita-panel.vita-compacto .vita-cabecera {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+@keyframes vita-aparecer {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* Cabecera del panel */
+.vita-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 0.85rem 0.85rem 1rem;
+    color: #FFFFFF;
+    background: linear-gradient(120deg, var(--pub-primario) 0%, var(--pub-oscuro) 100%);
+}
+
+.vita-cabecera-avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 46px;
+    height: 46px;
+    padding: 5px;
+    background: #FFFFFF;
+    border-radius: 14px;
+}
+
+.vita-cabecera-texto {
+    flex: 1;
+    min-width: 0;
+}
+
+.vita-cabecera h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.2;
+    color: #FFFFFF;
+}
+
+.vita-cabecera p {
+    margin: 0.1rem 0 0;
+    font-size: 0.82rem;
+    color: #DCEFF4;
+}
+
+.vita-cerrar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color var(--pub-transicion);
+}
+
+.vita-cerrar:hover {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+.vita-cerrar:focus-visible {
+    outline: 3px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+.vita-cerrar svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+}
+
+.vita-nota {
+    margin: 0;
+    padding: 0.55rem 1rem;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--pub-suave);
+    background: var(--pub-tinte);
+    border-bottom: 1px solid var(--pub-borde);
+}
+
+.vita-nota strong {
+    color: var(--pub-texto);
+}
+
+/* ---------------------------------------------------------------------
+   Mensajes
+   --------------------------------------------------------------------- */
+.vita-mensajes {
+    flex: 1 1 auto;
+    min-height: 4.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--pub-fondo);
+}
+
+.vita-mensajes:focus-visible {
+    outline: 3px solid var(--pub-enlace);
+    outline-offset: -3px;
+}
+
+.vita-msg {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    max-width: 100%;
+}
+
+.vita-msg-usuario {
+    justify-content: flex-end;
+}
+
+.vita-msg-avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    padding: 3px;
+    background: #FFFFFF;
+    border: 1px solid var(--pub-borde);
+    border-radius: 10px;
+}
+
+.vita-burbuja {
+    max-width: 85%;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.93rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    border-radius: 16px;
+}
+
+.vita-burbuja p {
+    margin: 0;
+}
+
+.vita-msg-bot .vita-burbuja {
+    color: var(--pub-texto);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde);
+    border-bottom-left-radius: 6px;
+}
+
+.vita-msg-usuario .vita-burbuja {
+    color: #FFFFFF;
+    background: var(--pub-primario);
+    border-bottom-right-radius: 6px;
+}
+
+/* Título de la pregunta frecuente que se responde */
+.vita-burbuja .vita-respuesta-titulo {
+    margin-bottom: 0.3rem;
+    font-weight: 700;
+    color: var(--pub-texto);
+}
+
+/* Avisos: consulta médica, datos personales, sin conexión */
+.vita-msg-bot .vita-burbuja-aviso {
+    background: var(--pub-tinte);
+    border-color: var(--pub-info-borde, var(--pub-borde));
+    border-left: 4px solid var(--pub-primario);
+}
+
+/* Posible emergencia: lo más visible */
+.vita-msg-bot .vita-burbuja-urgente {
+    color: var(--vita-urgente-texto);
+    background: var(--vita-urgente-fondo);
+    border-color: #F5B5AE;
+    border-left: 4px solid var(--vita-urgente-borde);
+}
+
+.vita-burbuja-urgente .vita-respuesta-titulo {
+    color: var(--vita-urgente-texto);
+}
+
+/* Enlace de acción (página real de la web) */
+.vita-accion {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 40px;
+    margin-top: 0.6rem;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-decoration: none;
+    background: var(--pub-primario);
+    border-radius: 10px;
+    transition: background-color var(--pub-transicion);
+}
+
+.vita-accion:hover {
+    background: var(--pub-primario-hover);
+}
+
+.vita-accion:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+.vita-accion::after {
+    content: "→";
+    font-weight: 400;
+}
+
+/* Mensaje de error: "Reintentar" y el enlace a Ayuda, uno junto al otro */
+.vita-error-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.9rem;
+    margin-top: 0.6rem;
+}
+
+.vita-enlace-ayuda {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--pub-enlace);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.vita-enlace-ayuda:focus-visible {
+    outline: none;
+    border-radius: 6px;
+    box-shadow: var(--pub-anillo);
+}
+
+/* Botón "Reintentar" dentro de un mensaje de error */
+.vita-reintentar {
+    min-height: 40px;
+    margin-top: 0;
+    padding: 0.45rem 0.9rem;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--pub-enlace);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde-fuerte);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.vita-reintentar:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+/* "Vita está escribiendo…" */
+.vita-escribiendo {
+    display: inline-flex;
+    gap: 4px;
+    padding: 0.85rem 1rem;
+}
+
+.vita-escribiendo span[aria-hidden] {
+    width: 7px;
+    height: 7px;
+    background: var(--pub-suave);
+    border-radius: 50%;
+    animation: vita-punto 1.1s infinite ease-in-out;
+}
+
+.vita-escribiendo span[aria-hidden]:nth-of-type(2) { animation-delay: 0.15s; }
+.vita-escribiendo span[aria-hidden]:nth-of-type(3) { animation-delay: 0.3s; }
+
+@keyframes vita-punto {
+    0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+    40%           { opacity: 1;   transform: translateY(-3px); }
+}
+
+/* ---------------------------------------------------------------------
+   Sugerencias
+   --------------------------------------------------------------------- */
+.vita-sugerencias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    max-height: 9.4rem;        /* 3 sugerencias; si hay más, scroll */
+    padding: 0.6rem 1rem;
+    overflow-y: auto;
+    background: var(--pub-superficie);
+    border-top: 1px solid var(--pub-borde);
+}
+
+.vita-sugerencia {
+    min-height: 34px;
+    padding: 0.35rem 0.75rem;
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    text-align: left;
+    color: var(--pub-enlace);
+    background: var(--pub-superficie);
+    border: 1px solid var(--pub-borde-fuerte);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color var(--pub-transicion), border-color var(--pub-transicion);
+}
+
+.vita-sugerencia:hover {
+    background: var(--pub-tinte);
+    border-color: var(--pub-primario);
+}
+
+.vita-sugerencia:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+.vita-sugerencia:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------------
+   Campo de texto
+   --------------------------------------------------------------------- */
+.vita-formulario {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 0.25rem;
+    background: var(--pub-superficie);
+    border-top: 1px solid var(--pub-borde);
+}
+
+.vita-entrada {
+    flex: 1;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0.6rem 0.85rem;
+    font: inherit;
+    font-size: 1rem;            /* 16px: el celular no hace zoom al escribir */
+    color: var(--pub-texto);
+    background: var(--pub-fondo);
+    border: 1px solid var(--pub-borde-fuerte);
+    border-radius: 12px;
+}
+
+.vita-entrada::placeholder {
+    color: var(--pub-suave);
+}
+
+.vita-entrada:focus-visible {
+    outline: none;
+    border-color: var(--pub-primario);
+    box-shadow: var(--pub-anillo);
+}
+
+.vita-enviar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    color: #FFFFFF;
+    background: var(--pub-primario);
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color var(--pub-transicion);
+}
+
+.vita-enviar:hover {
+    background: var(--pub-primario-hover);
+}
+
+.vita-enviar:focus-visible {
+    outline: none;
+    box-shadow: var(--pub-anillo);
+}
+
+.vita-enviar svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.vita-entrada:disabled,
+.vita-enviar:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.vita-estado {
+    margin: 0;
+    padding: 0.15rem 1rem 0;
+    font-size: 0.8rem;
+    color: var(--pub-suave);
+    background: var(--pub-superficie);
+}
+
+/* Vacío no ocupa lugar, pero sigue en la página: así los lectores de
+   pantalla anuncian el aviso cuando aparece (role="status"). */
+.vita-estado:empty {
+    padding: 0;
+}
+
+.vita-pie {
+    margin: 0;
+    padding: 0.2rem 1rem 0.75rem;
+    font-size: 0.82rem;
+    background: var(--pub-superficie);
+}
+
+.vita-pie a {
+    color: var(--pub-enlace);
+}
+
+/* ---------------------------------------------------------------------
+   Modo oscuro (además de las variables --pub-*, que ya cambian solas)
+   --------------------------------------------------------------------- */
+:root[data-tema="oscuro"] .vita {
+    --vita-urgente-fondo: #2A1A1A;
+    --vita-urgente-borde: #F4A199;
+    --vita-urgente-texto: #F8C7C1;
+}
+
+:root[data-tema="oscuro"] .vita-lanzador {
+    border-color: #0E5A6D;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+:root[data-tema="oscuro"] .vita-msg-avatar {
+    border-color: transparent;
+}
+
+/* ---------------------------------------------------------------------
+   Celular y tablet
+   --------------------------------------------------------------------- */
+@media (max-width: 640px) {
+    /* Solo el robot (el texto queda para los lectores de pantalla) */
+    .vita-lanzador {
+        width: 58px;
+        height: 58px;
+        padding: 5px;
+        justify-content: center;
+    }
+
+    .vita-lanzador-texto {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    /* Panel como hoja que sube desde abajo, a todo el ancho.
+       --vita-teclado y --vita-visible los calcula vita.js con la zona
+       que de verdad se ve (visualViewport): con el teclado abierto, la
+       hoja se apoya encima del teclado y cabe en lo visible. */
+    .vita-panel {
+        left: 0;
+        right: 0;
+        bottom: calc(var(--vita-teclado, 0px) + var(--vita-barra, 0px));
+        width: 100%;
+        max-height: min(680px, calc(var(--vita-visible, 100dvh) - 3.5rem - var(--vita-barra, 0px)));
+        border-width: 1px 0 0;
+        border-radius: 20px 20px 0 0;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Con el teclado abierto: la hoja usa todo lo visible */
+    .vita-panel.vita-teclado-abierto {
+        max-height: calc(var(--vita-visible, 100dvh) - 0.5rem);
+        padding-bottom: 0;
+    }
+
+    /* Con el panel abierto, el botón queda debajo de la hoja */
+    .vita-lanzador[aria-expanded="true"] {
+        visibility: hidden;
+    }
+
+    /* Espacio al final del pie para que el botón no tape sus enlaces */
+    body.vita-activa .pub-pie {
+        padding-bottom: 5.5rem;
+    }
+}
+
+/* Pantallas muy angostas (320 px): más alto para la conversación.
+   El subtítulo sigue disponible para los lectores de pantalla (es la
+   descripción del diálogo, aria-describedby). */
+@media (max-width: 360px) {
+    .vita-cabecera p {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .vita-nota {
+        padding: 0.45rem 0.85rem;
+        font-size: 0.75rem;
+    }
+
+    .vita-mensajes,
+    .vita-sugerencias {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+/* ---------------------------------------------------------------------
+   Movimiento: parpadeo suave solo si la persona no pidió reducirlo
+   --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+    .vita-mascota-lanzador .vm-ojo,
+    .vita-mascota-cabecera .vm-ojo {
+        animation: vita-parpadeo 6s infinite;
+    }
+}
+
+@keyframes vita-parpadeo {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%           { transform: scaleY(0.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vita-lanzador,
+    .vita-panel:not([hidden]),
+    .vita-escribiendo span[aria-hidden] {
+        animation: none;
+        transition: none;
+    }
+
+    .vita-lanzador:hover {
+        transform: none;
+    }
+}
+
+/* =====================================================================
+   Portal del paciente (body.portal)
+   Es el MISMO widget. El portal no carga publico.css, así que las
+   variables --pub-* que usa Vita se toman de las del portal (--panel-*),
+   que tienen los mismos colores. Su modo oscuro cambia esas variables,
+   y Vita lo sigue solo. Nada de esto afecta a la web pública.
+   ===================================================================== */
+body.portal .vita {
+    --pub-primario:       var(--panel-primario);
+    --pub-primario-hover: var(--panel-primario-hover);
+    --pub-oscuro:         #075267;   /* el mismo de la web pública */
+    --pub-fondo:          var(--panel-fondo);
+    --pub-superficie:     var(--panel-superficie);
+    --pub-texto:          var(--panel-texto);
+    --pub-suave:          var(--panel-texto-suave);
+    --pub-borde:          var(--panel-borde);
+    --pub-borde-fuerte:   var(--panel-borde-fuerte);
+    --pub-tinte:          var(--panel-tinte);
+    --pub-enlace:         var(--panel-enlace);
+    --pub-info-borde:     var(--panel-info-borde);
+    --pub-anillo:         var(--panel-anillo);
+    --pub-transicion:     var(--panel-transicion);
+    --pub-sombra-alta:    0 4px 10px rgba(25, 56, 71, 0.08), 0 18px 40px rgba(25, 56, 71, 0.12);
+}
+
+:root[data-tema="oscuro"] body.portal .vita {
+    --pub-sombra-alta:    0 4px 10px rgba(0, 0, 0, 0.35), 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Celular y tableta: el portal tiene una barra de pestañas fija abajo.
+   El botón de Vita (y el panel flotante de la tableta) se apoyan encima,
+   usando el mismo espacio que el portal reserva para esa barra. */
+@media (max-width: 900px) {
+    body.portal .vita {
+        --vita-abajo: var(--portal-menu-reserva, 5rem);
+    }
+
+    /* Espacio extra al final de la página: lo último no queda bajo Vita */
+    body.portal.vita-activa .pie {
+        padding-bottom: calc(var(--portal-menu-reserva, 5rem) + 58px + 1rem);
+    }
+}

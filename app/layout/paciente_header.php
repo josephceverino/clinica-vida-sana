@@ -44,6 +44,10 @@ $icono_panel = fn (string $id): string =>
     <link rel="stylesheet" href="<?= e(recurso('/assets/css/paciente.css')) ?>">
     <!-- Indicador "cargando" de los formularios (archivo aparte por la CSP). -->
     <script src="<?= e(recurso('/assets/js/panel.js')) ?>"></script>
+    <!-- Vita, el asistente guiado: el MISMO de la web pública (ver
+         paciente_footer.php). No usa la sesión ni los datos del paciente. -->
+    <link rel="stylesheet" href="<?= e(recurso('/assets/css/vita.css')) ?>">
+    <script src="<?= e(recurso('/assets/js/vita.js')) ?>" defer></script>
 </head>
 <body class="panel-body portal">
 <!-- Accesibilidad: con Tab, lo primero es saltar el menú. -->
@@ -54,8 +58,9 @@ $icono_panel = fn (string $id): string =>
             <img class="logo-oficial" src="<?= e(recurso('/assets/img/branding/logo.png')) ?>" width="2172" height="724" alt="Clínica Vida Sana">
         </a>
 
-        <!-- En el celular, este menú pasa a una barra fija abajo -->
-        <nav class="portal-menu" aria-label="Menú del portal">
+        <!-- En el celular, este menú pasa a una barra fija abajo.
+             data-vita-barra-inferior: Vita mide esta barra para no taparla. -->
+        <nav class="portal-menu" aria-label="Menú del portal" data-vita-barra-inferior>
             <?php foreach ($menu_paciente as $archivo => [$texto, $icono]): ?>
                 <?php if (file_exists(__DIR__ . '/../../public/paciente/' . $archivo)): ?>
                     <a href="<?= e(url('/paciente/' . $archivo)) ?>"

@@ -19,4 +19,9 @@ return [
         'password' => '',
         'charset'  => 'utf8mb4',
     ],
+
+    // Vita (opcional): carpeta donde se cuentan los mensajes por minuto.
+    // Vacío = carpeta temporal del sistema (sirve en XAMPP y en Fedora).
+    // Ver docs/despliegue.md, sección 7.2.
+    'vita_limite_carpeta' => '',
 ];
